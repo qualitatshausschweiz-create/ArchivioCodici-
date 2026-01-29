@@ -1,4 +1,5 @@
 const archivio = document.getElementById("archivio");
+const form = document.getElementById("form");
 
 function aggiungiVoce(titolo, descrizione, link) {
   const voce = document.createElement("div");
@@ -10,9 +11,14 @@ function aggiungiVoce(titolo, descrizione, link) {
   archivio.appendChild(voce);
 }
 
-// Esempio iniziale
-aggiungiVoce(
-  "Note App",
-  "Versione ufficiale con categorie, backup e popup iOS",
-  "https://github.com/tuo-utente/NoteApp"
-);
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const titolo = document.getElementById("titolo").value;
+  const descrizione = document.getElementById("descrizione").value;
+  const link = document.getElementById("link").value;
+
+  aggiungiVoce(titolo, descrizione, link);
+
+  form.reset();
+});
