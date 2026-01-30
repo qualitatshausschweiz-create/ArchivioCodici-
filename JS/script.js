@@ -1,370 +1,101 @@
-modello2: `body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
+modello1: `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Note App</title>
 
-:root {
-  --bg: #ffffff;
-  --text: #000000;
-}
+  <link rel="stylesheet" href="style.css">
 
-.dark {
-  --bg: #111111;
-  --text: #ffffff;
-}
+  <script src="https://accounts.google.com/gsi/client" async defer><\/script>
+</head>
+<body>
 
-.icon-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: var(--bg);
-  border-bottom: 1px solid #ccc;
-}
+  <div class="icon-bar">
+    <button id="themeToggle">☀️</button>
+    <button id="addNoteBtn">➕</button>
+    <button id="categoriesBtn">📁</button>
+    <button id="trashBtn">🗑️</button>
+    <button id="settingsBtn">⚙️</button>
+  </div>
 
-.icon-bar button {
-  font-size: 22px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
+  <div id="notesContainer"></div>
 
-/* PANELLO + ANIMAZIONE PREMIUM */
-.panel {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 70%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 1000;
-  opacity: 0;
-  backdrop-filter: blur(6px);
-  transition: opacity 0.25s ease;
-}
+  <div id="notePanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="noteTitle" placeholder="Titolo">
+      <textarea id="noteText" placeholder="Testo"></textarea>
+      <div id="categoryButtons" class="category-buttons"></div>
+      <div id="notePalette" class="palette"></div>
+      <button id="saveNoteBtn" class="save">Salva</button>
+      <button id="closeNotePanel" class="close">Chiudi</button>
+    </div>
+  </div>
 
-.panel.show {
-  opacity: 1;
-}
+  <div id="categoryPanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="newCategoryName" placeholder="Nome categoria">
+      <div id="categoryPalette" class="palette"></div>
+      <input type="color" id="categoryColorPicker">
+      <button id="saveCategoryBtn" class="save">Salva categoria</button>
+      <div id="categoryList"></div>
+      <button id="closeCategoryPanel" class="close">Chiudi</button>
+    </div>
+  </div>
 
-.hidden {
-  display: none;
-}
+  <div id="trashPanel" class="panel hidden">
+    <div class="panel-content">
+      <div id="trashList"></div>
+      <button id="closeTrashPanel" class="close">Chiudi</button>
+    </div>
+  </div>
 
-.panel-content {
-  width: 100%;
-  background: var(--bg);
-  color: var(--text);
-  padding: 20px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -8px 25px rgba(0,0,0,0.25);
-  animation: panelSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
+  <div id="settingsPanel" class="panel hidden">
+    <div class="panel-content settings-box">
 
-@keyframes panelSlideUp {
-  0% { transform: translateY(100%); }
-  60% { transform: translateY(-6%); }
-  100% { transform: translateY(0); }
-}
+      <h2>Impostazioni ⚙️</h2>
 
-/* IMPOSTAZIONI — PRIMA PARTE */
-.settings-box {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+      <div class="settings-group">
 
-.settings-item {
-  width: 100%;
-  padding: 14px;
-  font-size: 17px;
-  text-align: left;
-  background: none;
-  border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 12px;
-  cursor: pointer;
-}
+        <label class="settings-row">
+          <span>Tema dinamico</span>
+          <input type="checkbox" id="settingThemeAuto" class="toggle">
+        </label>
 
-/* NOTE */
-textarea, input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
-}
+        <label class="settings-row">
+          <span>Vibrazione feedback</span>
+          <input type="checkbox" id="settingVibration" class="toggle">
+        </label>
 
-.category-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+        <label class="settings-row">
+          <span>Ordinamento note</span>
+          <select id="settingSort" class="select-ios">
+            <option value="recenti">Più recenti</option>
+            <option value="vecchie">Più vecchie</option>
+            <option value="colore">Per colore categoria</option>
+            <option value="titolo">Titolo A‑Z</option>
+          </select>
+        </label>
 
-.category-btn {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
-}
+        <label class="settings-row">
+          <span>Animazioni avanzate</span>
+          <input type="checkbox" id="settingAnimations" class="toggle">
+        </label>
 
-.palette {
-  display: flex;
-  gap: 10px;
-  margin: 10px 0;
-}
+      </div>
 
-/* 🎯 CERCHI GRANDI PER PALETTE */
-.color {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
+      <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
+      <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
+      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
+      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie iniziali</button>
+      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale dati</button>
+      <button id="memoryStatusBtn" class="settings-item">💾 Stato memoria</button>
 
-.color.selected {
-  border: 2px solid #000;
-}
+      <button id="closeSettingsPanel" class="close">Chiudi</button>
 
-.note {
-  background: var(--bg);
-  border-left: 6px solid;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 10px;
-}
+    </div>
+  </div>
 
-.save, .close {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-/* ANIMAZIONE SOLE/LUNA */
-#themeToggle {
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-#themeToggle.animate {
-  transform: rotate(180deg) scale(1.2);
-  opacity: 0.7;
-}
-
-/* NOTE — leggibilità perfetta */
-.note {
-  border-left: 8px solid;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #000000;
-}
-
-.note h3,
-.note p,
-.note small {
-  color: #000000;
-}
-
-/* --- IMPOSTAZIONI MODERNE --- */
-.modern-settings {
-  padding: 20px;
-}
-
-.settings-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.modern-btn {
-  width: 100%;
-  padding: 14px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 12px;
-  background: #f2f2f7;
-  font-size: 16px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: 0.2s;
-}
-
-.modern-btn:hover {
-  background: #e5e5ea;
-}
-
-.modern-close {
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  border-radius: 12px;
-  background: #ff3b30;
-  color: white;
-  font-weight: bold;
-  border: none;
-  transition: 0.2s;
-}
-
-.modern-close:hover {
-  background: #d32f2f;
-}
-
-/* --- IMPOSTAZIONI iOS 17 --- */
-.settings-group {
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.modern-btn {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.modern-btn:last-child {
-  border-bottom: none;
-}
-
-.modern-btn:active {
-  background: rgba(0,0,0,0.08);
-}
-
-.modern-close:active {
-  background: #d32f2f;
-}
-
-/* ⭐ NUOVE VOCI IMPOSTAZIONI (toggle + select) */
-.settings-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 6px;
-  font-size: 17px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.settings-row:last-child {
-  border-bottom: none;
-}
-
-.toggle {
-  appearance: none;
-  width: 48px;
-  height: 28px;
-  background: #ccc;
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.25s ease;
-}
-
-.toggle:checked {
-  background: #34c759;
-}
-
-.toggle::before {
-  content: "";
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  background: white;
-  border-radius: 50%;
-  top: 3px;
-  left: 3px;
-  transition: transform 0.25s ease;
-}
-
-.toggle:checked::before {
-  transform: translateX(20px);
-}
-
-.select-ios {
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.2);
-  background: rgba(255,255,255,0.7);
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* ⭐ CERCHI GRANDI NELLA LISTA CATEGORIE */
-.category-list-color {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 2px solid transparent;
-  transition: transform 0.18s ease, box-shadow 0.25s ease;
-}
-
-.category-list-color:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
-}
-
-/* ⭐ CERCHI GRANDI + GLOW + BOUNCE + SELEZIONE */
-.category-list-color {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 2px solid transparent;
-  transition:
-    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.category-list-color:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 12px rgba(0,0,0,0.18);
-}
-
-.category-list-color:active {
-  transform: scale(0.85);
-  box-shadow: 0 0 6px rgba(0,0,0,0.15);
-}
-
-.category-selected .category-list-color {
-  border-color: #000;
-  animation: pulseCategory 0.55s ease-out;
-}
-
-@keyframes pulseCategory {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.22); }
-  100% { transform: scale(1); }
-}
-
-.category-row span {
-  font-size: 17px;
-  margin-left: 12px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.category-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}`,
+  <script src="script.js"><\/script>
+</body>
+</html>`,
