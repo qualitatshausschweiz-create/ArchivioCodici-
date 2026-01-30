@@ -123,13 +123,113 @@
     <script>
         const modelli = {
             modello1: `
-                <h2>HTML Sacro</h2>
-                <p>Incolla qui il tuo file HTML sacro.</p>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Note App</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <div class="icon-bar">
+    <button id="themeToggle">☀️</button>
+    <button id="addNoteBtn">➕</button>
+    <button id="categoriesBtn">📁</button>
+    <button id="trashBtn">🗑️</button>
+    <button id="settingsBtn">⚙️</button>
+  </div>
+
+  <div id="notesContainer"></div>
+
+  <div id="notePanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="noteTitle" placeholder="Titolo">
+      <textarea id="noteText" placeholder="Testo"></textarea>
+      <div id="categoryButtons" class="category-buttons"></div>
+      <div id="notePalette" class="palette"></div>
+      <button id="saveNoteBtn" class="save">Salva</button>
+      <button id="closeNotePanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="categoryPanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="newCategoryName" placeholder="Nome categoria">
+      <div id="categoryPalette" class="palette"></div>
+      <input type="color" id="categoryColorPicker">
+      <button id="saveCategoryBtn" class="save">Salva categoria</button>
+      <div id="categoryList"></div>
+      <button id="closeCategoryPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="trashPanel" class="panel hidden">
+    <div class="panel-content">
+      <div id="trashList"></div>
+      <button id="closeTrashPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="settingsPanel" class="panel hidden">
+    <div class="panel-content settings-box">
+
+      <h2>Impostazioni ⚙️</h2>
+
+      <div class="settings-group">
+
+        <label class="settings-row">
+          <span>Tema dinamico</span>
+          <input type="checkbox" id="settingThemeAuto" class="toggle">
+        </label>
+
+        <label class="settings-row">
+          <span>Vibrazione feedback</span>
+          <input type="checkbox" id="settingVibration" class="toggle">
+        </label>
+
+        <label class="settings-row">
+          <span>Ordinamento note</span>
+          <select id="settingSort" class="select-ios">
+            <option value="recenti">Più recenti</option>
+            <option value="vecchie">Più vecchie</option>
+            <option value="colore">Per colore categoria</option>
+            <option value="titolo">Titolo A‑Z</option>
+          </select>
+        </label>
+
+        <label class="settings-row">
+          <span>Animazioni avanzate</span>
+          <input type="checkbox" id="settingAnimations" class="toggle">
+        </label>
+
+      </div>
+
+      <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
+      <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
+      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
+      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie iniziali</button>
+      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale dati</button>
+      <button id="memoryStatusBtn" class="settings-item">💾 Stato memoria</button>
+
+      <button id="closeSettingsPanel" class="close">Chiudi</button>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
             `,
+
             modello2: `
                 <h2>CSS Sacro</h2>
                 <p>Incolla qui il tuo file CSS sacro.</p>
             `,
+
             modello3: `
                 <h2>JavaScript Sacro</h2>
                 <p>Incolla qui il tuo file JavaScript sacro.</p>
