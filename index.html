@@ -77,6 +77,10 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.25);
             max-height: 80vh;
             overflow-y: auto;
+        }
+
+        /* mostriamo il codice come testo */
+        #popup-body {
             white-space: pre-wrap;
             font-family: monospace;
             font-size: 13px;
@@ -119,22 +123,24 @@
     <div id="popup" class="popup">
         <div class="popup-content">
             <button class="close-btn" onclick="closePopup()">Chiudi</button>
-            <div id="popup-body"></div>
+            <pre id="popup-body"></pre>
         </div>
     </div>
 
     <script>
         const modelli = {
-            modello1: `
-<!DOCTYPE html>
+            modello1: `<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Note App</title>
 
+  <!-- Collegamento al tuo stile -->
   <link rel="stylesheet" href="style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Libreria Google per autenticazione Drive -->
+  <script src="https://accounts.google.com/gsi/client" async defer><\/script>
 </head>
 <body>
 
@@ -148,6 +154,7 @@
 
   <div id="notesContainer"></div>
 
+  <!-- Pannello Note -->
   <div id="notePanel" class="panel hidden">
     <div class="panel-content">
       <input id="noteTitle" placeholder="Titolo">
@@ -159,6 +166,7 @@
     </div>
   </div>
 
+  <!-- Pannello Categorie -->
   <div id="categoryPanel" class="panel hidden">
     <div class="panel-content">
       <input id="newCategoryName" placeholder="Nome categoria">
@@ -170,6 +178,7 @@
     </div>
   </div>
 
+  <!-- Pannello Cestino -->
   <div id="trashPanel" class="panel hidden">
     <div class="panel-content">
       <div id="trashList"></div>
@@ -177,11 +186,13 @@
     </div>
   </div>
 
+  <!-- Pannello Impostazioni -->
   <div id="settingsPanel" class="panel hidden">
     <div class="panel-content settings-box">
 
       <h2>Impostazioni ⚙️</h2>
 
+      <!-- Sezione moderna stile iOS 17 -->
       <div class="settings-group">
 
         <label class="settings-row">
@@ -211,6 +222,7 @@
 
       </div>
 
+      <!-- Pulsanti già esistenti -->
       <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
       <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
       <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
@@ -223,22 +235,18 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Collegamento al tuo script -->
+  <script src="script.js"><\/script>
 </body>
-</html>
-            `,
+</html>`,
 
-            modello2: `
-CSS in arrivo...
-            `,
-
-            modello3: `
-JavaScript in arrivo...
-            `
+            modello2: `CSS in arrivo...`,
+            modello3: `JavaScript in arrivo...`
         };
 
         function openPopup(nome) {
-            document.getElementById("popup-body").textContent = modelli[nome];
+            const el = document.getElementById("popup-body");
+            el.textContent = modelli[nome];   // mostra SOLO testo, non HTML
             document.getElementById("popup").style.display = "flex";
         }
 
