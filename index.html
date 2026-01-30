@@ -618,3 +618,355 @@ textarea, input {
 
 </body>
 </html>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ELEMENTI BASE */
+  const notesContainer = document.getElementById("notesContainer");
+  const addNoteBtn = document.getElementById("addNoteBtn");
+  const noteTitle = document.getElementById("noteTitle");
+  const noteText = document.getElementById("noteText");
+  const saveNoteBtn = document.getElementById("saveNoteBtn");
+  const categorySelect = document.getElementById("categorySelect");
+  const themeToggle = document.getElementById("themeToggle");
+
+  const categoryList = document.getElementById("categoryList");
+  const addCategoryBtn = document.getElementById("addCategoryBtn");
+  const newCategoryName = document.getElementById("newCategoryName");
+  const newCategoryColor = document.getElementById("newCategoryColor");
+
+  const trashContainer = document.getElementById("trashContainer");
+  const openTrashBtn = document.getElementById("openTrashBtn");
+  const closeTrashBtn = document.getElementById("closeTrashBtn");
+
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const closeSettingsPanel = document.getElementById("closeSettingsPanel");
+
+  const infoAppBtn = document.getElementById("infoAppBtn");
+  const exportBackupBtn = document.getElementById("exportBackupBtn");
+  const resetDataBtn = document.getElementById("resetDataBtn");
+  const memoryStatusBtn = document.getElementById("memoryStatusBtn");
+
+  const syncCloudBtn = document.getElementById("syncCloudBtn");
+
+  let accessToken = null;
+  /* TEMA SCURO / CHIARO */
+  function loadTheme() {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.body.setAttribute("data-theme", savedTheme);
+    themeToggle.checked = savedTheme === "dark";
+  }
+
+  themeToggle.addEventListener("change", () => {
+    const newTheme = themeToggle.checked ? "dark" : "light";
+    document.body.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  });
+
+  loadTheme();
+
+  /* CARICAMENTO NOTE E CATEGORIE */
+  let notes = JSON.parse(localStorage.getItem("notes")) || [];
+  let categories = JSON.parse(localStorage.getItem("categories")) || [
+    { name: "Generale", color: "#007bff" }
+  ];
+  let trash = JSON.parse(localStorage.getItem("trash")) || [];
+
+  function saveData() {
+    localStorage.setItem("notes", JSON.stringify(notes));
+    localStorage.setItem("categories", JSON.stringify(categories));
+    localStorage.setItem("trash", JSON.stringify(trash));
+  }
+
+  /* RENDER CATEGORIE */
+  function renderCategories() {
+    categorySelect.innerHTML = "";
+    categoryList.innerHTML = "";
+
+    categories.forEach((cat, index) => {
+      const option = document.createElement("option");
+      option.value = cat.name;
+      option.textContent = cat.name;
+      categorySelect.appendChild(option);
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="color-dot" style="background:${cat.color}"></span>
+        ${cat.name}
+      `;
+      categoryList.appendChild(li);
+    });
+  }
+
+  renderCategories();
+  /* CREA NUOVA NOTA */
+  addNoteBtn.addEventListener("click", () => {
+    noteTitle.value = "";
+    noteText.value = "";
+    categorySelect.value = categories[0].name;
+    saveNoteBtn.setAttribute("data-editing", "");
+    document.getElementById("noteEditor").classList.add("open");
+  });
+
+  /* SALVA NOTA */
+  saveNoteBtn.addEventListener("click", () => {
+    const title = noteTitle.value.trim();
+    const text = noteText.value.trim();
+    const category = categorySelect.value;
+
+    if (!title && !text) {
+      alert("La nota è vuota.");
+      return;
+    }
+
+    const editingId = saveNoteBtn.getAttribute("data-editing");
+
+    if (editingId) {
+      const note = notes.find(n => n.id == editingId);
+      note.title = title;
+      note.text = text;
+      note.category = category;
+    } else {
+      notes.push({
+        id: Date.now(),
+        title,
+        text,
+        category,
+        date: new Date().toLocaleString()
+      });
+    }
+
+    saveNoteBtn.removeAttribute("data-editing");
+    saveData();
+    renderNotes();
+    document.getElementById("noteEditor").classList.remove("open");
+  });
+
+  /* RENDER NOTE */
+  function renderNotes(filterCategory = null) {
+    notesContainer.innerHTML = "";
+
+    const filteredNotes = filterCategory
+      ? notes.filter(n => n.category === filterCategory)
+      : notes;
+
+    filteredNotes.forEach(note => {
+      const div = document.createElement("div");
+      div.className = "note-card";
+      div.innerHTML = `
+        <h3>${note.title || "(Senza titolo)"}</h3>
+        <p>${note.text.substring(0, 100)}...</p>
+        <span class="note-category">${note.category}</span>
+        <button class="open-note" data-id="${note.id}">Apri</button>
+        <button class="delete-note" data-id="${note.id}">Cestina</button>
+      `;
+      notesContainer.appendChild(div);
+    });
+  }
+
+  renderNotes();
+
+  /* APRI NOTA */
+  notesContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("open-note")) {
+      const id = e.target.getAttribute("data-id");
+      const note = notes.find(n => n.id == id);
+
+      noteTitle.value = note.title;
+      noteText.value = note.text;
+      categorySelect.value = note.category;
+
+      saveNoteBtn.setAttribute("data-editing", id);
+      document.getElementById("noteEditor").classList.add("open");
+    }
+  });
+  /* ELIMINA NOTA → VA NEL CESTINO */
+  notesContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-note")) {
+      const id = e.target.getAttribute("data-id");
+      const note = notes.find(n => n.id == id);
+
+      trash.push(note);
+      notes = notes.filter(n => n.id != id);
+
+      saveData();
+      renderNotes();
+      renderTrash();
+    }
+  });
+
+  /* APRI CESTINO */
+  openTrashBtn.addEventListener("click", () => {
+    trashContainer.classList.add("open");
+    renderTrash();
+  });
+
+  /* CHIUDI CESTINO */
+  closeTrashBtn.addEventListener("click", () => {
+    trashContainer.classList.remove("open");
+  });
+
+  /* RENDER CESTINO */
+  function renderTrash() {
+    const trashList = document.getElementById("trashList");
+    trashList.innerHTML = "";
+
+    trash.forEach(note => {
+      const div = document.createElement("div");
+      div.className = "trash-item";
+      div.innerHTML = `
+        <strong>${note.title || "(Senza titolo)"}</strong>
+        <button class="restore-note" data-id="${note.id}">Ripristina</button>
+        <button class="delete-forever" data-id="${note.id}">Elimina</button>
+      `;
+      trashList.appendChild(div);
+    });
+  }
+
+  /* RIPRISTINA NOTA */
+  document.getElementById("trashList").addEventListener("click", (e) => {
+    if (e.target.classList.contains("restore-note")) {
+      const id = e.target.getAttribute("data-id");
+      const note = trash.find(n => n.id == id);
+
+      notes.push(note);
+      trash = trash.filter(n => n.id != id);
+
+      saveData();
+      renderNotes();
+      renderTrash();
+    }
+  });
+
+  /* ELIMINA DEFINITIVAMENTE */
+  document.getElementById("trashList").addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-forever")) {
+      const id = e.target.getAttribute("data-id");
+      trash = trash.filter(n => n.id != id);
+
+      saveData();
+      renderTrash();
+    }
+  });
+  /* AGGIUNGI NUOVA CATEGORIA */
+  addCategoryBtn.addEventListener("click", () => {
+    const name = newCategoryName.value.trim();
+    const color = newCategoryColor.value;
+
+    if (!name) {
+      alert("Inserisci un nome per la categoria.");
+      return;
+    }
+
+    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      alert("Questa categoria esiste già.");
+      return;
+    }
+
+    categories.push({ name, color });
+    newCategoryName.value = "";
+    newCategoryColor.value = "#000000";
+
+    saveData();
+    renderCategories();
+  });
+
+  /* FILTRA NOTE PER CATEGORIA */
+  categoryList.addEventListener("click", (e) => {
+    if (e.target.tagName === "LI" || e.target.closest("li")) {
+      const li = e.target.tagName === "LI" ? e.target : e.target.closest("li");
+      const categoryName = li.textContent.trim();
+      renderNotes(categoryName);
+    }
+  });
+  /* APRI IMPOSTAZIONI */
+  settingsBtn.addEventListener("click", () => {
+    settingsPanel.classList.add("open");
+  });
+
+  /* CHIUDI IMPOSTAZIONI */
+  closeSettingsPanel.addEventListener("click", () => {
+    settingsPanel.classList.remove("open");
+  });
+
+  /* INFO APP */
+  infoAppBtn.addEventListener("click", () => {
+    alert("Archivio Note — Versione 1.0\nCreato da Sandro");
+  });
+
+  /* ESPORTA BACKUP */
+  exportBackupBtn.addEventListener("click", () => {
+    const data = {
+      notes,
+      categories,
+      trash,
+      theme: localStorage.getItem("theme")
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "backup_note.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  /* RESET DATI */
+  resetDataBtn.addEventListener("click", () => {
+    if (confirm("Sei sicuro di voler cancellare tutto?")) {
+      notes = [];
+      categories = [{ name: "Generale", color: "#007bff" }];
+      trash = [];
+      localStorage.clear();
+      saveData();
+      renderCategories();
+      renderNotes();
+      alert("Dati resettati.");
+    }
+  });
+
+  /* STATO MEMORIA */
+  memoryStatusBtn.addEventListener("click", () => {
+    const used = JSON.stringify(localStorage).length;
+    const kb = (used / 1024).toFixed(2);
+    alert("Memoria utilizzata: " + kb + " KB");
+  });
+  /* SYNC CLOUD — PLACEHOLDER */
+  syncCloudBtn.addEventListener("click", () => {
+    alert("Funzione Cloud in arrivo! 🚀");
+  });
+
+  /* CHIUDI EDITOR NOTA */
+  document.getElementById("closeEditorBtn").addEventListener("click", () => {
+    document.getElementById("noteEditor").classList.remove("open");
+  });
+
+  /* CHIUDI EDITOR SE CLICCHI FUORI */
+  document.getElementById("noteEditor").addEventListener("click", (e) => {
+    if (e.target.id === "noteEditor") {
+      document.getElementById("noteEditor").classList.remove("open");
+    }
+  });
+
+  /* CHIUDI CESTINO SE CLICCHI FUORI */
+  trashContainer.addEventListener("click", (e) => {
+    if (e.target.id === "trashContainer") {
+      trashContainer.classList.remove("open");
+    }
+  });
+
+  /* CHIUDI IMPOSTAZIONI SE CLICCHI FUORI */
+  settingsPanel.addEventListener("click", (e) => {
+    if (e.target.id === "settingsPanel") {
+      settingsPanel.classList.remove("open");
+    }
+  });
+  /* FINE SCRIPT — CHIUSURA DOMCONTENTLOADED */
+});
+</script>
+
