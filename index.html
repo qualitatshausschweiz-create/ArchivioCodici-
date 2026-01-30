@@ -1,23 +1,106 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archivio Codici</title>
-  <link rel="stylesheet" href="../CSS/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivio Codici</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: #f5f5f7;
+            margin: 0;
+            padding: 20px;
+            color: #1c1c1e;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #000;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-link {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 8px 14px;
+            background: #007aff;
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-link:hover {
+            background: #005ecb;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Archivio Codici</h1>
 
-  <form id="form">
-    <input type="text" id="titolo" placeholder="Titolo" required />
-    <input type="text" id="descrizione" placeholder="Descrizione" required />
-    <input type="url" id="link" placeholder="Link GitHub" required />
-    <button type="submit">Salva</button>
-  </form>
+    <h1>Archivio Codici</h1>
 
-  <div id="archivio"></div>
+    <div id="projectGrid" class="grid"></div>
 
-  <script src="../JS/script.js"></script>
+    <script>
+        async function loadProjects() {
+            const repo = "ArchivioCodici-";
+            const folder = "HTML";
+
+            const apiUrl = `https://api.github.com/repos/qualitatshausschweiz-create/${repo}/contents/${folder}`;
+
+            const response = await fetch(apiUrl);
+            const files = await response.json();
+
+            const grid = document.getElementById("projectGrid");
+
+            files.forEach(file => {
+                if (file.name.endsWith(".html")) {
+
+                    const card = document.createElement("div");
+                    card.className = "card";
+
+                    card.innerHTML = `
+                        <div class="card-title">${file.name.replace(".html", "")}</div>
+                        <a class="card-link" href="HTML/${file.name}" target="_blank">Apri</a>
+                    `;
+
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        loadProjects();
+    </script>
+
 </body>
 </html>
