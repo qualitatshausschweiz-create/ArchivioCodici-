@@ -73,10 +73,9 @@
 
     <script>
         async function loadProjects() {
-            const repo = "ArchivioCodici-";
-            const folder = "HTML";
 
-            const apiUrl = `https://api.github.com/repos/qualitatshausschweiz-create/${repo}/contents/${folder}`;
+            // URL API CORRETTO per il tuo repository
+            const apiUrl = "https://api.github.com/repos/qualitatshausschweiz-create/ArchivioCodici-/contents/HTML";
 
             const response = await fetch(apiUrl);
             const files = await response.json();
