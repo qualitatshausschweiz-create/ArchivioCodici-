@@ -54,7 +54,6 @@
             color: #000;
         }
 
-        /* Popup */
         .popup {
             position: fixed;
             top: 0;
@@ -118,7 +117,6 @@
 
     </div>
 
-    <!-- POPUP -->
     <div id="popup" class="popup">
         <div class="popup-content">
             <button class="close-btn" onclick="closePopup()">Chiudi</button>
@@ -129,7 +127,6 @@
     <script>
         const modelli = {
 
-            /* ⭐ HTML SACRO — NON TOCCATO ⭐ */
             modello1: `<!DOCTYPE html>
 <html lang="it">
 <head>
@@ -230,27 +227,3 @@
   <script src="script.js"><\/script>
 </body>
 </html>`,
-
-            /* ⭐ CSS SACRO COMPLETO ⭐ */
-            modello2: `YOUR CSS SACRO QUI (lo inserisco nella prossima risposta perché è troppo lungo per un singolo messaggio)`,
-
-            /* ⭐ JAVASCRIPT — MOSTRA SOLO TESTO ⭐ */
-            modello3: `// Qui puoi inserire il tuo JavaScript sacro
-// Verrà mostrato nel popup come testo
-// Esempio:
-console.log("JavaScript Sacro Caricato");`
-        };
-
-        function openPopup(nome) {
-            const el = document.getElementById("popup-body");
-            el.textContent = modelli[nome];
-            document.getElementById("popup").style.display = "flex";
-        }
-
-        function closePopup() {
-            document.getElementById("popup").style.display = "none";
-        }
-    </script>
-
-</body>
-</html>
