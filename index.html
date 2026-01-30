@@ -408,3 +408,32 @@ textarea, input {
 
 </body>
 </html>
+.category-list-color:active {
+  transform: scale(0.85);
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+}
+
+.category-selected .category-list-color {
+  border-color: #000;
+  animation: pulseCategory 0.55s ease-out;
+}
+
+@keyframes pulseCategory {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.category-row span {
+  font-size: 17px;
+  margin-left: 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.category-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
