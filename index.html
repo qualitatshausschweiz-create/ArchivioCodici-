@@ -602,26 +602,10 @@ textarea, input {
 }
 `,
 
-      /* ⭐ MODELLO 3 — JS (placeholder) ⭐ */
-      modello3: `/* Inseriremo qui il tuo JavaScript sacro */`
-    };
-
-    function openPopup(nome) {
-      document.getElementById("popup-body").textContent = modelli[nome];
-      document.getElementById("popup").style.display = "flex";
-    }
-
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
-    }
-  </script>
-
-</body>
-</html>
-<script>
+           /* ⭐ MODELLO 3 — JAVASCRIPT SACRO ⭐ */
+      modello3: `/* PARTE 1 */
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ELEMENTI BASE */
   const notesContainer = document.getElementById("notesContainer");
   const addNoteBtn = document.getElementById("addNoteBtn");
   const noteTitle = document.getElementById("noteTitle");
@@ -651,7 +635,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const syncCloudBtn = document.getElementById("syncCloudBtn");
 
   let accessToken = null;
-  /* TEMA SCURO / CHIARO */
+
+/* PARTE 2 */
   function loadTheme() {
     const savedTheme = localStorage.getItem("theme") || "light";
     document.body.setAttribute("data-theme", savedTheme);
@@ -666,7 +651,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadTheme();
 
-  /* CARICAMENTO NOTE E CATEGORIE */
   let notes = JSON.parse(localStorage.getItem("notes")) || [];
   let categories = JSON.parse(localStorage.getItem("categories")) || [
     { name: "Generale", color: "#007bff" }
@@ -679,28 +663,28 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("trash", JSON.stringify(trash));
   }
 
-  /* RENDER CATEGORIE */
   function renderCategories() {
     categorySelect.innerHTML = "";
     categoryList.innerHTML = "";
 
-    categories.forEach((cat, index) => {
+    categories.forEach((cat) => {
       const option = document.createElement("option");
       option.value = cat.name;
       option.textContent = cat.name;
       categorySelect.appendChild(option);
 
       const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="color-dot" style="background:${cat.color}"></span>
-        ${cat.name}
-      `;
+      li.innerHTML = \`
+        <span class="color-dot" style="background:\${cat.color}"></span>
+        \${cat.name}
+      \`;
       categoryList.appendChild(li);
     });
   }
 
   renderCategories();
-  /* CREA NUOVA NOTA */
+
+/* PARTE 3 */
   addNoteBtn.addEventListener("click", () => {
     noteTitle.value = "";
     noteText.value = "";
@@ -709,7 +693,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("noteEditor").classList.add("open");
   });
 
-  /* SALVA NOTA */
   saveNoteBtn.addEventListener("click", () => {
     const title = noteTitle.value.trim();
     const text = noteText.value.trim();
@@ -743,7 +726,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("noteEditor").classList.remove("open");
   });
 
-  /* RENDER NOTE */
   function renderNotes(filterCategory = null) {
     notesContainer.innerHTML = "";
 
@@ -754,20 +736,19 @@ document.addEventListener("DOMContentLoaded", () => {
     filteredNotes.forEach(note => {
       const div = document.createElement("div");
       div.className = "note-card";
-      div.innerHTML = `
-        <h3>${note.title || "(Senza titolo)"}</h3>
-        <p>${note.text.substring(0, 100)}...</p>
-        <span class="note-category">${note.category}</span>
-        <button class="open-note" data-id="${note.id}">Apri</button>
-        <button class="delete-note" data-id="${note.id}">Cestina</button>
-      `;
+      div.innerHTML = \`
+        <h3>\${note.title || "(Senza titolo)"}</h3>
+        <p>\${note.text.substring(0, 100)}...</p>
+        <span class="note-category">\${note.category}</span>
+        <button class="open-note" data-id="\${note.id}">Apri</button>
+        <button class="delete-note" data-id="\${note.id}">Cestina</button>
+      \`;
       notesContainer.appendChild(div);
     });
   }
 
   renderNotes();
 
-  /* APRI NOTA */
   notesContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("open-note")) {
       const id = e.target.getAttribute("data-id");
@@ -781,7 +762,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("noteEditor").classList.add("open");
     }
   });
-  /* ELIMINA NOTA → VA NEL CESTINO */
+
+/* PARTE 4 */
   notesContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("delete-note")) {
       const id = e.target.getAttribute("data-id");
@@ -796,18 +778,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* APRI CESTINO */
   openTrashBtn.addEventListener("click", () => {
     trashContainer.classList.add("open");
     renderTrash();
   });
 
-  /* CHIUDI CESTINO */
   closeTrashBtn.addEventListener("click", () => {
     trashContainer.classList.remove("open");
   });
 
-  /* RENDER CESTINO */
   function renderTrash() {
     const trashList = document.getElementById("trashList");
     trashList.innerHTML = "";
@@ -815,16 +794,15 @@ document.addEventListener("DOMContentLoaded", () => {
     trash.forEach(note => {
       const div = document.createElement("div");
       div.className = "trash-item";
-      div.innerHTML = `
-        <strong>${note.title || "(Senza titolo)"}</strong>
-        <button class="restore-note" data-id="${note.id}">Ripristina</button>
-        <button class="delete-forever" data-id="${note.id}">Elimina</button>
-      `;
+      div.innerHTML = \`
+        <strong>\${note.title || "(Senza titolo)"}</strong>
+        <button class="restore-note" data-id="\${note.id}">Ripristina</button>
+        <button class="delete-forever" data-id="\${note.id}">Elimina</button>
+      \`;
       trashList.appendChild(div);
     });
   }
 
-  /* RIPRISTINA NOTA */
   document.getElementById("trashList").addEventListener("click", (e) => {
     if (e.target.classList.contains("restore-note")) {
       const id = e.target.getAttribute("data-id");
@@ -839,7 +817,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ELIMINA DEFINITIVAMENTE */
   document.getElementById("trashList").addEventListener("click", (e) => {
     if (e.target.classList.contains("delete-forever")) {
       const id = e.target.getAttribute("data-id");
@@ -849,7 +826,8 @@ document.addEventListener("DOMContentLoaded", () => {
       renderTrash();
     }
   });
-  /* AGGIUNGI NUOVA CATEGORIA */
+
+/* PARTE 5 */
   addCategoryBtn.addEventListener("click", () => {
     const name = newCategoryName.value.trim();
     const color = newCategoryColor.value;
@@ -872,7 +850,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategories();
   });
 
-  /* FILTRA NOTE PER CATEGORIA */
   categoryList.addEventListener("click", (e) => {
     if (e.target.tagName === "LI" || e.target.closest("li")) {
       const li = e.target.tagName === "LI" ? e.target : e.target.closest("li");
@@ -880,22 +857,20 @@ document.addEventListener("DOMContentLoaded", () => {
       renderNotes(categoryName);
     }
   });
-  /* APRI IMPOSTAZIONI */
+
+/* PARTE 6 */
   settingsBtn.addEventListener("click", () => {
     settingsPanel.classList.add("open");
   });
 
-  /* CHIUDI IMPOSTAZIONI */
   closeSettingsPanel.addEventListener("click", () => {
     settingsPanel.classList.remove("open");
   });
 
-  /* INFO APP */
   infoAppBtn.addEventListener("click", () => {
-    alert("Archivio Note — Versione 1.0\nCreato da Sandro");
+    alert("Archivio Note — Versione 1.0\\nCreato da Sandro");
   });
 
-  /* ESPORTA BACKUP */
   exportBackupBtn.addEventListener("click", () => {
     const data = {
       notes,
@@ -916,7 +891,6 @@ document.addEventListener("DOMContentLoaded", () => {
     URL.revokeObjectURL(url);
   });
 
-  /* RESET DATI */
   resetDataBtn.addEventListener("click", () => {
     if (confirm("Sei sicuro di voler cancellare tutto?")) {
       notes = [];
@@ -930,43 +904,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* STATO MEMORIA */
   memoryStatusBtn.addEventListener("click", () => {
     const used = JSON.stringify(localStorage).length;
     const kb = (used / 1024).toFixed(2);
     alert("Memoria utilizzata: " + kb + " KB");
   });
-  /* SYNC CLOUD — PLACEHOLDER */
+
+/* PARTE 7 */
   syncCloudBtn.addEventListener("click", () => {
     alert("Funzione Cloud in arrivo! 🚀");
   });
 
-  /* CHIUDI EDITOR NOTA */
   document.getElementById("closeEditorBtn").addEventListener("click", () => {
     document.getElementById("noteEditor").classList.remove("open");
   });
 
-  /* CHIUDI EDITOR SE CLICCHI FUORI */
   document.getElementById("noteEditor").addEventListener("click", (e) => {
     if (e.target.id === "noteEditor") {
       document.getElementById("noteEditor").classList.remove("open");
     }
   });
 
-  /* CHIUDI CESTINO SE CLICCHI FUORI */
   trashContainer.addEventListener("click", (e) => {
     if (e.target.id === "trashContainer") {
       trashContainer.classList.remove("open");
     }
   });
 
-  /* CHIUDI IMPOSTAZIONI SE CLICCHI FUORI */
   settingsPanel.addEventListener("click", (e) => {
     if (e.target.id === "settingsPanel") {
       settingsPanel.classList.remove("open");
     }
   });
-  /* FINE SCRIPT — CHIUSURA DOMCONTENTLOADED */
-});
-</script>
 
+/* PARTE 8 */
+});
+`
