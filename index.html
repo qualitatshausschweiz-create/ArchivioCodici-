@@ -75,35 +75,29 @@
 
     <h1>Archivio Codici</h1>
 
-    <div id="projectGrid" class="grid"></div>
+    <div class="grid">
 
-    <script>
-        async function loadProjects() {
-            const apiUrl = "https://api.github.com/repos/qualitatshausschweiz-create/ArchivioCodici-/contents/HTML";
+        <!-- ESEMPIO 1 -->
+        <div class="card">
+            <div class="card-title">Esempio form note</div>
+            <a class="card-link" href="HTML/esempio-form-note.html" target="_blank">Apri</a>
+        </div>
 
-            const response = await fetch(apiUrl);
-            const files = await response.json();
+        <!-- ESEMPIO 2 -->
+        <div class="card">
+            <div class="card-title">Layout base</div>
+            <a class="card-link" href="HTML/layout-base.html" target="_blank">Apri</a>
+        </div>
 
-            const grid = document.getElementById("projectGrid");
+        <!-- DUPLICA QUESTO BLOCCO PER OGNI NUOVO FILE -->
+        <!--
+        <div class="card">
+            <div class="card-title">Nome progetto</div>
+            <a class="card-link" href="HTML/nome-file.html" target="_blank">Apri</a>
+        </div>
+        -->
 
-            files.forEach(file => {
-                if (file.name.endsWith(".html")) {
-
-                    const card = document.createElement("div");
-                    card.className = "card";
-
-                    card.innerHTML = `
-                        <div class="card-title">${file.name.replace(".html", "")}</div>
-                        <a class="card-link" href="HTML/${file.name}" target="_blank">Apri</a>
-                    `;
-
-                    grid.appendChild(card);
-                }
-            });
-        }
-
-        loadProjects();
-    </script>
+    </div>
 
 </body>
 </html>
