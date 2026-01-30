@@ -1,24 +1,137 @@
-const archivio = document.getElementById("archivio");
-const form = document.getElementById("form");
-
-function aggiungiVoce(titolo, descrizione, link) {
-  const voce = document.createElement("div");
-  voce.innerHTML = `
-    <strong>${titolo}</strong><br />
-    <em>${descrizione}</em><br />
-    <a href="${link}" target="_blank">Apri su GitHub</a>
-  `;
-  archivio.appendChild(voce);
+modello2: `body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+}
 
-  const titolo = document.getElementById("titolo").value;
-  const descrizione = document.getElementById("descrizione").value;
-  const link = document.getElementById("link").value;
+.dark {
+  --bg: #111111;
+  --text: #ffffff;
+}
 
-  aggiungiVoce(titolo, descrizione, link);
+.icon-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background: var(--bg);
+  border-bottom: 1px solid #ccc;
+}
 
-  form.reset();
-});
+.icon-bar button {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* PANELLO + ANIMAZIONE PREMIUM */
+.panel {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 70%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+  opacity: 0;
+  backdrop-filter: blur(6px);
+  transition: opacity 0.25s ease;
+}
+
+.panel.show {
+  opacity: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.panel-content {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 25px rgba(0,0,0,0.25);
+  animation: panelSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes panelSlideUp {
+  0% { transform: translateY(100%); }
+  60% { transform: translateY(-6%); }
+  100% { transform: translateY(0); }
+}
+
+/* IMPOSTAZIONI — PRIMA PARTE */
+.settings-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-item {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  text-align: left;
+  background: none;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* NOTE */
+textarea, input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+}
+
+.palette {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+/* 🎯 CERCHI GRANDI PER PALETTE */
+.color {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.color.selected {
+  border: 2px solid #000;
+}
+
+.note {
+  background: var(--bg);
+  border
