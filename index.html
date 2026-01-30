@@ -1,151 +1,144 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archivio Codici</title>
-
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            background: linear-gradient(180deg, #f2f2f7, #e5e5ea);
-            margin: 0;
-            padding: 30px 20px;
-            color: #1c1c1e;
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #000;
-            letter-spacing: -0.5px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 22px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .card {
-            backdrop-filter: blur(14px);
-            background: rgba(255, 255, 255, 0.55);
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #000;
-        }
-
-        .popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.45);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .popup-content {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        #popup-body {
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 13px;
-        }
-
-        .close-btn {
-            background: #ff3b30;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: none;
-            float: right;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h1>Archivio Codici</h1>
-
-    <div class="grid">
-
-        <div class="card" onclick="openPopup('modello1')">
-            <div class="card-title">HTML Sacro</div>
-        </div>
-
-        <div class="card" onclick="openPopup('modello2')">
-            <div class="card-title">CSS</div>
-        </div>
-
-        <div class="card" onclick="openPopup('modello3')">
-            <div class="card-title">JavaScript</div>
-        </div>
-
-    </div>
-
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <button class="close-btn" onclick="closePopup()">Chiudi</button>
-            <pre id="popup-body"></pre>
-        </div>
-    </div>
-
-    <script>
-        const modelli = {
-
-            modello1: `<!DOCTYPE html>
-<html lang="it">
-<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Note App</title>
+  <title>Archivio Codici</title>
 
-  <link rel="stylesheet" href="style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer><\/script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: linear-gradient(180deg, #f2f2f7, #e5e5ea);
+      margin: 0;
+      padding: 30px 20px;
+      color: #1c1c1e;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #000;
+      letter-spacing: -0.5px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #000;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .popup-content {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    #popup-body {
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .close-btn {
+      background: #ff3b30;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      float: right;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
+
 <body>
 
-  <div class="icon-bar">
-    <button id="themeToggle">☀️</button>
-    <button id="addNoteBtn">➕</button>
-    <button id="categoriesBtn">📁</button>
-    <button id="trashBtn">🗑️</button>
-    <button id="settingsBtn">⚙️</button>
+  <h1>Archivio Codici</h1>
+
+  <div class="grid">
+    <div class="card" onclick="openPopup('modello1')">
+      <div class="card-title">HTML Sacro</div>
+    </div>
+
+    <div class="card" onclick="openPopup('modello2')">
+      <div class="card-title">CSS</div>
+    </div>
+
+    <div class="card" onclick="openPopup('modello3')">
+      <div class="card-title">JavaScript</div>
+    </div>
   </div>
 
-  <div id="notesContainer"></div>
-`,
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <button class="close-btn" onclick="closePopup()">Chiudi</button>
+      <pre id="popup-body"></pre>
+    </div>
+  </div>
+
+  <script>
+    const modelli = {
+      modello1: `QUI IL TUO HTML SACRO...`,
+      modello2: `QUI IL TUO CSS SACRO...`,
+      modello3: `QUI IL TUO JAVASCRIPT SACRO...`
+    };
+
+    function openPopup(nome) {
+      const el = document.getElementById("popup-body");
+      el.textContent = modelli[nome];
+      document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
