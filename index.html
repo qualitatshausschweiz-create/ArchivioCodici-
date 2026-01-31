@@ -146,56 +146,7 @@
   </div>
 
   <script>
-    /* QUI ARRIVERÀ LA PARTE 2 (IL TUO HTML ESCAPED) */
-    const codiceHTML = ``;
-
-    const codiceCSS = ``;
-    const codiceJS = ``;
-
-    const popup = document.getElementById("popup");
-    const popupTitle = document.getElementById("popupTitle");
-    const popupBody = document.getElementById("popupBody");
-    const closePopupBtn = document.getElementById("closePopup");
-    const copyBtn = document.getElementById("copyBtn");
-
-    function openPopup(type) {
-      popup.style.display = "flex";
-      popupTitle.textContent = type.toUpperCase();
-
-      let codice = "";
-
-      if (type === "html") {
-        popupBody.className = "language-html";
-        codice = codiceHTML;
-      }
-      if (type === "css") {
-        popupBody.className = "language-css";
-        codice = codiceCSS;
-      }
-      if (type === "js") {
-        popupBody.className = "language-javascript";
-        codice = codiceJS;
-      }
-
-      popupBody.innerHTML = "";
-      popupBody.appendChild(document.createTextNode(codice));
-
-      hljs.highlightElement(popupBody);
-    }
-
-    closePopupBtn.onclick = () => popup.style.display = "none";
-    popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
-
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(popupBody.innerText);
-      copyBtn.textContent = "✔️ Copiato";
-      setTimeout(() => copyBtn.textContent = "📋 Copia", 1500);
-    };
-  </script>
-
-</body>
-</html>
-const codiceHTML = `
+    const codiceHTML = `
 &lt;!DOCTYPE html&gt;
 &lt;html lang="it"&gt;
 &lt;head&gt;
@@ -297,7 +248,74 @@ const codiceHTML = `
 &lt;/body&gt;
 &lt;/html&gt;
 `;
-</script>
+
+    const codiceCSS = ``;
+    const codiceJS = ``;
+
+    const popup = document.getElementById("popup");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupBody = document.getElementById("popupBody");
+    const closePopupBtn = document.getElementById("closePopup");
+    const copyBtn = document.getElementById("copyBtn");
+
+    function openPopup(type) {
+      popup.style.display = "flex";
+      popupTitle.textContent = type.toUpperCase();
+
+      let codice = "";
+
+      if (type === "html") {
+        popupBody.className = "language-html";
+        codice = codiceHTML;
+      }
+      if (type === "css") {
+        popupBody.className = "language-css";
+        codice = codiceCSS;
+      }
+      if (type === "js") {
+        popupBody.className = "language-javascript";
+        codice = codiceJS;
+      }
+
+      popupBody.innerHTML = "";
+      popupBody.appendChild(document.createTextNode(codice));
+
+      hljs.highlightElement(popupBody);
+    }
+
+    closePopupBtn.onclick = () => popup.style.display = "none";
+    popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+
+    copyBtn.onclick = async () => {
+      const text = popupBody.innerText;
+
+      // Primo tentativo: API moderna
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "✔️ Copiato";
+        setTimeout(() => copyBtn.textContent = "📋 Copia", 1500);
+        return;
+      } catch (e) {}
+
+      // Fallback: textarea nascosta
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand("copy");
+        copyBtn.textContent = "✔️ Copiato";
+      } catch (e) {
+        copyBtn.textContent = "❌ Errore copia";
+      }
+      setTimeout(() => copyBtn.textContent = "📋 Copia", 1500);
+      document.body.removeChild(ta);
+    };
+  </script>
 
 </body>
 </html>
