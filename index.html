@@ -1,1215 +1,137 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Archivio Codici</title>
+<meta charset="UTF-8">
+<title>Archivio Codici</title>
 
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-      background: linear-gradient(180deg, #f2f2f7, #e5e5ea);
-      margin: 0;
-      padding: 30px 20px;
-      color: #1c1c1e;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 30px;
-      color: #000;
-      letter-spacing: -0.5px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 22px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .card {
-      backdrop-filter: blur(14px);
-      background: rgba(255, 255, 255, 0.55);
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      border: 1px solid rgba(255,255,255,0.4);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
-    }
-
-    .card-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #000;
-    }
-
-    .popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.45);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .popup-content {
-      background: white;
-      width: 90%;
-      max-width: 600px;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    #popup-body {
-      white-space: pre-wrap;
-      font-family: monospace;
-      font-size: 13px;
-    }
-
-    .close-btn {
-      background: #ff3b30;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: none;
-      float: right;
-      cursor: pointer;
-      margin-bottom: 15px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <h1>Archivio Codici</h1>
-
-  <div class="grid">
-    <div class="card" onclick="openPopup('modello1')">
-      <div class="card-title">HTML Sacro</div>
-    </div>
-
-    <div class="card" onclick="openPopup('modello2')">
-      <div class="card-title">CSS Sacro</div>
-    </div>
-
-    <div class="card" onclick="openPopup('modello3')">
-      <div class="card-title">JavaScript Sacro</div>
-    </div>
-  </div>
-
-  <div id="popup" class="popup">
-    <div class="popup-content">
-      <button class="close-btn" onclick="closePopup()">Chiudi</button>
-      <pre id="popup-body"></pre>
-    </div>
-  </div>
-
-  <script>
-    const modelli = {
-
-      /* ⭐ MODELLO 1 — HTML SACRO ⭐ */
-      modello1: `<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Note App</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://accounts.google.com/gsi/client" async defer><\/script>
-</head>
-<body>
-
-  <div class="icon-bar">
-    <button id="themeToggle">☀️</button>
-    <button id="addNoteBtn">➕</button>
-    <button id="categoriesBtn">📁</button>
-    <button id="trashBtn">🗑️</button>
-    <button id="settingsBtn">⚙️</button>
-  </div>
-
-  <div id="notesContainer"></div>
-
-  <div id="notePanel" class="panel hidden">
-    <div class="panel-content">
-      <input id="noteTitle" placeholder="Titolo">
-      <textarea id="noteText" placeholder="Testo"></textarea>
-      <div id="categoryButtons" class="category-buttons"></div>
-      <div id="notePalette" class="palette"></div>
-      <button id="saveNoteBtn" class="save">Salva</button>
-      <button id="closeNotePanel" class="close">Chiudi</button>
-    </div>
-  </div>
-
-  <div id="categoryPanel" class="panel hidden">
-    <div class="panel-content">
-      <input id="newCategoryName" placeholder="Nome categoria">
-      <div id="categoryPalette" class="palette"></div>
-      <input type="color" id="categoryColorPicker">
-      <button id="saveCategoryBtn" class="save">Salva categoria</button>
-      <div id="categoryList"></div>
-      <button id="closeCategoryPanel" class="close">Chiudi</button>
-    </div>
-  </div>
-
-  <div id="trashPanel" class="panel hidden">
-    <div class="panel-content">
-      <div id="trashList"></div>
-      <button id="closeTrashPanel" class="close">Chiudi</button>
-    </div>
-  </div>
-
-  <div id="settingsPanel" class="panel hidden">
-    <div class="panel-content settings-box">
-
-      <h2>Impostazioni ⚙️</h2>
-
-      <div class="settings-group">
-
-        <label class="settings-row">
-          <span>Tema dinamico</span>
-          <input type="checkbox" id="settingThemeAuto" class="toggle">
-        </label>
-
-        <label class="settings-row">
-          <span>Vibrazione feedback</span>
-          <input type="checkbox" id="settingVibration" class="toggle">
-        </label>
-
-        <label class="settings-row">
-          <span>Ordinamento note</span>
-          <select id="settingSort" class="select-ios">
-            <option value="recenti">Più recenti</option>
-            <option value="vecchie">Più vecchie</option>
-            <option value="colore">Per colore categoria</option>
-            <option value="titolo">Titolo A‑Z</option>
-          </select>
-        </label>
-
-        <label class="settings-row">
-          <span>Animazioni avanzate</span>
-          <input type="checkbox" id="settingAnimations" class="toggle">
-        </label>
-
-      </div>
-
-      <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
-      <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
-      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
-      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie iniziali</button>
-      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale dati</button>
-      <button id="memoryStatusBtn" class="settings-item">💾 Stato memoria</button>
-
-      <button id="closeSettingsPanel" class="close">Chiudi</button>
-
-    </div>
-  </div>
-
-  <script src="script.js"><\/script>
-</body>
-</html>`,
-
-      /* ⭐ MODELLO 2 — CSS SACRO COMPLETO ⭐ */
-      modello2: `
+<style>
 body {
+  font-family: -apple-system, system-ui, sans-serif;
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-:root {
-  --bg: #ffffff;
-  --text: #000000;
-}
-
-.dark {
-  --bg: #111111;
-  --text: #ffffff;
-}
-
-.icon-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: var(--bg);
-  border-bottom: 1px solid #ccc;
-}
-
-.icon-bar button {
-  font-size: 22px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* PANELLO + ANIMAZIONE PREMIUM */
-.panel {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 70%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 1000;
-  opacity: 0;
-  backdrop-filter: blur(6px);
-  transition: opacity 0.25s ease;
-}
-
-.panel.show {
-  opacity: 1;
-}
-
-.hidden {
-  display: none;
-}
-
-.panel-content {
-  width: 100%;
-  background: var(--bg);
-  color: var(--text);
   padding: 20px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -8px 25px rgba(0,0,0,0.25);
-  animation: panelSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  background: #f5f5f7;
 }
+h1 { margin-bottom: 20px; }
 
-@keyframes panelSlideUp {
-  0% { transform: translateY(100%); }
-  60% { transform: translateY(-6%); }
-  100% { transform: translateY(0); }
+.cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  cursor: pointer;
+  min-width: 160px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+.card-title { font-weight: 600; }
 
-/* IMPOSTAZIONI — PRIMA PARTE */
-.settings-box {
+/* Popup */
+#popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+#popupContent {
+  background: #1e1e1e;
+  color: #f5f5f5;
+  width: 90%;
+  max-width: 900px;
+  max-height: 80vh;
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
 }
-
-.settings-item {
-  width: 100%;
-  padding: 14px;
-  font-size: 17px;
-  text-align: left;
-  background: none;
-  border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-/* NOTE */
-textarea, input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
-}
-
-.category-buttons {
+#popupHeader {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.category-btn {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
-}
-
-.palette {
-  display: flex;
-  gap: 10px;
-  margin: 10px 0;
-}
-
-/* 🎯 CORREZIONE: CERCHI GRANDI PER PALETTE */
-.color {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.color.selected {
-  border: 2px solid #000;
-}
-
-.note {
-  background: var(--bg);
-  border-left: 6px solid;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 10px;
-}
-
-.save, .close {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-/* ANIMAZIONE SOLE/LUNA */
-#themeToggle {
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-#themeToggle.animate {
-  transform: rotate(180deg) scale(1.2);
-  opacity: 0.7;
-}
-
-/* NOTE — leggibilità perfetta */
-.note {
-  border-left: 8px solid;
-  padding: 12px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #000000;
 }
-
-.note h3,
-.note p,
-.note small {
-  color: #000000;
-}
-
-/* --- IMPOSTAZIONI MODERNE --- */
-.modern-settings {
-  padding: 20px;
-}
-
-.settings-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.modern-btn {
-  width: 100%;
-  padding: 14px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 12px;
-  background: #f2f2f7;
-  font-size: 16px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: 0.2s;
-}
-
-.modern-btn:hover {
-  background: #e5e5ea;
-}
-
-.modern-close {
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  border-radius: 12px;
-  background: #ff3b30;
-  color: white;
-  font-weight: bold;
-  border: none;
-  transition: 0.2s;
-}
-
-.modern-close:hover {
-  background: #d32f2f;
-}
-
-/* --- IMPOSTAZIONI iOS 17 --- */
-.settings-group {
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.modern-btn {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.modern-btn:last-child {
-  border-bottom: none;
-}
-
-.modern-btn:active {
-  background: rgba(0,0,0,0.08);
-}
-
-.modern-close:active {
-  background: #d32f2f;
-}
-
-/* ⭐ NUOVE VOCI IMPOSTAZIONI (toggle + select) */
-.settings-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 6px;
-  font-size: 17px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.settings-row:last-child {
-  border-bottom: none;
-}
-
-.toggle {
-  appearance: none;
-  width: 48px;
-  height: 28px;
-  background: #ccc;
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.25s ease;
-}
-
-.toggle:checked {
-  background: #34c759;
-}
-
-.toggle::before {
-  content: "";
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  background: white;
-  border-radius: 50%;
-  top: 3px;
-  left: 3px;
-  transition: transform 0.25s ease;
-}
-
-.toggle:checked::before {
-  transform: translateX(20px);
-}
-
-.select-ios {
-  padding: 8px;
+#popupBody {
+  background: #111;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.2);
-  background: rgba(255,255,255,0.7);
-  font-size: 16px;
+  padding: 10px;
+  overflow: auto;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  white-space: pre;
+}
+#closePopup {
+  border: none;
+  background: transparent;
+  color: #f5f5f5;
+  font-size: 20px;
   cursor: pointer;
 }
+</style>
+</head>
 
-/* ⭐ CERCHI GRANDI NELLA LISTA CATEGORIE */
-.category-list-color {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 2px solid transparent;
-  transition: transform 0.18s ease, box-shadow 0.25s ease;
+<body>
+
+<h1>Archivio Codici</h1>
+
+<div class="cards">
+  <div class="card" onclick="openPopup('html')">
+    <div class="card-title">HTML</div>
+  </div>
+
+  <div class="card" onclick="openPopup('css')">
+    <div class="card-title">CSS</div>
+  </div>
+
+  <div class="card" onclick="openPopup('js')">
+    <div class="card-title">JavaScript</div>
+  </div>
+</div>
+
+<!-- Popup -->
+<div id="popup">
+  <div id="popupContent">
+    <div id="popupHeader">
+      <div id="popupTitle"></div>
+      <button id="closePopup">✕</button>
+    </div>
+    <pre id="popupBody"></pre>
+  </div>
+</div>
+
+<script>
+const popup = document.getElementById("popup");
+const popupTitle = document.getElementById("popupTitle");
+const popupBody = document.getElementById("popupBody");
+const closePopupBtn = document.getElementById("closePopup");
+
+// Codici provvisori (li sostituirò con i tuoi veri)
+const codiceHTML = `<h1>Codice HTML originale</h1>`;
+const codiceCSS = `body { background: #fafafa; }`;
+const codiceJS = `console.log("Codice JS originale");`;
+
+function openPopup(type) {
+  popup.style.display = "flex";
+  popupTitle.textContent = type.toUpperCase();
+
+  if (type === "html") popupBody.textContent = codiceHTML;
+  if (type === "css") popupBody.textContent = codiceCSS;
+  if (type === "js") popupBody.textContent = codiceJS;
 }
 
-.category-list-color:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
-}
-
-/* ⭐ CERCHI GRANDI + GLOW + BOUNCE + SELEZIONE */
-.category-list-color {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 2px solid transparent;
-  transition:
-    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.category-list-color:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 12px rgba(0,0,0,0.18);
-}
-
-.category-list-color:active {
-  transform: scale(0.85);
-  box-shadow: 0 0 6px rgba(0,0,0,0.15);
-}
-
-.category-selected .category-list-color {
-  border-color: #000;
-  animation: pulseCategory 0.55s ease-out;
-}
-
-@keyframes pulseCategory {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.22); }
-  100% { transform: scale(1); }
-}
-
-.category-row span {
-  font-size: 17px;
-  margin-left: 12px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.category-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-`,
-
-        /* PARTE 1 */
-document.addEventListener("DOMContentLoaded", () => {
-
-  /* GOOGLE DRIVE CONFIG */
-  const CLIENT_ID = "792122447047-u30lrb5oo1jjbnkibfh420ah0o95e3d8.apps.googleusercontent.com";
-  const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
-  let accessToken = null;
-
-  function getDriveToken(callback) {
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: DRIVE_SCOPE,
-      callback: (response) => {
-        if (response.access_token) {
-          accessToken = response.access_token;
-          callback();
-        } else {
-          alert("Errore nel recupero del token Google Drive.");
-        }
-      }
-    });
-
-    tokenClient.requestAccessToken();
-  }
-
-  /* TEMA SOLE/LUNA */
-  const themeToggle = document.getElementById("themeToggle");
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark");
-    themeToggle.textContent = "🌙";
-  } else {
-    document.body.classList.remove("dark");
-    themeToggle.textContent = "☀️";
-  }
-
-  themeToggle.onclick = () => {
-    themeToggle.classList.add("animate");
-    setTimeout(() => themeToggle.classList.remove("animate"), 250);
-
-    if (document.body.classList.contains("dark")) {
-      document.body.classList.remove("dark");
-      themeToggle.textContent = "☀️";
-      localStorage.setItem("theme", "light");
-    } else {
-      document.body.classList.add("dark");
-      themeToggle.textContent = "🌙";
-      localStorage.setItem("theme", "dark");
-    }
-  };
-/* PARTE 2 */
-  /* STORAGE */
-  let categories = JSON.parse(localStorage.getItem("categories")) || [
-    { name: "Lavoro", color: "#1e90ff" },
-    { name: "Spesa", color: "#ffa502" },
-    { name: "Idee", color: "#a55eea" },
-    { name: "Tutte", color: "#2ed573" }
-  ];
-
-  let notes = JSON.parse(localStorage.getItem("notes")) || [];
-  let trash = JSON.parse(localStorage.getItem("trash")) || [];
-
-  function saveCategories() { localStorage.setItem("categories", JSON.stringify(categories)); }
-  function saveNotes() { localStorage.setItem("notes", JSON.stringify(notes)); }
-  function saveTrash() { localStorage.setItem("trash", JSON.stringify(trash)); }
-
-  /* BACKUP OBJECT */
-  function createBackupObject() {
-    return { notes, categories, trash };
-  }
-
-  /* ELEMENTI */
-  const addNoteBtn = document.getElementById("addNoteBtn");
-  const notePanel = document.getElementById("notePanel");
-  const closeNotePanel = document.getElementById("closeNotePanel");
-  const saveNoteBtn = document.getElementById("saveNoteBtn");
-  const noteTitle = document.getElementById("noteTitle");
-  const noteText = document.getElementById("noteText");
-  const categoryButtons = document.getElementById("categoryButtons");
-  const notePalette = document.getElementById("notePalette");
-  const notesContainer = document.getElementById("notesContainer");
-
-  const trashBtn = document.getElementById("trashBtn");
-  const trashPanel = document.getElementById("trashPanel");
-  const closeTrashPanel = document.getElementById("closeTrashPanel");
-  const trashList = document.getElementById("trashList");
-
-  const categoriesBtn = document.getElementById("categoriesBtn");
-  const categoryPanel = document.getElementById("categoryPanel");
-  const closeCategoryPanel = document.getElementById("closeCategoryPanel");
-  const newCategoryName = document.getElementById("newCategoryName");
-  const categoryPalette = document.getElementById("categoryPalette");
-  const categoryColorPicker = document.getElementById("categoryColorPicker");
-  const saveCategoryBtn = document.getElementById("saveCategoryBtn");
-  const categoryList = document.getElementById("categoryList");
-
-  const settingsBtn = document.getElementById("settingsBtn");
-  const settingsPanel = document.getElementById("settingsPanel");
-  const closeSettingsPanel = document.getElementById("closeSettingsPanel");
-
-  const infoAppBtn = document.getElementById("infoAppBtn");
-  const exportBackupBtn = document.getElementById("exportBackupBtn");
-  const resetDataBtn = document.getElementById("resetDataBtn");
-  const memoryStatusBtn = document.getElementById("memoryStatusBtn");
-  const syncCloudBtn = document.getElementById("syncCloudBtn");
-
-  let selectedCategory = null;
-  let selectedNoteColor = "#1e90ff";
-  let selectedCategoryColor = "#1e90ff";
-
-  /* ANIMAZIONE PANNELLI */
-  function openPanel(panel) {
-    panel.classList.remove("hidden");
-    setTimeout(() => panel.classList.add("show"), 10);
-  }
-
-  function closePanel(panel) {
-    panel.classList.remove("show");
-    setTimeout(() => panel.classList.add("hidden"), 250);
-  }
-/* PARTE 3 */
-  /* NOTE */
-  addNoteBtn.onclick = () => {
-    openPanel(notePanel);
-    renderCategoryButtons();
-    renderNotePalette();
-  };
-
-  closeNotePanel.onclick = () => closePanel(notePanel);
-
-  function resetNoteForm() {
-    noteTitle.value = "";
-    noteText.value = "";
-    selectedCategory = null;
-    selectedNoteColor = "#1e90ff";
-  }
-
-  function renderCategoryButtons() {
-    categoryButtons.innerHTML = "";
-    categories.forEach(cat => {
-      const btn = document.createElement("button");
-      btn.className = "category-btn";
-      btn.style.background = cat.color;
-      btn.textContent = cat.name;
-
-      btn.onclick = () => {
-        selectedCategory = cat.name;
-        document.querySelectorAll(".category-btn").forEach(b => b.style.opacity = "0.5");
-        btn.style.opacity = "1";
-      };
-
-      categoryButtons.appendChild(btn);
-    });
-  }
-
-  function renderNotePalette() {
-    const colors = ["#ff6b6b", "#ffa502", "#2ed573", "#1e90ff", "#a55eea", "#000000", "#ffffff"];
-    notePalette.innerHTML = "";
-
-    colors.forEach(c => {
-      const div = document.createElement("div");
-      div.className = "color";
-      div.style.background = c;
-
-      div.onclick = () => {
-        selectedNoteColor = c;
-        document.querySelectorAll("#notePalette .color").forEach(x => x.classList.remove("selected"));
-        div.classList.add("selected");
-      };
-
-      notePalette.appendChild(div);
-    });
-
-    notePalette.querySelector(".color").classList.add("selected");
-  }
-
-  saveNoteBtn.onclick = () => {
-    const titolo = noteTitle.value.trim();
-    const testo = noteText.value.trim();
-    if (!titolo && !testo) return;
-
-    const categoriaScelta = selectedCategory || categories[0].name;
-
-    const newNote = {
-      id: Date.now(),
-      titolo,
-      testo,
-      colore: selectedNoteColor,
-      categoria: categoriaScelta,
-      data: new Date().toISOString()
-    };
-
-    notes.push(newNote);
-    saveNotes();
-    renderNotes();
-    resetNoteForm();
-    closePanel(notePanel);
-  };
-
-  /* NOTE LIST */
-  function renderNotes() {
-    notesContainer.innerHTML = "";
-    notes.forEach(n => {
-      const div = document.createElement("div");
-      div.className = "note";
-      div.style.borderLeftColor = n.colore;
-
-      div.innerHTML = `
-        <h3>${n.titolo}</h3>
-        <p>${n.testo}</p>
-        <small>${n.categoria}</small><br>
-        <button class="deleteNote">Elimina</button>
-      `;
-
-      div.querySelector(".deleteNote").onclick = () => {
-        trash.push(n);
-        notes = notes.filter(x => x.id !== n.id);
-        saveNotes();
-        saveTrash();
-        renderNotes();
-      };
-
-      notesContainer.appendChild(div);
-    });
-  }
-
-  renderNotes();
-/* PARTE 4 */
-  /* CESTINO */
-  trashBtn.onclick = () => {
-    openPanel(trashPanel);
-    renderTrash();
-  };
-
-  closeTrashPanel.onclick = () => closePanel(trashPanel);
-
-  function renderTrash() {
-    trashList.innerHTML = "";
-    if (trash.length === 0) {
-      trashList.textContent = "Cestino vuoto";
-      return;
-    }
-
-    trash.forEach(n => {
-      const div = document.createElement("div");
-      div.className = "note";
-      div.style.borderLeftColor = n.colore;
-
-      div.innerHTML = `
-        <h3>${n.titolo}</h3>
-        <p>${n.testo}</p>
-        <small>${n.categoria}</small><br>
-        <button class="restoreNote">Ripristina</button>
-        <button class="deleteForever">Elimina definitivamente</button>
-      `;
-
-      div.querySelector(".restoreNote").onclick = () => {
-        notes.push(n);
-        trash = trash.filter(x => x.id !== n.id);
-        saveNotes();
-        saveTrash();
-        renderTrash();
-        renderNotes();
-      };
-
-      div.querySelector(".deleteForever").onclick = () => {
-        trash = trash.filter(x => x.id !== n.id);
-        saveTrash();
-        renderTrash();
-      };
-
-      trashList.appendChild(div);
-    });
-  }
-
-  /* CATEGORIE */
-  categoriesBtn.onclick = () => {
-    openPanel(categoryPanel);
-    renderCategoryPalette();
-    renderCategoryList();
-  };
-
-  closeCategoryPanel.onclick = () => closePanel(categoryPanel);
-
-  function renderCategoryPalette() {
-    const colors = ["#ff6b6b", "#ffa502", "#2ed573", "#1e90ff", "#a55eea", "#000000", "#ffffff"];
-    categoryPalette.innerHTML = "";
-
-    colors.forEach(c => {
-      const div = document.createElement("div");
-      div.className = "color";
-      div.style.background = c;
-
-      div.onclick = () => {
-        selectedCategoryColor = c;
-        document.querySelectorAll("#categoryPalette .color").forEach(x => x.classList.remove("selected"));
-        div.classList.add("selected");
-        categoryColorPicker.value = c;
-      };
-
-      categoryPalette.appendChild(div);
-    });
-
-    categoryPalette.querySelector(".color").classList.add("selected");
-    categoryColorPicker.value = colors[0];
-
-    categoryColorPicker.oninput = (e) => {
-      selectedCategoryColor = e.target.value;
-      document.querySelectorAll("#categoryPalette .color").forEach(x => x.classList.remove("selected"));
-    };
-  }
-/* PARTE 5 */
-  saveCategoryBtn.onclick = () => {
-    const name = newCategoryName.value.trim();
-    if (!name) return;
-
-    categories.push({ name, color: selectedCategoryColor });
-    saveCategories();
-    newCategoryName.value = "";
-    renderCategoryList();
-    renderCategoryButtons();
-  };
-
-  /* ⭐ LISTA CATEGORIE CON CERCHI GRANDI + SELEZIONE + ANIMAZIONE */
-  function renderCategoryList() {
-    categoryList.innerHTML = "";
-
-    categories.forEach((cat, index) => {
-      const row = document.createElement("div");
-      row.className = "category-row";
-      row.style.display = "flex";
-      row.style.alignItems = "center";
-      row.style.justifyContent = "space-between";
-      row.style.marginBottom = "14px";
-
-      const circle = document.createElement("div");
-      circle.className = "category-list-color";
-      circle.style.backgroundColor = cat.color;
-
-      const name = document.createElement("span");
-      name.textContent = cat.name;
-      name.style.fontSize = "17px";
-      name.style.marginLeft = "12px";
-
-      const left = document.createElement("div");
-      left.style.display = "flex";
-      left.style.alignItems = "center";
-      left.appendChild(circle);
-      left.appendChild(name);
-
-      const del = document.createElement("button");
-      del.textContent = "❌";
-      del.style.border = "none";
-      del.style.background = "transparent";
-      del.style.fontSize = "20px";
-      del.style.cursor = "pointer";
-
-      del.onclick = () => {
-        categories.splice(index, 1);
-        saveCategories();
-        renderCategoryList();
-        renderCategoryButtons();
-      };
-
-      left.onclick = () => {
-        document.querySelectorAll(".category-row").forEach(r => {
-          r.classList.remove("category-selected");
-        });
-
-        row.classList.add("category-selected");
-        selectedCategory = cat.name;
-      };
-
-      row.appendChild(left);
-      row.appendChild(del);
-      categoryList.appendChild(row);
-    });
-  }
-
-  renderCategoryList();
-/* PARTE 6 */
-  /* IMPOSTAZIONI */
-  settingsBtn.onclick = () => openPanel(settingsPanel);
-  closeSettingsPanel.onclick = () => closePanel(settingsPanel);
-
-  infoAppBtn.onclick = () => {
-    alert("Note App — Versione 1.0\nSviluppata da Sandro");
-  };
-
-  exportBackupBtn.onclick = () => {
-    const backup = { notes, categories, trash };
-    const data = JSON.stringify(backup, null, 2);
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "backup_note_app.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-  };
-
-  resetDataBtn.onclick = () => {
-    if (confirm("Vuoi davvero cancellare tutti i dati?")) {
-      notes = [];
-      categories = [];
-      trash = [];
-      saveNotes();
-      saveCategories();
-      saveTrash();
-
-      renderNotes();
-      renderCategoryList();
-      alert("Dati cancellati.");
-    }
-  };
-
-  memoryStatusBtn.onclick = () => {
-    const size = new Blob([JSON.stringify({ notes, categories, trash })]).size;
-    alert("Memoria usata: " + size + " bytes");
-  };
-
-  /* GOOGLE DRIVE UPLOAD */
-  async function uploadBackupToDrive() {
-    if (!accessToken) {
-      alert("Token Google non presente.");
-      return;
-    }
-
-    const backup = createBackupObject();
-
-    const metadata = {
-      name: "note_app_backup.json",
-      mimeType: "application/json"
-    };
-
-    const boundary = "-------314159265358979323846";
-    const delimiter = "\r\n--" + boundary + "\r\n";
-    const closeDelimiter = "\r\n--" + boundary + "--";
-
-    const body =
-      delimiter +
-      "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
-      JSON.stringify(metadata) +
-      delimiter +
-      "Content-Type: application/json\r\n\r\n" +
-      JSON.stringify(backup) +
-      closeDelimiter;
-
-    const res = await fetch(
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + accessToken,
-          "Content-Type": "multipart/related; boundary=" + boundary
-        },
-        body
-      }
-    );
-
-    if (!res.ok) {
-      alert("Errore nel backup su Google Drive.");
-      return;
-    }
-
-    alert("✅ Backup caricato su Google Drive!");
-  }
-
-  syncCloudBtn.onclick = () => {
-    if (!accessToken) {
-      getDriveToken(() => uploadBackupToDrive());
-    } else {
-      uploadBackupToDrive();
-    }
-  };
-/* PARTE 7 */
-/* ============================================================
-   ⭐ NUOVE IMPOSTAZIONI iOS 17 — PARTE 1
-   ============================================================ */
-
-  const settingThemeAuto = document.getElementById("settingThemeAuto");
-  const settingVibration = document.getElementById("settingVibration");
-  const settingSort = document.getElementById("settingSort");
-  const settingAnimations = document.getElementById("settingAnimations");
-
-  let appSettings = JSON.parse(localStorage.getItem("appSettings")) || {
-    themeAuto: false,
-    vibration: false,
-    sort: "recenti",
-    animations: true
-  };
-
-  settingThemeAuto.checked = appSettings.themeAuto;
-  settingVibration.checked = appSettings.vibration;
-  settingSort.value = appSettings.sort;
-  settingAnimations.checked = appSettings.animations;
-
-  function applyDynamicTheme() {
-    if (!appSettings.themeAuto) return;
-
-    const hour = new Date().getHours();
-    if (hour >= 19 || hour <= 6) {
-      document.body.classList.add("dark");
-      themeToggle.textContent = "🌙";
-    } else {
-      document.body.classList.remove("dark");
-      themeToggle.textContent = "☀️";
-    }
-  }
-  applyDynamicTheme();
-
-  function vibrate(ms = 40) {
-    if (appSettings.vibration && navigator.vibrate) {
-      navigator.vibrate(ms);
-    }
-  }
-
-  function sortNotes() {
-    if (appSettings.sort === "recenti") {
-      notes.sort((a, b) => new Date(b.data) - new Date(a.data));
-    }
-    if (appSettings.sort === "vecchie") {
-      notes.sort((a, b) => new Date(a.data) - new Date(b.data));
-    }
-    if (appSettings.sort === "colore") {
-      notes.sort((a, b) => a.colore.localeCompare(b.colore));
-    }
-    if (appSettings.sort === "titolo") {
-      notes.sort((a, b) => a.titolo.localeCompare(b.titolo));
-    }
-  }
-
-  function applyNoteAnimations(div) {
-    if (!appSettings.animations) return;
-    div.style.transition = "transform 0.25s ease, opacity 0.25s ease";
-    div.style.opacity = "0";
-    div.style.transform = "translateY(10px)";
-    setTimeout(() => {
-      div.style.opacity = "1";
-      div.style.transform = "translateY(0)";
-    }, 10);
-  }
-/* PARTE 8 */
-/* ============================================================
-   ⭐ NUOVE IMPOSTAZIONI iOS 17 — PARTE 2
-   ============================================================ */
-
-  /* Override di renderNotes per ordinamento + animazioni */
-  const originalRenderNotes = renderNotes;
-  renderNotes = function () {
-    notesContainer.innerHTML = "";
-
-    sortNotes();
-
-    notes.forEach(n => {
-      const div = document.createElement("div");
-      div.className = "note";
-      div.style.borderLeftColor = n.colore;
-
-      div.innerHTML = `
-        <h3>${n.titolo}</h3>
-        <p>${n.testo}</p>
-        <small>${n.categoria}</small><br>
-        <button class="deleteNote">Elimina</button>
-      `;
-
-      div.querySelector(".deleteNote").onclick = () => {
-        vibrate();
-        trash.push(n);
-        notes = notes.filter(x => x.id !== n.id);
-        saveNotes();
-        saveTrash();
-        renderNotes();
-      };
-
-      applyNoteAnimations(div);
-      notesContainer.appendChild(div);
-    });
-  };
-
-  /* LISTENER IMPOSTAZIONI */
-  settingThemeAuto.onchange = () => {
-    appSettings.themeAuto = settingThemeAuto.checked;
-    localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    applyDynamicTheme();
-    vibrate();
-  };
-
-  settingVibration.onchange = () => {
-    appSettings.vibration = settingVibration.checked;
-    localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    vibrate();
-  };
-
-  settingSort.onchange = () => {
-    appSettings.sort = settingSort.value;
-    localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    renderNotes();
-    vibrate();
-  };
-
-  settingAnimations.onchange = () => {
-    appSettings.animations = settingAnimations.checked;
-    localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    vibrate();
-  };
-
-}); // 🔥 CHIUSURA FINALE DEL DOMContentLoaded
+closePopupBtn.onclick = () => popup.style.display = "none";
+popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+</script>
+
+</body>
+</html>
