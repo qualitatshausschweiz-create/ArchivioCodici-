@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Archivio Codici</title>
 
-  <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
@@ -38,26 +38,27 @@
       gap: 10px;
       font-size: 18px;
       color: #fff;
+      border: 1px solid #333;
     }
 
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+      background: #252525;
     }
 
-    .icon {
-      font-size: 26px;
-    }
+    .icon { font-size: 26px; }
 
     /* Popup */
     #popup {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.7);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 999;
+      backdrop-filter: blur(4px);
     }
 
     #popupContent {
@@ -65,12 +66,13 @@
       color: #f5f5f5;
       width: 90%;
       max-width: 900px;
-      max-height: 80vh;
+      max-height: 85vh;
       border-radius: 16px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      border: 1px solid #444;
     }
 
     #popupHeader {
@@ -80,28 +82,34 @@
       margin-bottom: 10px;
     }
 
+    #popupTitle { font-weight: bold; color: #007aff; }
+
     #popupHeader button {
       margin-left: 4px;
       border: none;
       background: #333;
       color: #fff;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 8px;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
-    #popupHeader button:hover {
-      background: #444;
+    #popupHeader button:hover { background: #444; }
+
+    pre {
+      margin: 0;
+      flex-grow: 1;
+      overflow: hidden;
+      border-radius: 10px;
     }
 
     #popupBody {
       background: #0d0d0d;
-      border-radius: 10px;
-      padding: 16px;
+      height: 100%;
       overflow: auto;
       font-size: 14px;
-      white-space: pre-wrap;
-      word-break: break-word;
+      padding: 15px !important;
       font-family: "SF Mono", Menlo, monospace;
       line-height: 1.4;
     }
@@ -113,91 +121,146 @@
   <h1>Archivio Codici</h1>
 
   <div class="cards">
-
-    <!-- BOTTONE HTML -->
     <div class="card" onclick="openPopup('html')">
       <span class="icon">📄</span>
-      <span>HTML</span>
+      <span>App Note (HTML)</span>
     </div>
-
-    <!-- BOTTONE CSS (NUOVO) -->
-    <div class="card" onclick="openPopup('css')">
-      <span class="icon">🎨</span>
-      <span>CSS</span>
-    </div>
-
   </div>
 
-  <!-- Popup -->
   <div id="popup">
     <div id="popupContent">
       <div id="popupHeader">
         <div id="popupTitle"></div>
-
         <div>
-          <button id="copyBtn">📋</button>
-          <button id="openEditorBtn">✏️</button>
-          <button id="downloadBtn">⬇️</button>
-          <button id="textareaBtn">📝</button>
+          <button id="copyBtn" title="Copia">📋</button>
+          <button id="downloadBtn" title="Scarica">⬇️</button>
+          <button id="textareaBtn" title="Editor">📝</button>
           <button id="closePopup">✕</button>
         </div>
       </div>
-
-      <pre><code id="popupBody"></code></pre>
+      <pre><code id="popupBody" class="language-html"></code></pre>
     </div>
   </div>
 
   <script>
 /* ===========================
-   CODICE HTML COMPLETO ESCAPED
+   IL TUO CODICE APP NOTE (ESCAPED)
 =========================== */
 
-const codiceHTML = `
-… (il tuo codice HTML escapato rimane identico)
-`;
+const codiceHTML = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Note App</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://accounts.google.com/gsi/client" async defer><\/script>
+</head>
+<body>
+
+  <div class="icon-bar">
+    <button id="themeToggle">☀️</button>
+    <button id="addNoteBtn">➕</button>
+    <button id="categoriesBtn">📁</button>
+    <button id="trashBtn">🗑️</button>
+    <button id="settingsBtn">⚙️</button>
+  </div>
+
+  <div id="notesContainer"></div>
+
+  <div id="notePanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="noteTitle" placeholder="Titolo">
+      <textarea id="noteText" placeholder="Testo"></textarea>
+      <div id="categoryButtons" class="category-buttons"></div>
+      <div id="notePalette" class="palette"></div>
+      <button id="saveNoteBtn" class="save">Salva</button>
+      <button id="closeNotePanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="categoryPanel" class="panel hidden">
+    <div class="panel-content">
+      <input id="newCategoryName" placeholder="Nome categoria">
+      <div id="categoryPalette" class="palette"></div>
+      <input type="color" id="categoryColorPicker">
+      <button id="saveCategoryBtn" class="save">Salva categoria</button>
+      <div id="categoryList"></div>
+      <button id="closeCategoryPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="trashPanel" class="panel hidden">
+    <div class="panel-content">
+      <div id="trashList"></div>
+      <button id="closeTrashPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="settingsPanel" class="panel hidden">
+    <div class="panel-content settings-box">
+
+      <h2>Impostazioni ⚙️</h2>
+
+      <div class="settings-group">
+        <label class="settings-row">
+          <span>Tema dinamico</span>
+          <input type="checkbox" id="settingThemeAuto" class="toggle">
+        </label>
+        <label class="settings-row">
+          <span>Vibrazione feedback</span>
+          <input type="checkbox" id="settingVibration" class="toggle">
+        </label>
+        <label class="settings-row">
+          <span>Ordinamento note</span>
+          <select id="settingSort" class="select-ios">
+            <option value="recenti">Più recenti</option>
+            <option value="vecchie">Più vecchie</option>
+            <option value="colore">Per colore categoria</option>
+            <option value="titolo">Titolo A-Z</option>
+          </select>
+        </label>
+        <label class="settings-row">
+          <span>Animazioni avanzate</span>
+          <input type="checkbox" id="settingAnimations" class="toggle">
+        </label>
+      </div>
+
+      <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
+      <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
+      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
+      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie iniziali</button>
+      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale dati</button>
+      <button id="memoryStatusBtn" class="settings-item">💾 Stato memoria</button>
+
+      <button id="closeSettingsPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <script src="script.js"><\/script>
+</body>
+</html>`;
 
 /* ===========================
-   CODICE CSS COMPLETO ESCAPED
-=========================== */
-
-const codiceCSS = `
-… (qui dentro ho inserito TUTTO il tuo CSS escapato)
-`;
-
-/* ===========================
-   POPUP LOGIC
+   LOGICA POPUP
 =========================== */
 
 const popup = document.getElementById("popup");
 const popupTitle = document.getElementById("popupTitle");
 const popupBody = document.getElementById("popupBody");
-
 const closePopupBtn = document.getElementById("closePopup");
-const copyBtn = document.getElementById("copyBtn");
-const openEditorBtn = document.getElementById("openEditorBtn");
-const downloadBtn = document.getElementById("downloadBtn");
-const textareaBtn = document.getElementById("textareaBtn");
 
 function openPopup(type) {
   popup.style.display = "flex";
-  popupTitle.textContent = type.toUpperCase();
+  popupTitle.textContent = "CODICE " + type.toUpperCase();
 
-  let codice = "";
+  // Inserisce il codice
+  popupBody.textContent = codiceHTML;
 
-  if (type === "html") {
-    popupBody.className = "language-html";
-    codice = codiceHTML;
-  }
-
-  if (type === "css") {
-    popupBody.className = "language-css";
-    codice = codiceCSS;
-  }
-
-  popupBody.innerHTML = "";
-  popupBody.appendChild(document.createTextNode(codice));
-
-  if (window.hljs && hljs.highlightElement) {
+  // Applica colorazione sintassi
+  if (window.hljs) {
     hljs.highlightElement(popupBody);
   }
 }
@@ -205,43 +268,29 @@ function openPopup(type) {
 closePopupBtn.onclick = () => popup.style.display = "none";
 popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
 
-copyBtn.onclick = async () => {
-  const text = popupBody.innerText;
-  try {
-    await navigator.clipboard.writeText(text);
-    copyBtn.textContent = "✔️";
-    setTimeout(() => copyBtn.textContent = "📋", 1500);
-  } catch (e) {}
+// Funzione Copia
+document.getElementById("copyBtn").onclick = async () => {
+  await navigator.clipboard.writeText(codiceHTML);
+  const btn = document.getElementById("copyBtn");
+  btn.textContent = "✔️";
+  setTimeout(() => btn.textContent = "📋", 1500);
 };
 
-openEditorBtn.onclick = () => {
-  const editorWindow = window.open("", "_blank");
-  editorWindow.document.write(`
-<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-</textarea>
-  `);
-  editorWindow.document.close();
-};
-
-downloadBtn.onclick = () => {
-  const blob = new Blob([popupBody.innerText], { type: "text/plain" });
+// Funzione Scarica
+document.getElementById("downloadBtn").onclick = () => {
+  const blob = new Blob([codiceHTML], { type: "text/html" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = popupTitle.textContent + ".txt";
+  a.download = "index.html";
   a.click();
   URL.revokeObjectURL(url);
 };
 
-textareaBtn.onclick = () => {
-  const box = window.open("", "_blank");
-  box.document.write(`
-<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-</textarea>
-  `);
-  box.document.close();
+// Funzione Editor rapido
+document.getElementById("textareaBtn").onclick = () => {
+  const win = window.open("", "_blank");
+  win.document.write(`<body style="margin:0"><textarea style="width:100%;height:100vh;font-family:monospace;padding:20px;background:#1e1e1e;color:#fff;border:none;">${codiceHTML}</textarea></body>`);
 };
   </script>
 
