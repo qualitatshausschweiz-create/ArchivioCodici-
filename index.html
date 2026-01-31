@@ -388,10 +388,6 @@ ${popupBody.innerText}
 
 </body>
 </html>
-/* ===========================
-   CSS COMPLETO NOTE APP
-=========================== */
-
 const codiceCSS = `
 body {
   margin: 0;
@@ -424,6 +420,7 @@ body {
   border: none;
   cursor: pointer;
 }
+
 /* PANELLO + ANIMAZIONE PREMIUM */
 .panel {
   position: fixed;
@@ -465,6 +462,24 @@ body {
   100% { transform: translateY(0); }
 }
 
+/* IMPOSTAZIONI — PRIMA PARTE */
+.settings-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-item {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  text-align: left;
+  background: none;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
 /* NOTE */
 textarea, input {
   width: 100%;
@@ -494,7 +509,8 @@ textarea, input {
   gap: 10px;
   margin: 10px 0;
 }
-/* 🎯 CERCHI GRANDI PER PALETTE */
+
+/* 🎯 CORREZIONE: CERCHI GRANDI PER PALETTE */
 .color {
   width: 32px;
   height: 32px;
@@ -549,6 +565,7 @@ textarea, input {
 .note small {
   color: #000000;
 }
+
 /* --- IMPOSTAZIONI MODERNE --- */
 .modern-settings {
   padding: 20px;
@@ -658,6 +675,7 @@ textarea, input {
   font-size: 16px;
   cursor: pointer;
 }
+
 /* ⭐ CERCHI GRANDI NELLA LISTA CATEGORIE */
 .category-list-color {
   width: 32px;
@@ -724,5 +742,4 @@ textarea, input {
   justify-content: space-between;
   margin-bottom: 14px;
 }
-
 `;
