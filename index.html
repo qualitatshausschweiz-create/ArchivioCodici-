@@ -1,289 +1,283 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>Archivio Codici</title>
+  <meta charset="UTF-8">
+  <title>Archivio Codici</title>
 
-<!-- Highlight.js -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-<style>
-body {
-  font-family: -apple-system, system-ui, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background: #0f0f0f;
-  color: #fff;
-}
+  <style>
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #0f0f0f;
+      color: #fff;
+    }
 
-h1 { margin-bottom: 20px; }
+    h1 { margin-bottom: 20px; }
 
-.cards {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+    .cards {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-.card {
-  background: #1c1c1c;
-  border-radius: 14px;
-  padding: 16px 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
-  min-width: 180px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 18px;
-  color: #fff;
-}
+    .card {
+      background: #1c1c1c;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      min-width: 180px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      color: #fff;
+    }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.6);
-}
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
 
-.icon {
-  font-size: 26px;
-}
+    .icon {
+      font-size: 26px;
+    }
 
-/* Popup */
-#popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
+    /* Popup */
+    #popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
 
-#popupContent {
-  background: #1e1e1e;
-  color: #f5f5f5;
-  width: 90%;
-  max-width: 900px;
-  max-height: 80vh;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.7);
-}
+    #popupContent {
+      background: #1e1e1e;
+      color: #f5f5f5;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    }
 
-#popupHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
+    #popupHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-#popupBody {
-  background: #0d0d0d;
-  border-radius: 10px;
-  padding: 10px;
-  overflow: auto;
-  font-size: 14px;
-}
+    #popupBody {
+      background: #0d0d0d;
+      border-radius: 10px;
+      padding: 10px;
+      overflow: auto;
+      font-size: 14px;
+      white-space: pre; /* importantissimo per mantenere le righe */
+    }
 
-#closePopup {
-  border: none;
-  background: transparent;
-  color: #f5f5f5;
-  font-size: 20px;
-  cursor: pointer;
-}
-</style>
+    #closePopup {
+      border: none;
+      background: transparent;
+      color: #f5f5f5;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>Archivio Codici</h1>
+  <h1>Archivio Codici</h1>
 
-<div class="cards">
-
-  <div class="card" onclick="openPopup('html')">
-    <span class="icon">📄</span>
-    <span>HTML</span>
-  </div>
-
-  <div class="card" onclick="openPopup('css')">
-    <span class="icon">🎨</span>
-    <span>CSS</span>
-  </div>
-
-  <div class="card" onclick="openPopup('js')">
-    <span class="icon">⚡</span>
-    <span>JavaScript</span>
-  </div>
-
-</div>
-
-<!-- Popup -->
-<div id="popup">
-  <div id="popupContent">
-    <div id="popupHeader">
-      <div id="popupTitle"></div>
-      <button id="closePopup">✕</button>
+  <div class="cards">
+    <div class="card" onclick="openPopup('html')">
+      <span class="icon">📄</span>
+      <span>HTML</span>
     </div>
-    <pre><code id="popupBody" class="language-html"></code></pre>
-  </div>
-</div>
 
-<script>
-/* QUI INSERIRÒ I TUOI CODICI ORIGINALI NEI PROSSIMI MESSAGGI */
-const codiceHTML = ``;
-const codiceCSS = ``;
-const codiceJS = ``;
+    <div class="card" onclick="openPopup('css')">
+      <span class="icon">🎨</span>
+      <span>CSS</span>
+    </div>
 
-const popup = document.getElementById("popup");
-const popupTitle = document.getElementById("popupTitle");
-const popupBody = document.getElementById("popupBody");
-const closePopupBtn = document.getElementById("closePopup");
-
-function openPopup(type) {
-  popup.style.display = "flex";
-  popupTitle.textContent = type.toUpperCase();
-
-  if (type === "html") {
-    popupBody.className = "language-html";
-    popupBody.textContent = codiceHTML;
-  }
-  if (type === "css") {
-    popupBody.className = "language-css";
-    popupBody.textContent = codiceCSS;
-  }
-  if (type === "js") {
-    popupBody.className = "language-javascript";
-    popupBody.textContent = codiceJS;
-  }
-
-  hljs.highlightElement(popupBody);
-}
-
-closePopupBtn.onclick = () => popup.style.display = "none";
-popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
-</script>
-
-</body>
-</html>
-const codiceHTML = `
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <title>Note App</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-
-  <div class="icon-bar">
-    <button id="addNoteBtn">➕</button>
-    <button id="categoriesBtn">📂</button>
-    <button id="trashBtn">🗑️</button>
-    <button id="settingsBtn">⚙️</button>
-    <button id="themeToggle">☀️</button>
-  </div>
-
-  <div id="notesContainer"></div>
-
-  <!-- PANELLO NOTE -->
-  <div id="notePanel" class="panel hidden">
-    <div class="panel-content">
-      <h2>Nuova Nota</h2>
-      <input id="noteTitle" placeholder="Titolo" />
-      <textarea id="noteText" placeholder="Testo"></textarea>
-
-      <h3>Categoria</h3>
-      <div id="categoryButtons" class="category-buttons"></div>
-
-      <h3>Colore</h3>
-      <div id="notePalette" class="palette"></div>
-
-      <button id="saveNoteBtn" class="save">Salva</button>
-      <button id="closeNotePanel" class="close">Chiudi</button>
+    <div class="card" onclick="openPopup('js')">
+      <span class="icon">⚡</span>
+      <span>JavaScript</span>
     </div>
   </div>
 
-  <!-- PANELLO CESTINO -->
-  <div id="trashPanel" class="panel hidden">
-    <div class="panel-content">
-      <h2>Cestino</h2>
-      <div id="trashList"></div>
-      <button id="closeTrashPanel" class="close">Chiudi</button>
-    </div>
-  </div>
-
-  <!-- PANELLO CATEGORIE -->
-  <div id="categoryPanel" class="panel hidden">
-    <div class="panel-content">
-      <h2>Categorie</h2>
-
-      <input id="newCategoryName" placeholder="Nome categoria" />
-
-      <h3>Colore</h3>
-      <div id="categoryPalette" class="palette"></div>
-      <input type="color" id="categoryColorPicker" />
-
-      <button id="saveCategoryBtn" class="save">Aggiungi Categoria</button>
-
-      <h3>Lista categorie</h3>
-      <div id="categoryList"></div>
-
-      <button id="closeCategoryPanel" class="close">Chiudi</button>
-    </div>
-  </div>
-
-  <!-- PANELLO IMPOSTAZIONI -->
-  <div id="settingsPanel" class="panel hidden">
-    <div class="panel-content modern-settings">
-
-      <h2 class="settings-title">Impostazioni</h2>
-
-      <div class="settings-group">
-
-        <div class="settings-row">
-          <span>Tema automatico</span>
-          <input type="checkbox" id="settingThemeAuto" class="toggle" />
-        </div>
-
-        <div class="settings-row">
-          <span>Vibrazione</span>
-          <input type="checkbox" id="settingVibration" class="toggle" />
-        </div>
-
-        <div class="settings-row">
-          <span>Ordina note</span>
-          <select id="settingSort" class="select-ios">
-            <option value="recenti">Più recenti</option>
-            <option value="vecchie">Più vecchie</option>
-            <option value="colore">Per colore</option>
-            <option value="titolo">Per titolo</option>
-          </select>
-        </div>
-
-        <div class="settings-row">
-          <span>Animazioni</span>
-          <input type="checkbox" id="settingAnimations" class="toggle" />
-        </div>
-
+  <!-- Popup -->
+  <div id="popup">
+    <div id="popupContent">
+      <div id="popupHeader">
+        <div id="popupTitle"></div>
+        <button id="closePopup">✕</button>
       </div>
-
-      <button id="infoAppBtn" class="modern-btn">ℹ️ Info App</button>
-      <button id="exportBackupBtn" class="modern-btn">💾 Esporta Backup</button>
-      <button id="syncCloudBtn" class="modern-btn">☁️ Backup su Cloud</button>
-      <button id="memoryStatusBtn" class="modern-btn">📊 Memoria</button>
-
-      <button id="resetDataBtn" class="modern-close">Reset Dati</button>
-      <button id="closeSettingsPanel" class="close">Chiudi</button>
-
+      <pre><code id="popupBody" class="language-html"></code></pre>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    /* TUO HTML ORIGINALE, ESCAPED: NON VIENE RENDERIZZATO, SOLO MOSTRATO COME TESTO */
+    const codiceHTML = `
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;it&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;title&gt;Note App&lt;/title&gt;
+
+  &lt;!-- Collegamento al tuo stile --&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+
+  &lt;!-- Libreria Google per autenticazione Drive --&gt;
+  &lt;script src=&quot;https://accounts.google.com/gsi/client&quot; async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;div class=&quot;icon-bar&quot;&gt;
+    &lt;button id=&quot;themeToggle&quot;&gt;☀️&lt;/button&gt;
+    &lt;button id=&quot;addNoteBtn&quot;&gt;➕&lt;/button&gt;
+    &lt;button id=&quot;categoriesBtn&quot;&gt;📁&lt;/button&gt;
+    &lt;button id=&quot;trashBtn&quot;&gt;🗑️&lt;/button&gt;
+    &lt;button id=&quot;settingsBtn&quot;&gt;⚙️&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;notesContainer&quot;&gt;&lt;/div&gt;
+
+  &lt;!-- Pannello Note --&gt;
+  &lt;div id=&quot;notePanel&quot; class=&quot;panel hidden&quot;&gt;
+    &lt;div class=&quot;panel-content&quot;&gt;
+      &lt;input id=&quot;noteTitle&quot; placeholder=&quot;Titolo&quot;&gt;
+      &lt;textarea id=&quot;noteText&quot; placeholder=&quot;Testo&quot;&gt;&lt;/textarea&gt;
+      &lt;div id=&quot;categoryButtons&quot; class=&quot;category-buttons&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;notePalette&quot; class=&quot;palette&quot;&gt;&lt;/div&gt;
+      &lt;button id=&quot;saveNoteBtn&quot; class=&quot;save&quot;&gt;Salva&lt;/button&gt;
+      &lt;button id=&quot;closeNotePanel&quot; class=&quot;close&quot;&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Pannello Categorie --&gt;
+  &lt;div id=&quot;categoryPanel&quot; class=&quot;panel hidden&quot;&gt;
+    &lt;div class=&quot;panel-content&quot;&gt;
+      &lt;input id=&quot;newCategoryName&quot; placeholder=&quot;Nome categoria&quot;&gt;
+      &lt;div id=&quot;categoryPalette&quot; class=&quot;palette&quot;&gt;&lt;/div&gt;
+      &lt;input type=&quot;color&quot; id=&quot;categoryColorPicker&quot;&gt;
+      &lt;button id=&quot;saveCategoryBtn&quot; class=&quot;save&quot;&gt;Salva categoria&lt;/button&gt;
+      &lt;div id=&quot;categoryList&quot;&gt;&lt;/div&gt;
+      &lt;button id=&quot;closeCategoryPanel&quot; class=&quot;close&quot;&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Pannello Cestino --&gt;
+  &lt;div id=&quot;trashPanel&quot; class=&quot;panel hidden&quot;&gt;
+    &lt;div class=&quot;panel-content&quot;&gt;
+      &lt;div id=&quot;trashList&quot;&gt;&lt;/div&gt;
+      &lt;button id=&quot;closeTrashPanel&quot; class=&quot;close&quot;&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Pannello Impostazioni --&gt;
+  &lt;div id=&quot;settingsPanel&quot; class=&quot;panel hidden&quot;&gt;
+    &lt;div class=&quot;panel-content settings-box&quot;&gt;
+
+      &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
+
+      &lt;!-- Sezione moderna stile iOS 17 --&gt;
+      &lt;div class=&quot;settings-group&quot;&gt;
+
+        &lt;label class=&quot;settings-row&quot;&gt;
+          &lt;span&gt;Tema dinamico&lt;/span&gt;
+          &lt;input type=&quot;checkbox&quot; id=&quot;settingThemeAuto&quot; class=&quot;toggle&quot;&gt;
+        &lt;/label&gt;
+
+        &lt;label class=&quot;settings-row&quot;&gt;
+          &lt;span&gt;Vibrazione feedback&lt;/span&gt;
+          &lt;input type=&quot;checkbox&quot; id=&quot;settingVibration&quot; class=&quot;toggle&quot;&gt;
+        &lt;/label&gt;
+
+        &lt;label class=&quot;settings-row&quot;&gt;
+          &lt;span&gt;Ordinamento note&lt;/span&gt;
+          &lt;select id=&quot;settingSort&quot; class=&quot;select-ios&quot;&gt;
+            &lt;option value=&quot;recenti&quot;&gt;Più recenti&lt;/option&gt;
+            &lt;option value=&quot;vecchie&quot;&gt;Più vecchie&lt;/option&gt;
+            &lt;option value=&quot;colore&quot;&gt;Per colore categoria&lt;/option&gt;
+            &lt;option value=&quot;titolo&quot;&gt;Titolo A‑Z&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label class=&quot;settings-row&quot;&gt;
+          &lt;span&gt;Animazioni avanzate&lt;/span&gt;
+          &lt;input type=&quot;checkbox&quot; id=&quot;settingAnimations&quot; class=&quot;toggle&quot;&gt;
+        &lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;!-- Pulsanti già esistenti --&gt;
+      &lt;button id=&quot;infoAppBtn&quot; class=&quot;settings-item&quot;&gt;ℹ️ Info App&lt;/button&gt;
+      &lt;button id=&quot;exportBackupBtn&quot; class=&quot;settings-item&quot;&gt;📤 Esporta backup&lt;/button&gt;
+      &lt;button id=&quot;syncCloudBtn&quot; class=&quot;settings-item&quot;&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
+      &lt;button id=&quot;restoreCategoriesBtn&quot; class=&quot;settings-item&quot;&gt;🔄 Ripristina categorie iniziali&lt;/button&gt;
+      &lt;button id=&quot;resetDataBtn&quot; class=&quot;settings-item&quot;&gt;🗑️ Reset totale dati&lt;/button&gt;
+      &lt;button id=&quot;memoryStatusBtn&quot; class=&quot;settings-item&quot;&gt;💾 Stato memoria&lt;/button&gt;
+
+      &lt;button id=&quot;closeSettingsPanel&quot; class=&quot;close&quot;&gt;Chiudi&lt;/button&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Collegamento al tuo script --&gt;
+  &lt;script src=&quot;script.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+`;
+
+    /* Per ora lascio vuoti CSS e JS, li potremo riempire dopo allo stesso modo */
+    const codiceCSS = ``;
+    const codiceJS = ``;
+
+    const popup = document.getElementById("popup");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupBody = document.getElementById("popupBody");
+    const closePopupBtn = document.getElementById("closePopup");
+
+    function openPopup(type) {
+      popup.style.display = "flex";
+      popupTitle.textContent = type.toUpperCase();
+
+      if (type === "html") {
+        popupBody.className = "language-html";
+        popupBody.textContent = codiceHTML;
+      }
+      if (type === "css") {
+        popupBody.className = "language-css";
+        popupBody.textContent = codiceCSS;
+      }
+      if (type === "js") {
+        popupBody.className = "language-javascript";
+        popupBody.textContent = codiceJS;
+      }
+
+      hljs.highlightElement(popupBody);
+    }
+
+    closePopupBtn.onclick = () => popup.style.display = "none";
+    popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+  </script>
+
 </body>
 </html>
-`;
