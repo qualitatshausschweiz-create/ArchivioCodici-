@@ -83,18 +83,26 @@
     #popupBody {
       background: #0d0d0d;
       border-radius: 10px;
-      padding: 10px;
+      padding: 16px;
       overflow: auto;
       font-size: 14px;
       white-space: pre;
+      font-family: "SF Mono", "Menlo", monospace;
+      line-height: 1.4;
     }
 
-    #closePopup {
+    #closePopup, #copyBtn {
       border: none;
-      background: transparent;
-      color: #f5f5f5;
-      font-size: 20px;
+      background: #333;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
       cursor: pointer;
+      margin-left: 8px;
+    }
+
+    #copyBtn:hover {
+      background: #444;
     }
   </style>
 </head>
@@ -125,14 +133,19 @@
     <div id="popupContent">
       <div id="popupHeader">
         <div id="popupTitle"></div>
-        <button id="closePopup">✕</button>
+
+        <div>
+          <button id="copyBtn">📋 Copia</button>
+          <button id="closePopup">✕</button>
+        </div>
       </div>
+
       <pre><code id="popupBody"></code></pre>
     </div>
   </div>
 
   <script>
-    /* TUO HTML ORIGINALE, ESCAPED */
+    /* TUO HTML ORIGINALE ESCAPED */
     const codiceHTML = `
 &lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;it&quot;&gt;
@@ -144,13 +157,6 @@
   &lt;script src=&quot;https://accounts.google.com/gsi/client&quot; async defer&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;div class=&quot;icon-bar&quot;&gt;
-    &lt;button id=&quot;themeToggle&quot;&gt;☀️&lt;/button&gt;
-    &lt;button id=&quot;addNoteBtn&quot;&gt;➕&lt;/button&gt;
-    &lt;button id=&quot;categoriesBtn&quot;&gt;📁&lt;/button&gt;
-    &lt;button id=&quot;trashBtn&quot;&gt;🗑️&lt;/button&gt;
-    &lt;button id=&quot;settingsBtn&quot;&gt;⚙️&lt;/button&gt;
-  &lt;/div&gt;
   ... (continua tutto il tuo HTML escaped)
 &lt;/body&gt;
 &lt;/html&gt;
@@ -163,6 +169,7 @@
     const popupTitle = document.getElementById("popupTitle");
     const popupBody = document.getElementById("popupBody");
     const closePopupBtn = document.getElementById("closePopup");
+    const copyBtn = document.getElementById("copyBtn");
 
     function openPopup(type) {
       popup.style.display = "flex";
@@ -189,6 +196,13 @@
 
     closePopupBtn.onclick = () => popup.style.display = "none";
     popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+
+    /* COPIA CODICE */
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(popupBody.innerText);
+      copyBtn.textContent = "✔️ Copiato";
+      setTimeout(() => copyBtn.textContent = "📋 Copia", 1500);
+    };
   </script>
 
 </body>
