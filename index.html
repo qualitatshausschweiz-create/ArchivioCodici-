@@ -153,7 +153,7 @@
 
   <script>
     /* ===========================
-       CODICE HTML NOTE APP COMPLETO (ESCAPED)
+       HTML NOTE APP (ESCAPED)
     ============================ */
 
     const codiceHTML = `
@@ -163,11 +163,7 @@
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
   &lt;title&gt;Note App&lt;/title&gt;
-
-  &lt;!-- Collegamento al tuo stile --&gt;
   &lt;link rel="stylesheet" href="style.css"&gt;
-
-  &lt;!-- Libreria Google per autenticazione Drive --&gt;
   &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -182,7 +178,6 @@
 
   &lt;div id="notesContainer"&gt;&lt;/div&gt;
 
-  &lt;!-- Pannello Note --&gt;
   &lt;div id="notePanel" class="panel hidden"&gt;
     &lt;div class="panel-content"&gt;
       &lt;input id="noteTitle" placeholder="Titolo"&gt;
@@ -194,7 +189,6 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- Pannello Categorie --&gt;
   &lt;div id="categoryPanel" class="panel hidden"&gt;
     &lt;div class="panel-content"&gt;
       &lt;input id="newCategoryName" placeholder="Nome categoria"&gt;
@@ -206,7 +200,6 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- Pannello Cestino --&gt;
   &lt;div id="trashPanel" class="panel hidden"&gt;
     &lt;div class="panel-content"&gt;
       &lt;div id="trashList"&gt;&lt;/div&gt;
@@ -214,13 +207,11 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- Pannello Impostazioni --&gt;
   &lt;div id="settingsPanel" class="panel hidden"&gt;
     &lt;div class="panel-content settings-box"&gt;
 
       &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
 
-      &lt;!-- Sezione moderna stile iOS 17 --&gt;
       &lt;div class="settings-group"&gt;
 
         &lt;label class="settings-row"&gt;
@@ -250,7 +241,6 @@
 
       &lt;/div&gt;
 
-      &lt;!-- Pulsanti già esistenti --&gt;
       &lt;button id="infoAppBtn" class="settings-item"&gt;ℹ️ Info App&lt;/button&gt;
       &lt;button id="exportBackupBtn" class="settings-item"&gt;📤 Esporta backup&lt;/button&gt;
       &lt;button id="syncCloudBtn" class="settings-item"&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
@@ -263,132 +253,16 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- Collegamento al tuo script --&gt;
   &lt;script src="script.js"&gt;&lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 `;
 
-    const codiceCSS = `
-body {
-  background: #111;
-  color: white;
-  font-family: sans-serif;
-}
-`;
-
-    const codiceJS = `
-console.log("Ciao Sandro, questo è JavaScript!");
-`;
-
     /* ===========================
-       LOGICA POPUP
+       CSS NOTE APP (TUO, COMPLETO)
     ============================ */
 
-    const popup = document.getElementById("popup");
-    const popupTitle = document.getElementById("popupTitle");
-    const popupBody = document.getElementById("popupBody");
-
-    const closePopupBtn = document.getElementById("closePopup");
-    const copyBtn = document.getElementById("copyBtn");
-    const openEditorBtn = document.getElementById("openEditorBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const textareaBtn = document.getElementById("textareaBtn");
-
-    function openPopup(type) {
-      popup.style.display = "flex";
-      popupTitle.textContent = type.toUpperCase();
-
-      let codice = "";
-
-      if (type === "html") {
-        popupBody.className = "language-html";
-        codice = codiceHTML;
-      }
-      if (type === "css") {
-        popupBody.className = "language-css";
-        codice = codiceCSS;
-      }
-      if (type === "js") {
-        popupBody.className = "language-javascript";
-        codice = codiceJS;
-      }
-
-      popupBody.innerHTML = "";
-      popupBody.appendChild(document.createTextNode(codice));
-
-      hljs.highlightElement(popupBody);
-    }
-
-    closePopupBtn.onclick = () => popup.style.display = "none";
-    popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
-
-    /* 1) COPIA */
-    copyBtn.onclick = async () => {
-      const text = popupBody.innerText;
-
-      try {
-        await navigator.clipboard.writeText(text);
-        copyBtn.textContent = "✔️";
-        setTimeout(() => copyBtn.textContent = "📋", 1500);
-        return;
-      } catch (e) {}
-
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try {
-        document.execCommand("copy");
-        copyBtn.textContent = "✔️";
-      } catch (e) {
-        copyBtn.textContent = "❌";
-      }
-      setTimeout(() => copyBtn.textContent = "📋", 1500);
-      document.body.removeChild(ta);
-    };
-
-    /* 2) APRI IN EDITOR */
-    openEditorBtn.onclick = () => {
-      const editorWindow = window.open("", "_blank");
-      editorWindow.document.write(`
-        <textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-        </textarea>
-      `);
-      editorWindow.document.close();
-    };
-
-    /* 3) SCARICA FILE TXT */
-    downloadBtn.onclick = () => {
-      const blob = new Blob([popupBody.innerText], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = popupTitle.textContent + ".txt";
-      a.click();
-
-      URL.revokeObjectURL(url);
-    };
-
-    /* 4) MOSTRA IN TEXTAREA */
-    textareaBtn.onclick = () => {
-      const box = window.open("", "_blank");
-      box.document.write(`
-        <textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-        </textarea>
-      `);
-      box.document.close();
-    };
-  </script>
-
-</body>
-</html>
-const codiceCSS = `
+    const codiceCSS = `
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
@@ -510,7 +384,7 @@ textarea, input {
   margin: 10px 0;
 }
 
-/* 🎯 CERCHI GRANDI PER PALETTE */
+/* 🎯 CORREZIONE: CERCHI GRANDI PER PALETTE */
 .color {
   width: 32px;
   height: 32px;
@@ -743,3 +617,111 @@ textarea, input {
   margin-bottom: 14px;
 }
 `;
+
+    const codiceJS = `
+console.log("Ciao Sandro, questo è JavaScript!");
+`;
+
+    /* ===========================
+       LOGICA POPUP
+    ============================ */
+
+    const popup = document.getElementById("popup");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupBody = document.getElementById("popupBody");
+
+    const closePopupBtn = document.getElementById("closePopup");
+    const copyBtn = document.getElementById("copyBtn");
+    const openEditorBtn = document.getElementById("openEditorBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const textareaBtn = document.getElementById("textareaBtn");
+
+    function openPopup(type) {
+      popup.style.display = "flex";
+      popupTitle.textContent = type.toUpperCase();
+
+      let codice = "";
+
+      if (type === "html") {
+        popupBody.className = "language-html";
+        codice = codiceHTML;
+      }
+      if (type === "css") {
+        popupBody.className = "language-css";
+        codice = codiceCSS;
+      }
+      if (type === "js") {
+        popupBody.className = "language-javascript";
+        codice = codiceJS;
+      }
+
+      popupBody.innerHTML = "";
+      popupBody.appendChild(document.createTextNode(codice));
+
+      hljs.highlightElement(popupBody);
+    }
+
+    closePopupBtn.onclick = () => popup.style.display = "none";
+    popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+
+    copyBtn.onclick = async () => {
+      const text = popupBody.innerText;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "✔️";
+        setTimeout(() => copyBtn.textContent = "📋", 1500);
+        return;
+      } catch (e) {}
+
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        copyBtn.textContent = "✔️";
+      } catch (e) {
+        copyBtn.textContent = "❌";
+      }
+      setTimeout(() => copyBtn.textContent = "📋", 1500);
+      document.body.removeChild(ta);
+    };
+
+    openEditorBtn.onclick = () => {
+      const editorWindow = window.open("", "_blank");
+      editorWindow.document.write(`
+        <textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+        </textarea>
+      `);
+      editorWindow.document.close();
+    };
+
+    downloadBtn.onclick = () => {
+      const blob = new Blob([popupBody.innerText], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = popupTitle.textContent + ".txt";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    };
+
+    textareaBtn.onclick = () => {
+      const box = window.open("", "_blank");
+      box.document.write(`
+        <textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+        </textarea>
+      `);
+      box.document.close();
+    };
+  </script>
+
+</body>
+</html>
