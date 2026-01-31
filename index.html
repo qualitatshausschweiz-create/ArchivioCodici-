@@ -83,6 +83,16 @@
 
     #popupHeader button {
       margin-left: 4px;
+      border: none;
+      background: #333;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #popupHeader button:hover {
+      background: #444;
     }
 
     #popupBody {
@@ -95,19 +105,6 @@
       word-break: break-word;
       font-family: "SF Mono", Menlo, monospace;
       line-height: 1.4;
-    }
-
-    #popupHeader button {
-      border: none;
-      background: #333;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #popupHeader button:hover {
-      background: #444;
     }
   </style>
 </head>
@@ -158,8 +155,51 @@
     ============================ */
 
     const codiceHTML = `
-&lt;h1&gt;Ciao Sandro!&lt;/h1&gt;
-&lt;p&gt;Questo è un esempio di codice HTML salvato nel tuo Archivio.&lt;/p&gt;
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Note App</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="settingsBtn">⚙️</div>
+  <div id="notesContainer"></div>
+
+  <div id="notePanel" class="hidden">
+    <div>
+      <button id="closeNotePanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="categoryPanel" class="hidden">
+    <div>
+      <button id="saveCategory">Salva categoria</button>
+      <button id="closeCategoryPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div id="trashPanel" class="hidden">
+    <div>
+      <button id="closeTrashPanel" class="close">Chiudi</button>
+    </div>
+  </div>
+
+  <div class="panel-content settings-box">
+    <h2>Impostazioni ⚙️</h2>
+    <div class="settings-group">
+      <label>
+        <input type="checkbox" id="settingThemeAuto" class="toggle">
+      </label>
+      <label>
+        <input type="checkbox" id="settingVibration" class="toggle">
+      </label>
+    </div>
+  </div>
+</body>
+</html>
 `;
 
     const codiceCSS = `
@@ -216,7 +256,6 @@ console.log("Ciao Sandro, questo è JavaScript!");
     closePopupBtn.onclick = () => popup.style.display = "none";
     popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
 
-    /* 1) COPIA */
     copyBtn.onclick = async () => {
       const text = popupBody.innerText;
 
@@ -243,7 +282,6 @@ console.log("Ciao Sandro, questo è JavaScript!");
       document.body.removeChild(ta);
     };
 
-    /* 2) APRI IN EDITOR */
     openEditorBtn.onclick = () => {
       const editorWindow = window.open("", "_blank");
       editorWindow.document.write(`
@@ -254,7 +292,6 @@ ${popupBody.innerText}
       editorWindow.document.close();
     };
 
-    /* 3) SCARICA FILE TXT */
     downloadBtn.onclick = () => {
       const blob = new Blob([popupBody.innerText], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
@@ -267,7 +304,6 @@ ${popupBody.innerText}
       URL.revokeObjectURL(url);
     };
 
-    /* 4) MOSTRA IN TEXTAREA */
     textareaBtn.onclick = () => {
       const box = window.open("", "_blank");
       box.document.write(`
