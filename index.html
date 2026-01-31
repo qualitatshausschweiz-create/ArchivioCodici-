@@ -276,7 +276,9 @@ function openPopup(type) {
   popupBody.innerHTML = "";
   popupBody.appendChild(document.createTextNode(codice));
 
-  hljs.highlightElement(popupBody);
+  if (window.hljs && hljs.highlightElement) {
+    hljs.highlightElement(popupBody);
+  }
 }
 
 closePopupBtn.onclick = () => popup.style.display = "none";
