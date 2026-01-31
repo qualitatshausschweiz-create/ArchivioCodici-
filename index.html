@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -151,55 +150,57 @@
 
   <script>
     /* ===========================
-       CODICI ESCAPED
+       CODICE HTML COMPLETO ESCAPED
     ============================ */
 
     const codiceHTML = `
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Note App</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-</head>
-<body>
-  <div id="settingsBtn">⚙️</div>
-  <div id="notesContainer"></div>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Note App&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
 
-  <div id="notePanel" class="hidden">
-    <div>
-      <button id="closeNotePanel" class="close">Chiudi</button>
-    </div>
-  </div>
+  &lt;div id="settingsBtn"&gt;⚙️&lt;/div&gt;
+  &lt;div id="notesContainer"&gt;&lt;/div&gt;
 
-  <div id="categoryPanel" class="hidden">
-    <div>
-      <button id="saveCategory">Salva categoria</button>
-      <button id="closeCategoryPanel" class="close">Chiudi</button>
-    </div>
-  </div>
+  &lt;div id="notePanel" class="hidden"&gt;
+    &lt;div&gt;
+      &lt;button id="closeNotePanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 
-  <div id="trashPanel" class="hidden">
-    <div>
-      <button id="closeTrashPanel" class="close">Chiudi</button>
-    </div>
-  </div>
+  &lt;div id="categoryPanel" class="hidden"&gt;
+    &lt;div&gt;
+      &lt;button id="saveCategory"&gt;Salva categoria&lt;/button&gt;
+      &lt;button id="closeCategoryPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 
-  <div class="panel-content settings-box">
-    <h2>Impostazioni ⚙️</h2>
-    <div class="settings-group">
-      <label>
-        <input type="checkbox" id="settingThemeAuto" class="toggle">
-      </label>
-      <label>
-        <input type="checkbox" id="settingVibration" class="toggle">
-      </label>
-    </div>
-  </div>
-</body>
-</html>
+  &lt;div id="trashPanel" class="hidden"&gt;
+    &lt;div&gt;
+      &lt;button id="closeTrashPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel-content settings-box"&gt;
+    &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
+    &lt;div class="settings-group"&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" id="settingThemeAuto" class="toggle"&gt;
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" id="settingVibration" class="toggle"&gt;
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
 `;
 
     const codiceCSS = `
