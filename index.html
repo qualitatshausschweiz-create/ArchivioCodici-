@@ -86,8 +86,9 @@
       padding: 16px;
       overflow: auto;
       font-size: 14px;
-      white-space: pre;
-      font-family: "SF Mono", "Menlo", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SF Mono", Menlo, monospace;
       line-height: 1.4;
     }
 
@@ -145,22 +146,8 @@
   </div>
 
   <script>
-    /* TUO HTML ORIGINALE ESCAPED */
-    const codiceHTML = `
-&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;it&quot;&gt;
-&lt;head&gt;
-  &lt;meta charset=&quot;UTF-8&quot;&gt;
-  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-  &lt;title&gt;Note App&lt;/title&gt;
-  &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
-  &lt;script src=&quot;https://accounts.google.com/gsi/client&quot; async defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  ... (continua tutto il tuo HTML escaped)
-&lt;/body&gt;
-&lt;/html&gt;
-`;
+    /* QUI ARRIVERÀ LA PARTE 2 (IL TUO HTML ESCAPED) */
+    const codiceHTML = ``;
 
     const codiceCSS = ``;
     const codiceJS = ``;
@@ -190,20 +177,127 @@
         codice = codiceJS;
       }
 
-      popupBody.innerText = codice;
+      popupBody.innerHTML = "";
+      popupBody.appendChild(document.createTextNode(codice));
+
       hljs.highlightElement(popupBody);
     }
 
     closePopupBtn.onclick = () => popup.style.display = "none";
     popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
 
-    /* COPIA CODICE */
     copyBtn.onclick = () => {
       navigator.clipboard.writeText(popupBody.innerText);
       copyBtn.textContent = "✔️ Copiato";
       setTimeout(() => copyBtn.textContent = "📋 Copia", 1500);
     };
   </script>
+
+</body>
+</html>
+const codiceHTML = `
+&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Note App&lt;/title&gt;
+
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;div class="icon-bar"&gt;
+    &lt;button id="themeToggle"&gt;☀️&lt;/button&gt;
+    &lt;button id="addNoteBtn"&gt;➕&lt;/button&gt;
+    &lt;button id="categoriesBtn"&gt;📁&lt;/button&gt;
+    &lt;button id="trashBtn"&gt;🗑️&lt;/button&gt;
+    &lt;button id="settingsBtn"&gt;⚙️&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id="notesContainer"&gt;&lt;/div&gt;
+
+  &lt;div id="notePanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="noteTitle" placeholder="Titolo"&gt;
+      &lt;textarea id="noteText" placeholder="Testo"&gt;&lt;/textarea&gt;
+      &lt;div id="categoryButtons" class="category-buttons"&gt;&lt;/div&gt;
+      &lt;div id="notePalette" class="palette"&gt;&lt;/div&gt;
+      &lt;button id="saveNoteBtn" class="save"&gt;Salva&lt;/button&gt;
+      &lt;button id="closeNotePanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="categoryPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="newCategoryName" placeholder="Nome categoria"&gt;
+      &lt;div id="categoryPalette" class="palette"&gt;&lt;/div&gt;
+      &lt;input type="color" id="categoryColorPicker"&gt;
+      &lt;button id="saveCategoryBtn" class="save"&gt;Salva categoria&lt;/button&gt;
+      &lt;div id="categoryList"&gt;&lt;/div&gt;
+      &lt;button id="closeCategoryPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="trashPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;div id="trashList"&gt;&lt;/div&gt;
+      &lt;button id="closeTrashPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="settingsPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content settings-box"&gt;
+
+      &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
+
+      &lt;div class="settings-group"&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Tema dinamico&lt;/span&gt;
+          &lt;input type="checkbox" id="settingThemeAuto" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Vibrazione feedback&lt;/span&gt;
+          &lt;input type="checkbox" id="settingVibration" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Ordinamento note&lt;/span&gt;
+          &lt;select id="settingSort" class="select-ios"&gt;
+            &lt;option value="recenti"&gt;Più recententi&lt;/option&gt;
+            &lt;option value="vecchie"&gt;Più vecchie&lt;/option&gt;
+            &lt;option value="colore"&gt;Per colore categoria&lt;/option&gt;
+            &lt;option value="titolo"&gt;Titolo A‑Z&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Animazioni avanzate&lt;/span&gt;
+          &lt;input type="checkbox" id="settingAnimations" class="toggle"&gt;
+        &lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;button id="infoAppBtn" class="settings-item"&gt;ℹ️ Info App&lt;/button&gt;
+      &lt;button id="exportBackupBtn" class="settings-item"&gt;📤 Esporta backup&lt;/button&gt;
+      &lt;button id="syncCloudBtn" class="settings-item"&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
+      &lt;button id="restoreCategoriesBtn" class="settings-item"&gt;🔄 Ripristina categorie iniziali&lt;/button&gt;
+      &lt;button id="resetDataBtn" class="settings-item"&gt;🗑️ Reset totale dati&lt;/button&gt;
+      &lt;button id="memoryStatusBtn" class="settings-item"&gt;💾 Stato memoria&lt;/button&gt;
+
+      &lt;button id="closeSettingsPanel" class="close"&gt;Chiudi&lt;/button&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+`;
+</script>
 
 </body>
 </html>
