@@ -1,140 +1,329 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Note Sandro - Master Utility</title>
-    
-    <style>
-        /* === 1. CSS: STILE E COLORI DEI BOTTONI === */
-        :root {
-            --altea-purple: #6c5ce7;
-            --sandro-blue: #0984e3;
-            --success-green: #00b894;
-            --exe-orange: #e17055;
-            --dark-bg: #1e272e;
-        }
+  <meta charset="UTF-8">
+  <title>Archivio Codici</title>
 
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f2f6; margin: 0; padding: 0; }
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-        .header-bar {
-            background: #2d3436;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            position: sticky; top: 0; z-index: 1000;
-        }
+  <style>
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #0f0f0f;
+      color: #fff;
+    }
 
-        .button-group { display: flex; gap: 10px; }
+    h1 { margin-bottom: 20px; }
 
-        .btn {
-            padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer;
-            font-weight: bold; color: white; transition: 0.3s ease;
-            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
-        }
-        
-        /* Colori assegnati ai bottoni */
-        .btn-python { background: var(--altea-purple); }
-        .btn-exe    { background: var(--exe-orange); }
-        .btn-report { background: var(--success-green); }
-        .btn-webapp { background: var(--sandro-blue); }
-        
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn:active { transform: translateY(1px); }
+    .cards {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        /* === 2. CSS: LAYOUT CONTENUTO === */
-        .main-container { padding: 30px; max-width: 1000px; margin: auto; }
-        
-        .card {
-            background: white; padding: 25px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px;
-        }
+    .card {
+      background: #1c1c1c;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      min-width: 180px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      color: #fff;
+    }
 
-        textarea {
-            width: 100%; height: 180px; padding: 15px; border: 1px solid #ddd;
-            border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box;
-        }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
 
-        pre {
-            background: var(--dark-bg); color: #74b9ff; padding: 20px;
-            border-radius: 8px; overflow-x: auto; font-size: 0.9rem;
-        }
-    </style>
+    .icon {
+      font-size: 26px;
+    }
+
+    /* Popup */
+    #popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    #popupContent {
+      background: #1e1e1e;
+      color: #f5f5f5;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    }
+
+    #popupHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    #popupHeader button {
+      margin-left: 4px;
+      border: none;
+      background: #333;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #popupHeader button:hover {
+      background: #444;
+    }
+
+    #popupBody {
+      background: #0d0d0d;
+      border-radius: 10px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SF Mono", Menlo, monospace;
+      line-height: 1.4;
+    }
+  </style>
 </head>
+
 <body>
 
-    <header class="header-bar">
-        <h1 style="margin:0; font-size: 1.4rem;">APP NOTE SANDRO</h1>
-        <div class="button-group">
-            <button class="btn btn-python" onclick="copyPython()">📋 COPIA PYTHON</button>
-            <button class="btn btn-exe" onclick="copyExe()">📦 COMANDO .EXE</button>
-            <button class="btn btn-report" onclick="downloadNote()">📥 SCARICA NOTA</button>
-            <button class="btn btn-webapp" onclick="copyFullWebApp()">🌐 COPIA WEB APP</button>
-        </div>
-    </header>
+  <h1>Archivio Codici</h1>
 
-    <div class="main-container">
-        <div class="card">
-            <h3>📝 Scrivi la tua Nota</h3>
-            <textarea id="noteField" placeholder="Inserisci qui i tuoi appunti..."></textarea>
-        </div>
-
-        <div class="card">
-            <h3>🐍 Codice Altea Utility (Python)</h3>
-            <pre id="pythonSource">
-# Altea Utility V2.6 - Integrated for Sandro Notes
-import math
-
-def main():
-    password = "ALTEA_PRO_2026"
-    print("Sistema Protetto Attivo")
-
-if __name__ == "__main__":
-    main()
-            </pre>
-        </div>
+  <div class="cards">
+    <!-- BOTTONE HTML -->
+    <div class="card" onclick="openPopup('html')">
+      <span class="icon">📄</span>
+      <span>HTML</span>
     </div>
+  </div>
 
-    <script>
-        // Funzione per copiare il codice Python
-        function copyPython() {
-            const code = document.getElementById('pythonSource').innerText;
-            navigator.clipboard.writeText(code);
-            alert("✅ Codice Python Altea copiato negli appunti!");
-        }
+  <!-- Popup -->
+  <div id="popup">
+    <div id="popupContent">
+      <div id="popupHeader">
+        <div id="popupTitle"></div>
 
-        // Funzione per il comando PyInstaller
-        function copyExe() {
-            const cmd = "pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py";
-            navigator.clipboard.writeText(cmd);
-            alert("📦 Comando EXE (con icona) copiato!");
-        }
+        <div>
+          <button id="copyBtn">📋</button>
+          <button id="openEditorBtn">✏️</button>
+          <button id="downloadBtn">⬇️</button>
+          <button id="textareaBtn">📝</button>
+          <button id="closePopup">✕</button>
+        </div>
+      </div>
 
-        // Funzione per scaricare la nota scritta
-        function downloadNote() {
-            const content = document.getElementById('noteField').value;
-            if (!content) {
-                alert("L'area note è vuota!");
-                return;
-            }
-            const blob = new Blob([content], {type: "text/plain"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "nota_sandro.txt";
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+      <pre><code id="popupBody"></code></pre>
+    </div>
+  </div>
 
-        // Funzione per copiare l'intero codice HTML/CSS/JS di questa pagina
-        function copyFullWebApp() {
-            const fullCode = document.documentElement.outerHTML;
-            navigator.clipboard.writeText(fullCode);
-            alert("🌐 Intera Web App copiata! Puoi incollarla in un file .html");
-        }
-    </script>
+  <script>
+/* ===========================
+   CODICE HTML COMPLETO ESCAPED
+=========================== */
+
+const codiceHTML = `
+&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Note App&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;div class="icon-bar"&gt;
+    &lt;button id="themeToggle"&gt;☀️&lt;/button&gt;
+    &lt;button id="addNoteBtn"&gt;➕&lt;/button&gt;
+    &lt;button id="categoriesBtn"&gt;📁&lt;/button&gt;
+    &lt;button id="trashBtn"&gt;🗑️&lt;/button&gt;
+    &lt;button id="settingsBtn"&gt;⚙️&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id="notesContainer"&gt;&lt;/div&gt;
+
+  &lt;div id="notePanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="noteTitle" placeholder="Titolo"&gt;
+      &lt;textarea id="noteText" placeholder="Testo"&gt;&lt;/textarea&gt;
+      &lt;div id="categoryButtons" class="category-buttons"&gt;&lt;/div&gt;
+      &lt;div id="notePalette" class="palette"&gt;&lt;/div&gt;
+      &lt;button id="saveNoteBtn" class="save"&gt;Salva&lt;/button&gt;
+      &lt;button id="closeNotePanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="categoryPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="newCategoryName" placeholder="Nome categoria"&gt;
+      &lt;div id="categoryPalette" class="palette"&gt;&lt;/div&gt;
+      &lt;input type="color" id="categoryColorPicker"&gt;
+      &lt;button id="saveCategoryBtn" class="save"&gt;Salva categoria&lt;/button&gt;
+      &lt;div id="categoryList"&gt;&lt;/div&gt;
+      &lt;button id="closeCategoryPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="trashPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;div id="trashList"&gt;&lt;/div&gt;
+      &lt;button id="closeTrashPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id="settingsPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content settings-box"&gt;
+
+      &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
+
+      &lt;div class="settings-group"&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Tema dinamico&lt;/span&gt;
+          &lt;input type="checkbox" id="settingThemeAuto" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Vibrazione feedback&lt;/span&gt;
+          &lt;input type="checkbox" id="settingVibration" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Ordinamento note&lt;/span&gt;
+          &lt;select id="settingSort" class="select-ios"&gt;
+            &lt;option value="recenti"&gt;Più recenti&lt;/option&gt;
+            &lt;option value="vecchie"&gt;Più vecchie&lt;/option&gt;
+            &lt;option value="colore"&gt;Per colore categoria&lt;/option&gt;
+            &lt;option value="titolo"&gt;Titolo A‑Z&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Animazioni avanzate&lt;/span&gt;
+          &lt;input type="checkbox" id="settingAnimations" class="toggle"&gt;
+        &lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;button id="infoAppBtn" class="settings-item"&gt;ℹ️ Info App&lt;/button&gt;
+      &lt;button id="exportBackupBtn" class="settings-item"&gt;📤 Esporta backup&lt;/button&gt;
+      &lt;button id="syncCloudBtn" class="settings-item"&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
+      &lt;button id="restoreCategoriesBtn" class="settings-item"&gt;🔄 Ripristina categorie iniziali&lt;/button&gt;
+      &lt;button id="resetDataBtn" class="settings-item"&gt;🗑️ Reset totale dati&lt;/button&gt;
+      &lt;button id="memoryStatusBtn" class="settings-item"&gt;💾 Stato memoria&lt;/button&gt;
+
+      &lt;button id="closeSettingsPanel" class="close"&gt;Chiudi&lt;/button&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+`;
+
+/* ===========================
+   POPUP LOGIC
+=========================== */
+
+const popup = document.getElementById("popup");
+const popupTitle = document.getElementById("popupTitle");
+const popupBody = document.getElementById("popupBody");
+
+const closePopupBtn = document.getElementById("closePopup");
+const copyBtn = document.getElementById("copyBtn");
+const openEditorBtn = document.getElementById("openEditorBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const textareaBtn = document.getElementById("textareaBtn");
+
+function openPopup(type) {
+  popup.style.display = "flex";
+  popupTitle.textContent = type.toUpperCase();
+
+  let codice = "";
+
+  if (type === "html") {
+    popupBody.className = "language-html";
+    codice = codiceHTML;
+  }
+
+  popupBody.innerHTML = "";
+  popupBody.appendChild(document.createTextNode(codice));
+
+  if (window.hljs && hljs.highlightElement) {
+    hljs.highlightElement(popupBody);
+  }
+}
+
+closePopupBtn.onclick = () => popup.style.display = "none";
+popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+
+copyBtn.onclick = async () => {
+  const text = popupBody.innerText;
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = "✔️";
+    setTimeout(() => copyBtn.textContent = "📋", 1500);
+  } catch (e) {}
+};
+
+openEditorBtn.onclick = () => {
+  const editorWindow = window.open("", "_blank");
+  editorWindow.document.write(`
+<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+</textarea>
+  `);
+  editorWindow.document.close();
+};
+
+downloadBtn.onclick = () => {
+  const blob = new Blob([popupBody.innerText], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = popupTitle.textContent + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+textareaBtn.onclick = () => {
+  const box = window.open("", "_blank");
+  box.document.write(`
+<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+</textarea>
+  `);
+  box.document.close();
+};
+  </script>
+
 </body>
 </html>
