@@ -3,180 +3,156 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Archivio Codici Sandro</title>
+  <title>Archivio Codici Sandro - Master 2026</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
     :root {
-      --primary: #6c5ce7;
-      --exe: #e17055;
-      --report: #00b894;
-      --web: #0984e3;
+      --altea: #6c5ce7; --exe: #e17055; --report: #00b894; --web: #0984e3;
+      --gray-btn: #333;
     }
 
     body {
       font-family: -apple-system, system-ui, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #0f0f0f;
-      color: #fff;
+      margin: 0; padding: 20px; background: #0f0f0f; color: #fff;
     }
 
-    /* HEADER CON TITOLO E 4 BOTTONI */
+    /* HEADER CON TITOLO E I 7 BOTTONI */
     .header-master {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;
     }
 
-    .top-buttons { display: flex; gap: 10px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .btn-top {
-      padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer;
-      font-weight: bold; color: white; font-size: 12px; transition: 0.2s;
+    .btn-tool {
+      padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer;
+      font-weight: bold; color: white; font-size: 11px; transition: 0.2s;
+      display: flex; align-items: center; gap: 5px;
     }
-    .b-py { background: var(--primary); }
+
+    /* Colori 4 Bottoni Copia */
+    .b-py { background: var(--altea); }
     .b-exe { background: var(--exe); }
     .b-rep { background: var(--report); }
     .b-web { background: var(--web); }
-    .btn-top:hover { transform: translateY(-2px); filter: brightness(1.2); }
+    
+    /* Colori 3 Bottoni Gestione */
+    .b-edit { background: var(--gray-btn); }
+    .b-down { background: var(--gray-btn); }
+    .b-txt { background: var(--gray-btn); }
 
-    /* CARDS */
+    .btn-tool:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+    /* CARDS ARCHIVIO */
     .cards { display: flex; gap: 12px; flex-wrap: wrap; }
-
     .card {
-      background: #1c1c1c;
-      border-radius: 14px;
-      padding: 16px 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      cursor: pointer;
-      min-width: 150px;
-      transition: 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 18px;
+      background: #1c1c1c; border-radius: 14px; padding: 16px 20px;
+      cursor: pointer; transition: 0.15s; display: flex; align-items: center;
+      gap: 10px; border: 1px solid #333; min-width: 140px;
     }
+    .card:hover { border-color: var(--altea); background: #252525; }
 
-    .card:hover { background: #252525; transform: translateY(-2px); }
-
-    /* Popup Style */
+    /* POPUP */
     #popup {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
       display: none; align-items: center; justify-content: center; z-index: 999;
     }
-
     #popupContent {
-      background: #1e1e1e; color: #f5f5f5; width: 90%; max-width: 900px;
-      max-height: 80vh; border-radius: 16px; padding: 16px; display: flex; flex-direction: column;
+      background: #1e1e1e; width: 90%; max-width: 950px;
+      max-height: 85vh; border-radius: 16px; padding: 20px; display: flex; flex-direction: column;
     }
-
-    #popupHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-
-    #popupHeader button {
-      margin-left: 4px; border: none; background: #333; color: #fff;
-      padding: 6px 10px; border-radius: 8px; cursor: pointer;
-    }
-
-    #popupBody {
-      background: #0d0d0d; border-radius: 10px; padding: 16px;
-      overflow: auto; font-size: 14px; font-family: "SF Mono", monospace;
-    }
+    #popupHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    #popupBody { background: #0d0d0d; border-radius: 10px; padding: 15px; overflow: auto; font-family: monospace; }
   </style>
 </head>
-
 <body>
 
   <div class="header-master">
     <h1>Archivio Codici Sandro</h1>
-    <div class="top-buttons">
-        <button class="btn-top b-py" onclick="quickCopy('python')">🐍 PYTHON</button>
-        <button class="btn-top b-exe" onclick="quickCopy('exe')">📦 EXE</button>
-        <button class="btn-top b-rep" onclick="quickDownload()">📥 REPORT</button>
-        <button class="btn-top b-web" onclick="quickCopy('webapp')">🌐 WEB APP</button>
+    <div class="toolbar">
+        <button class="btn-tool b-py" onclick="quickCopy('python')">📋 PYTHON</button>
+        <button class="btn-tool b-exe" onclick="quickCopy('exe')">📦 EXE</button>
+        <button class="btn-tool b-rep" onclick="quickDownload()">📊 REPORT</button>
+        <button class="btn-tool b-web" onclick="quickCopy('webapp')">🌐 WEB APP</button>
+        <button class="btn-tool b-edit" onclick="openEditor()">✏️ EDITOR</button>
+        <button class="btn-tool b-down" onclick="downloadCurrent()">⬇️ SAVE</button>
+        <button class="btn-tool b-txt" onclick="openTextarea()">📝 TXT</button>
     </div>
   </div>
 
   <div class="cards">
-    <div class="card" onclick="openPopup('html')"><span class="icon">📄</span><span>HTML</span></div>
-    <div class="card" onclick="openPopup('css')"><span class="icon">🎨</span><span>CSS</span></div>
-    <div class="card" onclick="openPopup('js')"><span class="icon">⚡</span><span>JS</span></div>
+    <div class="card" onclick="openPopup('html')"><span>📄</span><span>HTML</span></div>
+    <div class="card" onclick="openPopup('css')"><span>🎨</span><span>CSS</span></div>
+    <div class="card" onclick="openPopup('js')"><span>⚡</span><span>JS</span></div>
   </div>
 
   <div id="popup">
     <div id="popupContent">
       <div id="popupHeader">
-        <div id="popupTitle" style="font-weight: bold; color: var(--web);"></div>
-        <div>
-          <button id="copyBtn">📋</button>
-          <button id="downloadBtn">⬇️</button>
-          <button onclick="closePopup()">✕</button>
-        </div>
+        <h2 id="popupTitle" style="margin:0; color: var(--web);"></h2>
+        <button class="btn-tool" style="background:#cc0000" onclick="closePopup()">✕</button>
       </div>
       <pre><code id="popupBody"></code></pre>
     </div>
   </div>
 
   <script>
-/* ===========================
-   DATABASE CODICI
-=========================== */
-const database = {
-  html: `&lt;!-- Struttura Note App --&gt;\n&lt;div class="icon-bar"&gt; ... &lt;/div&gt;`,
-  css: `/* Stile Sandro App */\nbody { background: #0f0f0f; color: #fff; }`,
-  js: `// Logica di sistema\nfunction saveNote() { console.log("Nota salvata!"); }`,
-  python: `# Altea Utility V2.6\npassword = "ALTEA_PRO_2026"\nimport math`,
-  exe: `pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py`,
-  webapp: `&lt;!-- Codice Completo Web Dashboard Sandro --&gt;`
-};
+    const database = {
+      html: `&lt;!-- App Note Sandro --&gt;\n&lt;div class="main"&gt;...&lt;/div&gt;`,
+      css: `/* Style Master */\nbody { background: #000; }`,
+      js: `// Logic 2026\nfunction altea() { alert('Active'); }`,
+      python: `# Script Altea V2.6\nimport math\npass = "ALTEA_PRO_2026"`,
+      exe: `pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py`,
+      webapp: `&lt;!-- Full WebApp Code --&gt;`
+    };
 
-/* ===========================
-   LOGICA POPUP & BOTTONI
-=========================== */
-const popup = document.getElementById("popup");
-const popupTitle = document.getElementById("popupTitle");
-const popupBody = document.getElementById("popupBody");
+    let currentType = 'html';
 
-function openPopup(type) {
-  popup.style.display = "flex";
-  popupTitle.textContent = type.toUpperCase();
-  popupBody.innerHTML = database[type];
-  hljs.highlightElement(popupBody);
-}
+    function openPopup(type) {
+      currentType = type;
+      document.getElementById("popup").style.display = "flex";
+      document.getElementById("popupTitle").textContent = type.toUpperCase();
+      const body = document.getElementById("popupBody");
+      body.innerHTML = database[type];
+      hljs.highlightElement(body);
+    }
 
-function closePopup() { popup.style.display = "none"; }
+    function closePopup() { document.getElementById("popup").style.display = "none"; }
 
-function quickCopy(type) {
-  const text = database[type].replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  navigator.clipboard.writeText(text);
-  alert("Copiato: " + type.toUpperCase());
-}
+    function quickCopy(type) {
+      const text = database[type].replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      navigator.clipboard.writeText(text);
+      alert("Copiato: " + type.toUpperCase());
+    }
 
-function quickDownload() {
-    const blob = new Blob(["Report Archivio Sandro"], { type: "text/plain" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "report_sandro.txt";
-    a.click();
-}
+    function quickDownload() {
+      const blob = new Blob(["Report Archivio Sandro 2026"], {type: "text/plain"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "report_sandro.txt";
+      a.click();
+    }
 
-document.getElementById("copyBtn").onclick = () => {
-  navigator.clipboard.writeText(popupBody.innerText);
-  alert("Copiato!");
-};
+    // Funzioni dei 3 bottoni aggiuntivi
+    function openEditor() {
+      const win = window.open("", "_blank");
+      win.document.write(`<textarea style="width:100%;height:100%;">${database[currentType]}</textarea>`);
+    }
 
-document.getElementById("downloadBtn").onclick = () => {
-  const blob = new Blob([popupBody.innerText], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = popupTitle.textContent + ".txt";
-  a.click();
-};
+    function downloadCurrent() {
+      const blob = new Blob([database[currentType]], {type: "text/plain"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = currentType + "_sandro.txt";
+      a.click();
+    }
+
+    function openTextarea() {
+      alert("Codice " + currentType.toUpperCase() + " caricato nell'area di testo temporanea.");
+    }
   </script>
 </body>
 </html>
