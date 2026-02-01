@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -10,7 +9,9 @@
 
   <style>
     :root {
-      --altea: #6c5ce7; --exe: #e17055; --report: #00b894; --web: #0984e3;
+      --copy-btn: #6c5ce7;
+      --report: #00b894;
+      --web: #0984e3;
       --gray-btn: #333;
     }
 
@@ -19,41 +20,38 @@
       margin: 0; padding: 20px; background: #0f0f0f; color: #fff;
     }
 
-    /* HEADER CON TITOLO E I 7 BOTTONI */
+    /* HEADER CON TITOLO E TOOLBAR AGGIORNATA */
     .header-master {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;
     }
 
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .toolbar { display: flex; gap: 8px; }
 
     .btn-tool {
-      padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer;
+      padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer;
       font-weight: bold; color: white; font-size: 11px; transition: 0.2s;
       display: flex; align-items: center; gap: 5px;
     }
 
-    /* Colori 4 Bottoni Copia */
-    .b-py { background: var(--altea); }
-    .b-exe { background: var(--exe); }
-    .b-rep { background: var(--report); }
-    .b-web { background: var(--web); }
+    /* Bottoni Principali */
+    .b-copy { background: var(--copy-btn); } /* Nuovo Tasto Copia */
+    .b-rep  { background: var(--report); }
+    .b-web  { background: var(--web); }
     
-    /* Colori 3 Bottoni Gestione */
-    .b-edit { background: var(--gray-btn); }
-    .b-down { background: var(--gray-btn); }
-    .b-txt { background: var(--gray-btn); }
+    /* Bottoni Utility */
+    .b-util { background: var(--gray-btn); }
 
     .btn-tool:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-    /* CARDS ARCHIVIO */
+    /* CARDS */
     .cards { display: flex; gap: 12px; flex-wrap: wrap; }
     .card {
       background: #1c1c1c; border-radius: 14px; padding: 16px 20px;
       cursor: pointer; transition: 0.15s; display: flex; align-items: center;
       gap: 10px; border: 1px solid #333; min-width: 140px;
     }
-    .card:hover { border-color: var(--altea); background: #252525; }
+    .card:hover { border-color: var(--copy-btn); background: #252525; }
 
     /* POPUP */
     #popup {
@@ -73,13 +71,13 @@
   <div class="header-master">
     <h1>Archivio Codici Sandro</h1>
     <div class="toolbar">
-        <button class="btn-tool b-py" onclick="quickCopy('python')">📋 PYTHON</button>
-        <button class="btn-tool b-exe" onclick="quickCopy('exe')">📦 EXE</button>
+        <button class="btn-tool b-copy" onclick="copyFullArchive()">📋 COPIA TUTTO</button>
         <button class="btn-tool b-rep" onclick="quickDownload()">📊 REPORT</button>
         <button class="btn-tool b-web" onclick="quickCopy('webapp')">🌐 WEB APP</button>
-        <button class="btn-tool b-edit" onclick="openEditor()">✏️ EDITOR</button>
-        <button class="btn-tool b-down" onclick="downloadCurrent()">⬇️ SAVE</button>
-        <button class="btn-tool b-txt" onclick="openTextarea()">📝 TXT</button>
+        
+        <button class="btn-tool b-util" onclick="openEditor()">✏️ EDITOR</button>
+        <button class="btn-tool b-util" onclick="downloadCurrent()">⬇️ SAVE</button>
+        <button class="btn-tool b-util" onclick="openTextarea()">📝 TXT</button>
     </div>
   </div>
 
@@ -104,9 +102,7 @@
       html: `&lt;!-- App Note Sandro --&gt;\n&lt;div class="main"&gt;...&lt;/div&gt;`,
       css: `/* Style Master */\nbody { background: #000; }`,
       js: `// Logic 2026\nfunction altea() { alert('Active'); }`,
-      python: `# Script Altea V2.6\nimport math\npass = "ALTEA_PRO_2026"`,
-      exe: `pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py`,
-      webapp: `&lt;!-- Full WebApp Code --&gt;`
+      webapp: `&lt;!-- Full WebApp Code Sandro --&gt;`
     };
 
     let currentType = 'html';
@@ -122,6 +118,12 @@
 
     function closePopup() { document.getElementById("popup").style.display = "none"; }
 
+    function copyFullArchive() {
+      const fullContent = JSON.stringify(database, null, 2);
+      navigator.clipboard.writeText(fullContent);
+      alert("✅ Intero database copiato negli appunti!");
+    }
+
     function quickCopy(type) {
       const text = database[type].replace(/&lt;/g, '<').replace(/&gt;/g, '>');
       navigator.clipboard.writeText(text);
@@ -136,10 +138,9 @@
       a.click();
     }
 
-    // Funzioni dei 3 bottoni aggiuntivi
     function openEditor() {
       const win = window.open("", "_blank");
-      win.document.write(`<textarea style="width:100%;height:100%;">${database[currentType]}</textarea>`);
+      win.document.write(`<textarea style="width:100%;height:100%;font-family:monospace;">${database[currentType]}</textarea>`);
     }
 
     function downloadCurrent() {
@@ -151,7 +152,7 @@
     }
 
     function openTextarea() {
-      alert("Codice " + currentType.toUpperCase() + " caricato nell'area di testo temporanea.");
+      alert("Modalità TXT attiva per: " + currentType.toUpperCase());
     }
   </script>
 </body>
