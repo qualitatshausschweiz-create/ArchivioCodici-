@@ -2,112 +2,327 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Archivio Note - iOS Fix</title>
-  
+  <title>Archivio Codici</title>
+
+  <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #000; color: #fff; }
-    h1 { text-align: center; font-size: 22px; margin-bottom: 30px; }
-    
-    .cards { display: flex; flex-direction: column; gap: 15px; align-items: center; }
-    .card { 
-      background: #1c1c1e; border-radius: 12px; padding: 20px; width: 90%;
-      display: flex; align-items: center; gap: 15px; border: 1px solid #333;
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #0f0f0f;
+      color: #fff;
     }
-    .card:active { background: #2c2c2e; }
 
-    /* Popup iPhone Style */
-    #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; z-index: 9999; }
-    #popupHeader { 
-      display: flex; justify-content: space-between; align-items: center; 
-      padding: 15px; border-bottom: 1px solid #333; background: #1c1c1e;
-    }
-    
-    .btn-group { display: flex; gap: 12px; }
-    .btn-group button { 
-      border: none; background: #3a3a3c; color: #fff; width: 45px; height: 45px;
-      border-radius: 10px; font-size: 20px; display: flex; align-items: center; justify-content: center;
-    }
-    .btn-close { background: #ff3b30 !important; }
+    h1 { margin-bottom: 20px; }
 
-    /* Correzione SCROLL VERTICALE */
-    pre { margin: 0; flex-grow: 1; overflow: hidden; display: flex; }
-    #popupBody { 
-      background: #000; width: 100%; padding: 20px !important;
-      font-family: "Menlo", monospace; font-size: 13px; line-height: 1.5;
-      overflow-y: scroll !important; /* Forza scroll verticale */
-      -webkit-overflow-scrolling: touch; /* Scroll fluido iOS */
-      white-space: pre-wrap; /* Manda a capo se troppo lungo */
-      word-wrap: break-word;
+    .cards {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      min-width: 180px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
+
+    .icon {
+      font-size: 26px;
+    }
+
+    /* Popup */
+    #popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    #popupContent {
+      background: #1e1e1e;
+      color: #f5f5f5;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    }
+
+    #popupHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    #popupHeader button {
+      margin-left: 4px;
+      border: none;
+      background: #333;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #popupHeader button:hover {
+      background: #444;
+    }
+
+    #popupBody {
+      background: #0d0d0d;
+      border-radius: 10px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SF Mono", Menlo, monospace;
+      line-height: 1.4;
     }
   </style>
 </head>
+
 <body>
 
-  <h1>Archivio Progetto Note</h1>
+  <h1>Archivio Codici</h1>
 
   <div class="cards">
-    <div class="card" onclick="openPopup('html')"><span>📄</span><span>CODICE HTML</span></div>
-    <div class="card" onclick="openPopup('css')"><span>🎨</span><span>CODICE CSS</span></div>
-    <div class="card" onclick="openPopup('js')"><span>⚡</span><span>CODICE JS</span></div>
+    <!-- BOTTONE HTML -->
+    <div class="card" onclick="openPopup('html')">
+      <span class="icon">📄</span>
+      <span>HTML</span>
+    </div>
   </div>
 
+  <!-- Popup -->
   <div id="popup">
-    <div id="popupHeader">
-      <div id="popupTitle" style="font-weight:bold; color:#0a84ff;">FILE</div>
-      <div class="btn-group">
-        <button onclick="copiaCodice()">📋</button>
-        <button onclick="scaricaCodice()">⬇️</button>
-        <button onclick="apriEditor()">📝</button> 
-        <button onclick="chiudiPopup()" class="btn-close">✕</button>
+    <div id="popupContent">
+      <div id="popupHeader">
+        <div id="popupTitle"></div>
+
+        <div>
+          <button id="copyBtn">📋</button>
+          <button id="openEditorBtn">✏️</button>
+          <button id="downloadBtn">⬇️</button>
+          <button id="textareaBtn">📝</button>
+          <button id="closePopup">✕</button>
+        </div>
       </div>
+
+      <pre><code id="popupBody"></code></pre>
     </div>
-    <pre><code id="popupBody"></code></pre>
   </div>
 
   <script>
-    const archivio = {
-      html: `\n<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <title>Note App</title>\n  <link rel="stylesheet" href="style.css">\n  <script src="https://accounts.google.com/gsi/client" async defer><\/script>\n</head>\n<body>\n  <div class="icon-bar">\n    <button id="themeToggle">☀️</button>\n    <button id="addNoteBtn">➕</button>\n    <button id="categoriesBtn">📁</button>\n    <button id="trashBtn">🗑️</button>\n    <button id="settingsBtn">⚙️</button>\n  </div>\n  <div id="notesContainer"></div>\n  <script src="script.js"><\/script>\n</body>\n</html>`,
+/* ===========================
+   CODICE HTML COMPLETO ESCAPED
+=========================== */
 
-      css: `/* CODICE CSS COMPLETO */\n:root { --bg: #f2f2f7; --card: #ffffff; --text: #000000; }\nbody.dark { --bg: #000; --card: #1c1c1e; --text: #fff; }\nbody { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; }\n.panel { position: fixed; bottom: 0; width: 100%; height: 80%; background: var(--card); transform: translateY(100%); transition: 0.3s; }\n.panel.show { transform: translateY(0); }`,
+const codiceHTML = `
+&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Note App&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
+&lt;/head&gt;
 
-      js: `/* CODICE JS COMPLETO */\ndocument.addEventListener("DOMContentLoaded", () => {\n  const CLIENT_ID = "792122447047-u30lrb5oo1jjbnkibfh420ah0o95e3d8.apps.googleusercontent.com";\n  console.log("App pronta");\n  // Funzioni Drive...\n});`
-    };
+&lt;body&gt;
 
-    let corrente = '';
+  &lt;div class="icon-bar"&gt;
+    &lt;button id="themeToggle"&gt;☀️&lt;/button&gt;
+    &lt;button id="addNoteBtn"&gt;➕&lt;/button&gt;
+    &lt;button id="categoriesBtn"&gt;📁&lt;/button&gt;
+    &lt;button id="trashBtn"&gt;🗑️&lt;/button&gt;
+    &lt;button id="settingsBtn"&gt;⚙️&lt;/button&gt;
+  &lt;/div&gt;
 
-    function openPopup(tipo) {
-      corrente = tipo;
-      const popup = document.getElementById('popup');
-      const body = document.getElementById('popupBody');
-      popup.style.display = 'flex';
-      body.textContent = archivio[tipo];
-      body.className = tipo === 'html' ? 'language-xml' : tipo === 'css' ? 'language-css' : 'language-javascript';
-      hljs.highlightElement(body);
-    }
+  &lt;div id="notesContainer"&gt;&lt;/div&gt;
 
-    function chiudiPopup() { document.getElementById('popup').style.display = 'none'; }
+  &lt;div id="notePanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="noteTitle" placeholder="Titolo"&gt;
+      &lt;textarea id="noteText" placeholder="Testo"&gt;&lt;/textarea&gt;
+      &lt;div id="categoryButtons" class="category-buttons"&gt;&lt;/div&gt;
+      &lt;div id="notePalette" class="palette"&gt;&lt;/div&gt;
+      &lt;button id="saveNoteBtn" class="save"&gt;Salva&lt;/button&gt;
+      &lt;button id="closeNotePanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 
-    function copiaCodice() {
-      navigator.clipboard.writeText(archivio[corrente]);
-      alert("Copiato!");
-    }
+  &lt;div id="categoryPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;input id="newCategoryName" placeholder="Nome categoria"&gt;
+      &lt;div id="categoryPalette" class="palette"&gt;&lt;/div&gt;
+      &lt;input type="color" id="categoryColorPicker"&gt;
+      &lt;button id="saveCategoryBtn" class="save"&gt;Salva categoria&lt;/button&gt;
+      &lt;div id="categoryList"&gt;&lt;/div&gt;
+      &lt;button id="closeCategoryPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 
-    function scaricaCodice() {
-      const blob = new Blob([archivio[corrente]], {type: "text/plain"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "codice." + (corrente === 'js' ? 'js' : corrente);
-      a.click();
-    }
+  &lt;div id="trashPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content"&gt;
+      &lt;div id="trashList"&gt;&lt;/div&gt;
+      &lt;button id="closeTrashPanel" class="close"&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 
-    function apriEditor() {
-      const win = window.open("");
-      win.document.write('<pre style="white-space:pre-wrap; font-family:monospace;">' + archivio[corrente] + '</pre>');
-    }
+  &lt;div id="settingsPanel" class="panel hidden"&gt;
+    &lt;div class="panel-content settings-box"&gt;
+
+      &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
+
+      &lt;div class="settings-group"&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Tema dinamico&lt;/span&gt;
+          &lt;input type="checkbox" id="settingThemeAuto" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Vibrazione feedback&lt;/span&gt;
+          &lt;input type="checkbox" id="settingVibration" class="toggle"&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Ordinamento note&lt;/span&gt;
+          &lt;select id="settingSort" class="select-ios"&gt;
+            &lt;option value="recenti"&gt;Più recenti&lt;/option&gt;
+            &lt;option value="vecchie"&gt;Più vecchie&lt;/option&gt;
+            &lt;option value="colore"&gt;Per colore categoria&lt;/option&gt;
+            &lt;option value="titolo"&gt;Titolo A‑Z&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label class="settings-row"&gt;
+          &lt;span&gt;Animazioni avanzate&lt;/span&gt;
+          &lt;input type="checkbox" id="settingAnimations" class="toggle"&gt;
+        &lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;button id="infoAppBtn" class="settings-item"&gt;ℹ️ Info App&lt;/button&gt;
+      &lt;button id="exportBackupBtn" class="settings-item"&gt;📤 Esporta backup&lt;/button&gt;
+      &lt;button id="syncCloudBtn" class="settings-item"&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
+      &lt;button id="restoreCategoriesBtn" class="settings-item"&gt;🔄 Ripristina categorie iniziali&lt;/button&gt;
+      &lt;button id="resetDataBtn" class="settings-item"&gt;🗑️ Reset totale dati&lt;/button&gt;
+      &lt;button id="memoryStatusBtn" class="settings-item"&gt;💾 Stato memoria&lt;/button&gt;
+
+      &lt;button id="closeSettingsPanel" class="close"&gt;Chiudi&lt;/button&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+`;
+
+/* ===========================
+   POPUP LOGIC
+=========================== */
+
+const popup = document.getElementById("popup");
+const popupTitle = document.getElementById("popupTitle");
+const popupBody = document.getElementById("popupBody");
+
+const closePopupBtn = document.getElementById("closePopup");
+const copyBtn = document.getElementById("copyBtn");
+const openEditorBtn = document.getElementById("openEditorBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const textareaBtn = document.getElementById("textareaBtn");
+
+function openPopup(type) {
+  popup.style.display = "flex";
+  popupTitle.textContent = type.toUpperCase();
+
+  let codice = "";
+
+  if (type === "html") {
+    popupBody.className = "language-html";
+    codice = codiceHTML;
+  }
+
+  popupBody.innerHTML = "";
+  popupBody.appendChild(document.createTextNode(codice));
+
+  if (window.hljs && hljs.highlightElement) {
+    hljs.highlightElement(popupBody);
+  }
+}
+
+closePopupBtn.onclick = () => popup.style.display = "none";
+popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+
+copyBtn.onclick = async () => {
+  const text = popupBody.innerText;
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = "✔️";
+    setTimeout(() => copyBtn.textContent = "📋", 1500);
+  } catch (e) {}
+};
+
+openEditorBtn.onclick = () => {
+  const editorWindow = window.open("", "_blank");
+  editorWindow.document.write(`
+<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+</textarea>
+  `);
+  editorWindow.document.close();
+};
+
+downloadBtn.onclick = () => {
+  const blob = new Blob([popupBody.innerText], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = popupTitle.textContent + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+textareaBtn.onclick = () => {
+  const box = window.open("", "_blank");
+  box.document.write(`
+<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
+${popupBody.innerText}
+</textarea>
+  `);
+  box.document.close();
+};
   </script>
+
 </body>
 </html>
