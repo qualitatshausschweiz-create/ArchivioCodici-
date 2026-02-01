@@ -3,145 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altea Utility V2.3 - Dashboard</title>
+    <title>Altea Utility Master</title>
     <style>
-        /* --- CSS: Stile Moderno Altea --- */
         :root {
             --primary: #6c5ce7;
-            --secondary: #a29bfe;
+            --secondary: #00b894;
+            --warning: #fdcb6e;
             --dark: #2d3436;
-            --light: #dfe6e9;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
+        body { font-family: 'Segoe UI', sans-serif; background: #dfe6e9; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+        
+        /* TOOLBAR CON I 3 BOTTONI */
+        .toolbar { background: var(--dark); padding: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        
+        .btn { 
+            padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; 
+            font-weight: bold; color: white; display: flex; align-items: center; gap: 10px; transition: 0.3s;
         }
+        .btn-code { background: var(--primary); }
+        .btn-exe { background: var(--warning); color: #2d3436; }
+        .btn-download { background: var(--secondary); }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        .container {
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
+        /* SEZIONI CONTENT */
+        .section { padding: 30px; border-bottom: 1px solid #eee; }
+        h3 { color: var(--dark); border-left: 5px solid var(--primary); padding-left: 10px; }
+        
+        pre { 
+            background: #2d3436; color: #fab1a0; padding: 15px; border-radius: 8px; 
+            overflow-x: auto; font-size: 0.9rem; position: relative;
         }
-
-        .header {
-            background: var(--dark);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header img {
-            width: 50px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .content { padding: 30px; }
-
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        button {
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-copy { background: var(--primary); color: white; }
-        .btn-copy:hover { background: var(--secondary); }
-
-        .btn-exe { background: #00b894; color: white; }
-        .btn-exe:hover { background: #55efc4; }
-
-        pre {
-            background: #2d3436;
-            color: #fab1a0;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .copy-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            color: white;
-        }
+        
+        .calc-box { background: #f9f9ff; padding: 20px; border-radius: 10px; display: flex; gap: 10px; align-items: center; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 120px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>Altea Utility V2.3</h1>
-        <p>Framework di Controllo e Automazione</p>
+    <div class="toolbar">
+        <button class="btn btn-code" onclick="copyPython()">📋 COPIA CODICE PYTHON</button>
+        <button class="btn btn-exe" onclick="copyExe()">📦 COMANDO .EXE (ICON)</button>
+        <button class="btn btn-download" onclick="downloadReport()">📥 SCARICA REPORT TEST</button>
     </div>
 
-    <div class="content">
-        <div class="btn-group">
-            <button class="btn-copy" onclick="copyCode()">
-                📋 Copia Codice Python
-            </button>
-            <button class="btn-exe" onclick="downloadInstruction()">
-                📦 Istruzioni .EXE
-            </button>
+    <div class="section">
+        <h3>🧪 Test Rapido Matematica (Logic JS)</h3>
+        <div class="calc-box">
+            <input type="number" id="valA" placeholder="Valore A">
+            <span>➡️</span>
+            <input type="number" id="valB" placeholder="Valore B">
+            <button class="btn btn-code" onclick="runCalc()">Calcola %</button>
+            <strong id="resultDisplay" style="margin-left: 20px; color: var(--primary);">Risultato: --</strong>
         </div>
+    </div>
 
-        <h3>Codice Sorgente Memorizzato</h3>
+    <div class="section">
+        <h3>🐍 Codice Sorgente Python (Altea Utility V2.5)</h3>
         <pre id="pythonCode">
-<span class="copy-badge">Python 3.x</span>
-class AlteaUtilityV2:
-    def __init__(self):
-        self.password = "ALTEA_PRO_2026"
-        self.version = "2.3"
+# --- ALTEA UTILITY CONFIGURATION ---
+# Password: ALTEA_PRO_2026
+# Icon: altea_logo.ico
 
-    def authenticate(self):
-        # Sistema di sicurezza integrato
-        pass
+import math
 
-    def save_json(self, data):
-        # Gestione dati automatica
-        pass
+def calculate_growth(initial, final):
+    if initial == 0: return 0
+    return ((final - initial) / initial) * 100
+
+# Funzione pronta per interfaccia grafica Tkinter
+def show_results():
+    print("Avvio interfaccia Altea...")
         </pre>
     </div>
 </div>
 
 <script>
-    /* --- JAVASCRIPT: Funzionalità --- */
-    function copyCode() {
-        const code = document.getElementById('pythonCode').innerText;
-        navigator.clipboard.writeText(code).then(() => {
-            alert("✅ Codice Altea copiato negli appunti!");
-        });
+    // 1. Funzione Copia Codice
+    function copyPython() {
+        const text = document.getElementById('pythonCode').innerText;
+        navigator.clipboard.writeText(text);
+        alert("Codice Python copiato con successo!");
     }
 
-    function downloadInstruction() {
-        alert("Comando per EXE:\npyinstaller --noconsole --onefile --icon=altea_logo.ico altea_utility_v2.py");
+    // 2. Funzione Comando EXE
+    function copyExe() {
+        const cmd = "pyinstaller --noconsole --onefile --icon=altea_logo.ico altea_utility_v2.py";
+        navigator.clipboard.writeText(cmd);
+        alert("Comando PyInstaller copiato!\n\n" + cmd);
+    }
+
+    // 3. Funzione Download Report
+    function downloadReport() {
+        const res = document.getElementById('resultDisplay').innerText;
+        const blob = new Blob(["Report Altea Utility\n" + res], {type: "text/plain"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "report_altea.txt";
+        link.click();
+    }
+
+    // Logica Matematica JS
+    function runCalc() {
+        const a = parseFloat(document.getElementById('valA').value);
+        const b = parseFloat(document.getElementById('valB').value);
+        if (a && b) {
+            const growth = ((b - a) / a) * 100;
+            document.getElementById('resultDisplay').innerText = "Risultato: " + growth.toFixed(2) + "%";
+        }
     }
 </script>
 
