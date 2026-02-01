@@ -1,150 +1,149 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project Vault</title>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altea Utility V2.3 - Dashboard</title>
+    <style>
+        /* --- CSS: Stile Moderno Altea --- */
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+        }
 
-  <style>
-    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 20px; background: #000; color: #fff; -webkit-font-smoothing: antialiased; }
-    
-    .vault-header { text-align: center; margin-bottom: 30px; }
-    .vault-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: #fff; }
-    .stats { display: inline-block; background: #1c1c1e; padding: 5px 15px; border-radius: 20px; font-size: 12px; color: #0a84ff; border: 1px solid #333; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    .project-section { width: 95%; max-width: 450px; margin: 0 auto 35px auto; }
-    .project-title { 
-      font-size: 16px; font-weight: 700; color: #8e8e93; 
-      margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .project-title::after { content: ""; flex-grow: 1; height: 1px; background: rgba(255, 255, 255, 0.1); }
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
 
-    .cards { display: flex; flex-direction: column; gap: 10px; }
-    .card { background: #1c1c1e; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 15px; border: 1px solid #333; transition: 0.2s; cursor: pointer; }
-    .card:active { transform: scale(0.96); background: #2c2c2e; }
-    .card .icon { font-size: 20px; width: 30px; text-align: center; }
-    .card .info { display: flex; flex-direction: column; }
-    .card .info span:first-child { font-weight: 600; font-size: 15px; }
-    .card .info span:last-child { font-size: 12px; color: #8e8e93; }
+        .header {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
 
-    #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; z-index: 9999; backdrop-filter: blur(20px); }
-    #popupHeader { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; background: #1c1c1e; }
-    .btn-group { display: flex; gap: 10px; }
-    .btn-group button { border: none; background: #3a3a3c; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-close { background: #ff3b30 !important; }
-    pre { margin: 0; flex-grow: 1; overflow: hidden; display: flex; }
-    #popupBody { background: #000; width: 100%; padding: 20px !important; font-family: "SF Mono", monospace; font-size: 11px; line-height: 1.5; overflow-y: auto !important; white-space: pre; color: #dcdcdc; }
-  </style>
+        .header img {
+            width: 50px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .content { padding: 30px; }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-copy { background: var(--primary); color: white; }
+        .btn-copy:hover { background: var(--secondary); }
+
+        .btn-exe { background: #00b894; color: white; }
+        .btn-exe:hover { background: #55efc4; }
+
+        pre {
+            background: #2d3436;
+            color: #fab1a0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .copy-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="vault-header">
-    <h1>Sandro Dev Vault</h1>
-    <div class="stats">5 Moduli Salvati • 1 Progetto Attivo</div>
-  </div>
-
-  <div class="project-section">
-    <div class="project-title">📂 App Note Sandro</div>
-    <div class="cards">
-      <div class="card" onclick="openPopup('html', 'App Note')">
-        <div class="icon">📄</div>
-        <div class="info"><span>Structure</span><span>index.html</span></div>
-      </div>
-      <div class="card" onclick="openPopup('css', 'App Note')">
-        <div class="icon">🎨</div>
-        <div class="info"><span>Design</span><span>style.css</span></div>
-      </div>
-      <div class="card" onclick="openPopup('js', 'App Note')">
-        <div class="icon">⚡</div>
-        <div class="info"><span>Engine</span><span>script.js</span></div>
-      </div>
+<div class="container">
+    <div class="header">
+        <h1>Altea Utility V2.3</h1>
+        <p>Framework di Controllo e Automazione</p>
     </div>
-  </div>
 
-  <div class="project-section">
-    <div class="project-title">🛠️ Utility Snippets</div>
-    <div class="cards">
-      <div class="card" onclick="openPopup('glass', 'Utility')">
-        <div class="icon">🌈</div>
-        <div class="info"><span>Glassmorphism CSS</span><span>Effetto sfocatura</span></div>
-      </div>
-      <div class="card" onclick="openPopup('vibe', 'Utility')">
-        <div class="icon">📱</div>
-        <div class="info"><span>Vibration API</span><span>Haptic Feedback JS</span></div>
-      </div>
+    <div class="content">
+        <div class="btn-group">
+            <button class="btn-copy" onclick="copyCode()">
+                📋 Copia Codice Python
+            </button>
+            <button class="btn-exe" onclick="downloadInstruction()">
+                📦 Istruzioni .EXE
+            </button>
+        </div>
+
+        <h3>Codice Sorgente Memorizzato</h3>
+        <pre id="pythonCode">
+<span class="copy-badge">Python 3.x</span>
+class AlteaUtilityV2:
+    def __init__(self):
+        self.password = "ALTEA_PRO_2026"
+        self.version = "2.3"
+
+    def authenticate(self):
+        # Sistema di sicurezza integrato
+        pass
+
+    def save_json(self, data):
+        # Gestione dati automatica
+        pass
+        </pre>
     </div>
-  </div>
+</div>
 
-  <div id="popup">
-    <div id="popupHeader">
-      <div id="popupTitle" style="font-weight:bold; color:#0a84ff; font-size: 11px; text-transform: uppercase;">File</div>
-      <div class="btn-group">
-        <button onclick="azioneCopia()">📋</button>
-        <button onclick="azioneScarica()">⬇️</button>
-        <button onclick="chiudiPopup()" class="btn-close">✕</button>
-      </div>
-    </div>
-    <pre><code id="popupBody"></code></pre>
-  </div>
-
-  <script>
-    const archivio = {
-      // CODICI INTEGRALI APP NOTE (Mantieni quelli precedenti)
-      html: ``,
-      css: `/* CSS integrale salvato */`,
-      js: `// JS integrale salvato`,
-
-      // SNIPPET GLASSMORPHISM
-      glass: `.glass-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-}`,
-
-      // SNIPPET VIBRATION (Nuovo!)
-      vibe: `// 1. Vibrazione singola breve (tocco tasto)
-function vibeLight() {
-  if (navigator.vibrate) navigator.vibrate(50);
-}
-
-// 2. Doppia vibrazione (notifica o successo)
-function vibeSuccess() {
-  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-}
-
-// 3. Vibrazione lunga (errore)
-function vibeError() {
-  if (navigator.vibrate) navigator.vibrate(500);
-}
-
-// Esempio d'uso:
-// document.getElementById("btn").onclick = vibeLight;`
-    };
-
-    function openPopup(tipo, progetto) {
-      const p = document.getElementById('popup');
-      const b = document.getElementById('popupBody');
-      const t = document.getElementById('popupTitle');
-      p.style.display = 'flex';
-      t.textContent = progetto + " > " + tipo.toUpperCase();
-      b.textContent = archivio[tipo];
-      hljs.highlightElement(b);
+<script>
+    /* --- JAVASCRIPT: Funzionalità --- */
+    function copyCode() {
+        const code = document.getElementById('pythonCode').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert("✅ Codice Altea copiato negli appunti!");
+        });
     }
 
-    function chiudiPopup() { document.getElementById('popup').style.display = 'none'; }
-    function azioneCopia() { navigator.clipboard.writeText(document.getElementById('popupBody').textContent); alert("Codice copiato!"); }
-    function azioneScarica() {
-      const blob = new Blob([document.getElementById('popupBody').textContent], {type: "text/plain"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "sandro_utility.txt";
-      a.click();
+    function downloadInstruction() {
+        alert("Comando per EXE:\npyinstaller --noconsole --onefile --icon=altea_logo.ico altea_utility_v2.py");
     }
-  </script>
+</script>
+
 </body>
 </html>
