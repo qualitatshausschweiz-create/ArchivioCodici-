@@ -3,116 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altea Utility V2.6 - Secure Access</title>
+    <title>App Note Sandro - Master</title>
     <style>
-        :root {
-            --primary: #6c5ce7;
-            --secondary: #00b894;
-            --dark: #2d3436;
-            --error: #ff7675;
+        /* --- 1. PRIORITÀ CSS: BOTTONI E TOOLBAR --- */
+        .toolbar-top {
+            background: #2d3436;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end; /* Bottoni a destra */
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: #dfe6e9; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        
-        /* --- SCHERMATA LOGIN --- */
-        #login-screen { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 320px; }
-        #login-screen h2 { color: var(--dark); margin-bottom: 20px; }
-        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
 
-        /* --- DASHBOARD (Nascosta all'inizio) --- */
-        #main-dashboard { display: none; width: 95%; max-width: 1000px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; margin: 20px; }
-        
-        .toolbar { background: var(--dark); padding: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-code { background: var(--primary); }
-        .btn-exe { background: #fdcb6e; color: #2d3436; }
-        .btn-download { background: var(--secondary); }
-        
-        .section { padding: 25px; border-bottom: 1px solid #eee; }
-        pre { background: #2d3436; color: #fab1a0; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .btn-python { background-color: #6c5ce7; border-bottom: 3px solid #4834d4; }
+        .btn-exe    { background-color: #e17055; border-bottom: 3px solid #d35400; }
+        .btn-report { background-color: #00b894; border-bottom: 3px solid #009432; }
+        .btn-webapp { background-color: #0984e3; border-bottom: 3px solid #0652dd; }
+
+        .btn:active { transform: translateY(2px); border-bottom: none; }
+        .btn:hover { filter: brightness(1.1); }
+
+        /* --- 2. CSS: STRUTTURA PAGINA --- */
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; }
+        .app-title { padding: 20px 30px; color: #2d3436; margin: 0; font-weight: 800; border-bottom: 2px solid #ddd; }
+        .content-area { padding: 30px; max-width: 1000px; margin: auto; }
+        textarea { width: 100%; height: 200px; padding: 20px; border-radius: 12px; border: 1px solid #ccc; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        pre { background: #1e272e; color: #74b9ff; padding: 20px; border-radius: 8px; margin-top: 20px; overflow-x: auto; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <img src="https://via.placeholder.com/60" alt="Logo" style="margin-bottom: 10px; border-radius: 50%;"> <h2>Altea Secure Login</h2>
-        <input type="password" id="passInput" placeholder="Inserisci Password">
-        <button class="btn-login" onclick="checkPassword()">SBLOCCA UTILITY</button>
-        <p id="errMsg" style="color: var(--error); font-size: 0.8rem; margin-top: 10px; display: none;">Password Errata!</p>
-    </div>
+    <nav class="toolbar-top">
+        <button class="btn btn-python" onclick="copyPython()">📋 Copia Python</button>
+        <button class="btn btn-exe" onclick="copyExe()">📦 Comando .EXE</button>
+        <button class="btn btn-report" onclick="downloadNote()">📥 Scarica Report</button>
+        <button class="btn btn-webapp" onclick="copyFullHTML()">🌐 Copia Web App</button>
+    </nav>
 
-    <div id="main-dashboard">
-        <div class="toolbar">
-            <button class="btn btn-code" onclick="copyPython()">📋 COPIA PYTHON</button>
-            <button class="btn btn-exe" onclick="copyExe()">📦 COMANDO .EXE</button>
-            <button class="btn btn-download" onclick="downloadReport()">📥 SCARICA REPORT</button>
+    <h1 class="app-title">APP NOTE SANDRO</h1>
+
+    <div class="content-area">
+        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <h3 style="margin-top: 0;">📝 Nuova Nota / Codice</h3>
+            <textarea id="noteInput" placeholder="Inserisci qui il tuo testo o il codice da salvare..."></textarea>
         </div>
 
-        <div class="section">
-            <h3>🧪 Calcolatore Rapido (Utility Math)</h3>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="number" id="vA" placeholder="Valore 1" style="padding: 10px; width: 100px;">
-                <input type="number" id="vB" placeholder="Valore 2" style="padding: 10px; width: 100px;">
-                <button class="btn btn-code" onclick="calc()">Calcola %</button>
-                <span id="resTxt" style="font-weight: bold; color: var(--primary);">Risultato: --</span>
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>🐍 Script Python Integrato</h3>
-            <pre id="pyCode">
-# Password protetta: ALTEA_PRO_2026
-# Icona applicata: altea_logo.ico
+        <h3>🐍 Altea Utility V2.6 (Sorgente)</h3>
+        <pre id="pythonSource">
+# Altea System Integrated
+# Password: ALTEA_PRO_2026
 import math
 
-def altea_calc(v1, v2):
-    return ((v2 - v1) / v1) * 100
-            </pre>
-        </div>
+def altea_core():
+    print("Sistema Altea Attivo")
+        </pre>
     </div>
 
-<script>
-    const MASTER_PASS = "ALTEA_PRO_2026";
-
-    function checkPassword() {
-        const input = document.getElementById('passInput').value;
-        if (input === MASTER_PASS) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-dashboard').style.display = 'block';
-            document.body.style.display = 'block'; // Reset flex se necessario
-        } else {
-            document.getElementById('errMsg').style.display = 'block';
-            document.getElementById('passInput').value = '';
+    <script>
+        function copyPython() {
+            const code = document.getElementById('pythonSource').innerText;
+            navigator.clipboard.writeText(code);
+            alert("✅ Codice Python Altea copiato!");
         }
-    }
 
-    function copyPython() {
-        navigator.clipboard.writeText(document.getElementById('pyCode').innerText);
-        alert("Codice Python copiato!");
-    }
-
-    function copyExe() {
-        navigator.clipboard.writeText("pyinstaller --noconsole --onefile --icon=altea_logo.ico altea_utility_v2.py");
-        alert("Comando EXE copiato!");
-    }
-
-    function calc() {
-        const a = parseFloat(document.getElementById('vA').value);
-        const b = parseFloat(document.getElementById('vB').value);
-        if (a) {
-            const r = ((b - a) / a) * 100;
-            document.getElementById('resTxt').innerText = "Risultato: " + r.toFixed(2) + "%";
+        function copyExe() {
+            const cmd = "pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py";
+            navigator.clipboard.writeText(cmd);
+            alert("📦 Comando EXE copiato!");
         }
-    }
 
-    function downloadReport() {
-        const blob = new Blob(["Report Altea Utility: " + document.getElementById('resTxt').innerText], {type: "text/plain"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "altea_report.txt";
-        a.click();
-    }
-</script>
+        function downloadNote() {
+            const content = document.getElementById('noteInput').value;
+            if(!content) return alert("L'area note è vuota!");
+            const blob = new Blob([content], {type: "text/plain"});
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "nota_sandro.txt";
+            a.click();
+        }
+
+        function copyFullHTML() {
+            const fullHTML = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(fullHTML);
+            alert("🌐 Web App completa copiata negli appunti!");
+        }
+    </script>
 </body>
 </html>
