@@ -19,6 +19,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* STATS BAR */
+    .stats-bar {
+        background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
+        font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
+    }
+
     /* HOME VIEW */
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .item-box { 
@@ -28,16 +34,14 @@
     .item-box:active { transform: scale(0.95); }
     .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
     
-    /* Tasti Gestione Cartella */
     .btn-folder-action { position: absolute; top: 10px; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
     .btn-del { right: 10px; color: var(--danger); }
     .btn-edit { left: 10px; color: var(--web); }
 
-    /* BARRA RIPRISTINO */
     #undoBar { 
         display: none; background: var(--undo); color: #000; padding: 15px; 
         border-radius: 15px; margin-bottom: 20px; font-weight: bold; 
-        justify-content: space-between; align-items: center; animation: fadeIn 0.3s;
+        justify-content: space-between; align-items: center;
     }
 
     /* PROJECT VIEW */
@@ -54,14 +58,17 @@
     /* POPUP */
     #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
     #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; margin-top: 15px;}
-    
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
   <div id="homeView">
-    <h1 style="margin-bottom: 25px;">Sandro Project OS</h1>
+    <h1 style="margin-bottom: 10px;">Sandro Project OS</h1>
+    
+    <div class="stats-bar">
+        <span id="memUsage">Memoria: 0 KB</span>
+        <span id="projCount">Progetti: 0</span>
+    </div>
 
     <div id="undoBar">
         <span>Cartella eliminata</span>
@@ -73,13 +80,13 @@
 
   <div id="projectView">
     <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem; display:flex; align-items:center; gap:5px;">
-        <span style="font-size:1.2rem">⬅️</span> Torna ai Progetti
+        ⬅️ Torna ai Progetti
     </button>
     <h2 id="activeProjectTitle" style="margin:0 0 20px 0;"></h2>
 
     <div class="toolbar">
         <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
-        <button class="btn-tool" style="background:var(--report)" onclick="vibrate()">📊 REPORT</button>
+        <button class="btn-tool" style="background:var(--report)" onclick="alertStats()">📊 STATS</button>
         <button class="btn-tool" style="background:var(--web)" onclick="vibrate()">🌐 WEB APP</button>
         <button class="btn-tool" style="background:var(--gray-btn)" onclick="vibrate()">✏️ EDIT</button>
     </div>
@@ -113,7 +120,7 @@
 
   <script>
     let database = {
-      "App Note Sandro": { html: "", css: "/* CSS Note */", js: "// JS Note", python: "# PY Note", note: "Appunti Sandro..." }
+      "App Note Sandro": { html: "", css: "/* CSS Note */", js: "// JS Note", python: "# PY Note", note: "Appunti..." }
     };
 
     let backupProgetto = null;
@@ -123,7 +130,22 @@
 
     function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
 
+    function updateStats() {
+        const dataStr = JSON.stringify(database);
+        const sizeKB = (dataStr.length / 1024).toFixed(2);
+        const count = Object.keys(database).length;
+        document.getElementById('memUsage').textContent = `Memoria: ${sizeKB} KB / 1024 KB`;
+        document.getElementById('projCount').textContent = `Progetti: ${count}`;
+    }
+
+    function alertStats() {
+        const dataStr = JSON.stringify(database);
+        const sizeKB = (dataStr.length / 1024).toFixed(2);
+        alert(`📊 STATISTICHE ARCHIVIO\n\nSpazio usato: ${sizeKB} KB\nProgetti totali: ${Object.keys(database).length}\nLimite GitHub consigliato: 1000 KB (1 MB)`);
+    }
+
     function renderHome() {
+      updateStats();
       const grid = document.getElementById('mainFolderGrid');
       grid.innerHTML = '';
       
@@ -148,15 +170,15 @@
       vibrate();
       const nome = prompt("Nome del nuovo progetto:");
       if (nome && !database[nome]) {
-        database[nome] = { html: "", css: "/* CSS */", js: "// JS", python: "# PY", note: "" };
+        database[nome] = { html: "", css: "", js: "", python: "", note: "" };
         renderHome();
       }
     }
 
     function rinominaProgetto(vecchioNome) {
       vibrate();
-      const nuovoNome = prompt("Modifica nome progetto:", vecchioNome);
-      if (nuovoNome && nuovoNome !== vecchioNome && !database[nuovoNome]) {
+      const nuovoNome = prompt("Modifica nome:", vecchioNome);
+      if (nuovoNome && nuovoNome !== vecchioNome) {
         database[nuovoNome] = database[vecchioNome];
         delete database[vecchioNome];
         renderHome();
@@ -169,11 +191,9 @@
       backupProgetto = { ...database[nome] };
       delete database[nome];
       renderHome();
-      
-      const undoBar = document.getElementById('undoBar');
-      undoBar.style.display = 'flex';
+      document.getElementById('undoBar').style.display = 'flex';
       clearTimeout(undoTimeout);
-      undoTimeout = setTimeout(() => { undoBar.style.display = 'none'; }, 5000);
+      undoTimeout = setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
     }
 
     function ripristinaProgetto() {
@@ -191,7 +211,7 @@
       document.getElementById('homeView').style.display = 'none';
       document.getElementById('projectView').style.display = 'block';
       document.getElementById('activeProjectTitle').textContent = nome;
-      document.getElementById('noteArea').value = database[nome].note;
+      document.getElementById('noteArea').value = database[nome].note || "";
     }
 
     function goHome() { 
@@ -199,13 +219,14 @@
       database[cartellaAttiva].note = document.getElementById('noteArea').value;
       document.getElementById('homeView').style.display = 'block'; 
       document.getElementById('projectView').style.display = 'none'; 
+      updateStats();
     }
 
     function viewCode(type) {
       vibrate();
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popupTitle').textContent = type.toUpperCase();
-      document.getElementById('popupBody').textContent = database[cartellaAttiva][type];
+      document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Nessun codice inserito";
       hljs.highlightAll();
     }
 
