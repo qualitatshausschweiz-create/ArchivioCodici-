@@ -44,7 +44,7 @@
 
   <div class="vault-header">
     <h1>Sandro Dev Vault</h1>
-    <div class="stats">4 Moduli Salvati • 1 Progetto Attivo</div>
+    <div class="stats">5 Moduli Salvati • 1 Progetto Attivo</div>
   </div>
 
   <div class="project-section">
@@ -72,6 +72,10 @@
         <div class="icon">🌈</div>
         <div class="info"><span>Glassmorphism CSS</span><span>Effetto sfocatura</span></div>
       </div>
+      <div class="card" onclick="openPopup('vibe', 'Utility')">
+        <div class="icon">📱</div>
+        <div class="info"><span>Vibration API</span><span>Haptic Feedback JS</span></div>
+      </div>
     </div>
   </div>
 
@@ -89,20 +93,37 @@
 
   <script>
     const archivio = {
-      // CODICI APP NOTE (Integrali)
+      // CODICI INTEGRALI APP NOTE (Mantieni quelli precedenti)
       html: ``,
-      css: `/* Codice CSS integrale che abbiamo salvato prima */`,
-      js: `// Codice JS integrale che abbiamo salvato prima`,
+      css: `/* CSS integrale salvato */`,
+      js: `// JS integrale salvato`,
 
       // SNIPPET GLASSMORPHISM
       glass: `.glass-container {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}`
+}`,
+
+      // SNIPPET VIBRATION (Nuovo!)
+      vibe: `// 1. Vibrazione singola breve (tocco tasto)
+function vibeLight() {
+  if (navigator.vibrate) navigator.vibrate(50);
+}
+
+// 2. Doppia vibrazione (notifica o successo)
+function vibeSuccess() {
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
+
+// 3. Vibrazione lunga (errore)
+function vibeError() {
+  if (navigator.vibrate) navigator.vibrate(500);
+}
+
+// Esempio d'uso:
+// document.getElementById("btn").onclick = vibeLight;`
     };
 
     function openPopup(tipo, progetto) {
@@ -116,12 +137,12 @@
     }
 
     function chiudiPopup() { document.getElementById('popup').style.display = 'none'; }
-    function azioneCopia() { navigator.clipboard.writeText(document.getElementById('popupBody').textContent); alert("Copiato!"); }
+    function azioneCopia() { navigator.clipboard.writeText(document.getElementById('popupBody').textContent); alert("Codice copiato!"); }
     function azioneScarica() {
       const blob = new Blob([document.getElementById('popupBody').textContent], {type: "text/plain"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "snippet_sandro.txt";
+      a.download = "sandro_utility.txt";
       a.click();
     }
   </script>
