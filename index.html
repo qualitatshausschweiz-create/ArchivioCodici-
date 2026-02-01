@@ -10,7 +10,7 @@
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --gray-btn: #2d2d2d; --danger: #cc0000;
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --gray-btn: #2d2d2d; --danger: #cc0000; --undo: #fdcb6e;
     }
 
     body {
@@ -19,54 +19,31 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    h1 { font-size: 1.6rem; margin-bottom: 20px; }
-
-    /* TOOLBAR SUPERIORE */
+    /* TOOLBAR & RICERCA */
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-    .btn-tool {
-      padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer;
-      font-weight: bold; color: white; font-size: 11px; transition: 0.2s;
-    }
-    .b-copy { background: var(--copy-btn); }
-    .b-rep  { background: var(--report); }
-    .b-web  { background: var(--web); }
-    .b-util { background: var(--gray-btn); }
-
-    /* RICERCA CON TASTO VAI */
+    .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
+    
     .search-container { display: flex; gap: 8px; margin-bottom: 25px; }
-    .search-box {
-      flex-grow: 1; padding: 14px; border-radius: 12px; border: 1px solid #333;
-      background: #1c1c1c; color: white; font-size: 15px; outline: none;
-    }
-    .btn-vai {
-      background: var(--web); border: none; border-radius: 12px;
-      padding: 0 25px; color: white; font-weight: bold; cursor: pointer;
-    }
+    .search-box { flex-grow: 1; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1c1c1c; color: white; outline: none; }
+    .btn-vai { background: var(--web); border: none; border-radius: 12px; padding: 0 25px; color: white; font-weight: bold; }
 
     /* CARDS */
     .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-    .card {
-      background: #1c1c1c; border-radius: 16px; padding: 25px;
-      text-align: center; border: 1px solid #333; font-size: 1.1rem;
-    }
+    .card { background: #1c1c1c; border-radius: 16px; padding: 25px; text-align: center; border: 1px solid #333; }
 
-    /* PANNELLI STATS E NOTE */
-    .panel {
-      background: #1c1c1c; border-radius: 16px; padding: 20px;
-      border: 1px solid #333; margin-bottom: 15px; position: relative;
-    }
+    /* PANNELLO NOTE CON UNDO */
+    .panel { background: #1c1c1c; border-radius: 16px; padding: 20px; border: 1px solid #333; margin-bottom: 15px; position: relative; }
     .panel-title { color: #666; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 10px; }
-    
-    .quick-note-area {
-        width: 100%; height: 80px; background: transparent; border: none; color: #fff;
-        font-size: 1rem; resize: none; outline: none;
+    .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; }
+
+    .btn-trash { background: var(--danger); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; }
+    .btn-undo { 
+        background: var(--undo); color: #000; border: none; border-radius: 8px; 
+        padding: 5px 10px; font-size: 0.7rem; font-weight: bold; 
+        display: none; margin-left: 10px; animation: fadeIn 0.3s;
     }
 
-    .btn-trash {
-        position: absolute; right: 15px; bottom: 15px;
-        background: var(--danger); border: none; border-radius: 50%;
-        width: 35px; height: 35px; color: white; cursor: pointer;
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* POPUP */
     #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; z-index: 999; }
@@ -79,16 +56,15 @@
   <h1>Archivio Codici Sandro</h1>
 
   <div class="toolbar">
-      <button class="btn-tool b-copy" onclick="copyFullDatabase()">📋 COPIA TUTTO</button>
-      <button class="btn-tool b-rep" onclick="generateReport()">📊 REPORT</button>
-      <button class="btn-tool b-web" onclick="openPopup('webapp')">🌐 WEB APP</button>
-      <button class="btn-tool b-util" onclick="editorRapido()">✏️ EDIT</button>
-      <button class="btn-tool b-util" onclick="saveCurrentFile()">⬇️ SAVE</button>
+      <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
+      <button class="btn-tool" style="background:var(--report)" onclick="alert('📊 Report OK')">📊 REPORT</button>
+      <button class="btn-tool" style="background:var(--web)" onclick="openPopup('webapp')">🌐 WEB APP</button>
+      <button class="btn-tool" style="background:var(--gray-btn)" onclick="alert('✏️ Edit Mode')">✏️ EDIT</button>
   </div>
 
   <div class="search-container">
-    <input type="text" id="searchInput" class="search-box" placeholder="Cerca (es: html, py)...">
-    <button class="btn-vai" onclick="eseguiRicerca()">VAI</button>
+    <input type="text" id="searchInput" class="search-box" placeholder="Cerca codice...">
+    <button class="btn-vai" onclick="cerca()">VAI</button>
   </div>
 
   <div class="cards">
@@ -99,91 +75,81 @@
   </div>
 
   <div class="panel">
-    <div class="panel-title">Note Rapide</div>
-    <textarea id="noteRapida" class="quick-note-area" placeholder="Scrivi qui..."></textarea>
-    <button class="btn-trash" onclick="pulisciNote()">🗑️</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div class="panel-title">Note Rapide</div>
+        <div>
+            <button id="undoBtn" class="btn-undo" onclick="ripristinaNota()">↩️ RIPRISTINA</button>
+            <button class="btn-trash" onclick="eliminaNota()">🗑️</button>
+        </div>
+    </div>
+    <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi qui..."></textarea>
   </div>
 
   <div id="popup">
     <div id="popupContent">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h2 id="popupTitle" style="margin:0; color:var(--web)"></h2>
-        <button class="btn-tool" style="background:var(--danger); padding: 10px 20px;" onclick="closePopup()">CHIUDI</button>
+        <button class="btn-tool" style="background:var(--danger)" onclick="closePopup()">CHIUDI</button>
       </div>
       <pre><code id="popupBody"></code></pre>
     </div>
   </div>
 
   <script>
-    // DATABASE MASTER
     const database = {
-      html: `\n<div class="app">Sandro Dashboard</div>`,
-      css: `/* Master CSS 2026 */\nbody { background: #0f0f0f; color: white; }`,
-      js: `// Master JS 2026\nfunction init() { vibrate(); }`,
-      python: `# Script Altea V2.6\npassword = "ALTEA_PRO_2026"`,
-      webapp: ``
+      html: "", css: "/* Master CSS */", 
+      js: "// Master JS", python: "# Master PY", webapp: ""
     };
 
-    let currentOpen = 'html';
+    let notaTemporanea = "";
+    let undoTimeout;
 
     function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
 
-    // FUNZIONI TOOLBAR FISSARE
-    function copyFullDatabase() {
+    // LOGICA ELIMINA E RIPRISTINA
+    function eliminaNota() {
       vibrate();
-      navigator.clipboard.writeText(JSON.stringify(database, null, 2));
-      alert("✅ Intero database copiato negli appunti!");
+      const area = document.getElementById("noteArea");
+      if (area.value.trim() === "") return;
+
+      notaTemporanea = area.value; // Salva la nota prima di cancellare
+      area.value = "";
+      
+      const btnUndo = document.getElementById("undoBtn");
+      btnUndo.style.display = "inline-block";
+
+      // Il tasto ripristina sparisce dopo 5 secondi
+      clearTimeout(undoTimeout);
+      undoTimeout = setTimeout(() => {
+        btnUndo.style.display = "none";
+        notaTemporanea = "";
+      }, 5000);
     }
 
-    function generateReport() {
+    function ripristinaNota() {
       vibrate();
-      alert("📊 Report generato: 4 codici attivi. Stato: OTTIMO.");
+      document.getElementById("noteArea").value = notaTemporanea;
+      document.getElementById("undoBtn").style.display = "none";
+      notaTemporanea = "";
     }
 
-    function editorRapido() {
+    function cerca() {
       vibrate();
-      const content = database[currentOpen];
-      const win = window.open("", "_blank");
-      win.document.write(`<textarea style="width:100%;height:100%;">${content}</textarea>`);
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      if (database[q]) openPopup(q); else alert("Non trovato");
     }
 
-    function saveCurrentFile() {
-      vibrate();
-      alert("⬇️ Download di " + currentOpen.toUpperCase() + " avviato sul dispositivo.");
-    }
-
-    // RICERCA E CESTINO
-    function eseguiRicerca() {
-      vibrate();
-      const q = document.getElementById("searchInput").value.toLowerCase().trim();
-      const key = (q === 'py') ? 'python' : q;
-      if (database[key]) {
-        openPopup(key);
-      } else {
-        alert("Codice '" + q + "' non trovato nell'archivio.");
-      }
-    }
-
-    function pulisciNote() {
-      vibrate();
-      document.getElementById("noteRapida").value = "";
-    }
-
-    // GESTIONE POPUP
     function openPopup(type) {
       vibrate();
-      currentOpen = type;
       document.getElementById("popup").style.display = "flex";
       document.getElementById("popupTitle").textContent = type.toUpperCase();
-      const body = document.getElementById("popupBody");
-      body.textContent = database[type];
-      hljs.highlightElement(body);
+      document.getElementById("popupBody").textContent = database[type];
+      hljs.highlightAll();
     }
 
-    function closePopup() {
-      vibrate();
-      document.getElementById("popup").style.display = "none";
-    }
+    function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
+    
+    function copyAll() { vibrate(); navigator.clipboard.writeText(JSON.stringify(database)); alert("Copiato!"); }
   </script>
 </body>
 </html>
