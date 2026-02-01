@@ -3,13 +3,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Archivio Codici</title>
+  <title>Archivio Codici Sandro</title>
 
-  <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
+    :root {
+      --primary: #6c5ce7;
+      --exe: #e17055;
+      --report: #00b894;
+      --web: #0984e3;
+    }
+
     body {
       font-family: -apple-system, system-ui, sans-serif;
       margin: 0;
@@ -18,13 +24,30 @@
       color: #fff;
     }
 
-    h1 { margin-bottom: 20px; }
-
-    .cards {
+    /* HEADER CON TITOLO E 4 BOTTONI */
+    .header-master {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
     }
+
+    .top-buttons { display: flex; gap: 10px; }
+
+    .btn-top {
+      padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer;
+      font-weight: bold; color: white; font-size: 12px; transition: 0.2s;
+    }
+    .b-py { background: var(--primary); }
+    .b-exe { background: var(--exe); }
+    .b-rep { background: var(--report); }
+    .b-web { background: var(--web); }
+    .btn-top:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+    /* CARDS */
+    .cards { display: flex; gap: 12px; flex-wrap: wrap; }
 
     .card {
       background: #1c1c1c;
@@ -32,298 +55,128 @@
       padding: 16px 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       cursor: pointer;
-      min-width: 180px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-width: 150px;
+      transition: 0.15s ease;
       display: flex;
       align-items: center;
       gap: 10px;
       font-size: 18px;
-      color: #fff;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
-    }
+    .card:hover { background: #252525; transform: translateY(-2px); }
 
-    .icon {
-      font-size: 26px;
-    }
-
-    /* Popup */
+    /* Popup Style */
     #popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center; z-index: 999;
     }
 
     #popupContent {
-      background: #1e1e1e;
-      color: #f5f5f5;
-      width: 90%;
-      max-width: 900px;
-      max-height: 80vh;
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      background: #1e1e1e; color: #f5f5f5; width: 90%; max-width: 900px;
+      max-height: 80vh; border-radius: 16px; padding: 16px; display: flex; flex-direction: column;
     }
 
-    #popupHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    #popupHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
     #popupHeader button {
-      margin-left: 4px;
-      border: none;
-      background: #333;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #popupHeader button:hover {
-      background: #444;
+      margin-left: 4px; border: none; background: #333; color: #fff;
+      padding: 6px 10px; border-radius: 8px; cursor: pointer;
     }
 
     #popupBody {
-      background: #0d0d0d;
-      border-radius: 10px;
-      padding: 16px;
-      overflow: auto;
-      font-size: 14px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: "SF Mono", Menlo, monospace;
-      line-height: 1.4;
+      background: #0d0d0d; border-radius: 10px; padding: 16px;
+      overflow: auto; font-size: 14px; font-family: "SF Mono", monospace;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Archivio Codici</h1>
-
-  <div class="cards">
-    <!-- BOTTONE HTML -->
-    <div class="card" onclick="openPopup('html')">
-      <span class="icon">📄</span>
-      <span>HTML</span>
+  <div class="header-master">
+    <h1>Archivio Codici Sandro</h1>
+    <div class="top-buttons">
+        <button class="btn-top b-py" onclick="quickCopy('python')">🐍 PYTHON</button>
+        <button class="btn-top b-exe" onclick="quickCopy('exe')">📦 EXE</button>
+        <button class="btn-top b-rep" onclick="quickDownload()">📥 REPORT</button>
+        <button class="btn-top b-web" onclick="quickCopy('webapp')">🌐 WEB APP</button>
     </div>
   </div>
 
-  <!-- Popup -->
+  <div class="cards">
+    <div class="card" onclick="openPopup('html')"><span class="icon">📄</span><span>HTML</span></div>
+    <div class="card" onclick="openPopup('css')"><span class="icon">🎨</span><span>CSS</span></div>
+    <div class="card" onclick="openPopup('js')"><span class="icon">⚡</span><span>JS</span></div>
+  </div>
+
   <div id="popup">
     <div id="popupContent">
       <div id="popupHeader">
-        <div id="popupTitle"></div>
-
+        <div id="popupTitle" style="font-weight: bold; color: var(--web);"></div>
         <div>
           <button id="copyBtn">📋</button>
-          <button id="openEditorBtn">✏️</button>
           <button id="downloadBtn">⬇️</button>
-          <button id="textareaBtn">📝</button>
-          <button id="closePopup">✕</button>
+          <button onclick="closePopup()">✕</button>
         </div>
       </div>
-
       <pre><code id="popupBody"></code></pre>
     </div>
   </div>
 
   <script>
 /* ===========================
-   CODICE HTML COMPLETO ESCAPED
+   DATABASE CODICI
 =========================== */
-
-const codiceHTML = `
-&lt;!DOCTYPE html&gt;
-&lt;html lang="it"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;Note App&lt;/title&gt;
-  &lt;link rel="stylesheet" href="style.css"&gt;
-  &lt;script src="https://accounts.google.com/gsi/client" async defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-  &lt;div class="icon-bar"&gt;
-    &lt;button id="themeToggle"&gt;☀️&lt;/button&gt;
-    &lt;button id="addNoteBtn"&gt;➕&lt;/button&gt;
-    &lt;button id="categoriesBtn"&gt;📁&lt;/button&gt;
-    &lt;button id="trashBtn"&gt;🗑️&lt;/button&gt;
-    &lt;button id="settingsBtn"&gt;⚙️&lt;/button&gt;
-  &lt;/div&gt;
-
-  &lt;div id="notesContainer"&gt;&lt;/div&gt;
-
-  &lt;div id="notePanel" class="panel hidden"&gt;
-    &lt;div class="panel-content"&gt;
-      &lt;input id="noteTitle" placeholder="Titolo"&gt;
-      &lt;textarea id="noteText" placeholder="Testo"&gt;&lt;/textarea&gt;
-      &lt;div id="categoryButtons" class="category-buttons"&gt;&lt;/div&gt;
-      &lt;div id="notePalette" class="palette"&gt;&lt;/div&gt;
-      &lt;button id="saveNoteBtn" class="save"&gt;Salva&lt;/button&gt;
-      &lt;button id="closeNotePanel" class="close"&gt;Chiudi&lt;/button&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;div id="categoryPanel" class="panel hidden"&gt;
-    &lt;div class="panel-content"&gt;
-      &lt;input id="newCategoryName" placeholder="Nome categoria"&gt;
-      &lt;div id="categoryPalette" class="palette"&gt;&lt;/div&gt;
-      &lt;input type="color" id="categoryColorPicker"&gt;
-      &lt;button id="saveCategoryBtn" class="save"&gt;Salva categoria&lt;/button&gt;
-      &lt;div id="categoryList"&gt;&lt;/div&gt;
-      &lt;button id="closeCategoryPanel" class="close"&gt;Chiudi&lt;/button&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;div id="trashPanel" class="panel hidden"&gt;
-    &lt;div class="panel-content"&gt;
-      &lt;div id="trashList"&gt;&lt;/div&gt;
-      &lt;button id="closeTrashPanel" class="close"&gt;Chiudi&lt;/button&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;div id="settingsPanel" class="panel hidden"&gt;
-    &lt;div class="panel-content settings-box"&gt;
-
-      &lt;h2&gt;Impostazioni ⚙️&lt;/h2&gt;
-
-      &lt;div class="settings-group"&gt;
-
-        &lt;label class="settings-row"&gt;
-          &lt;span&gt;Tema dinamico&lt;/span&gt;
-          &lt;input type="checkbox" id="settingThemeAuto" class="toggle"&gt;
-        &lt;/label&gt;
-
-        &lt;label class="settings-row"&gt;
-          &lt;span&gt;Vibrazione feedback&lt;/span&gt;
-          &lt;input type="checkbox" id="settingVibration" class="toggle"&gt;
-        &lt;/label&gt;
-
-        &lt;label class="settings-row"&gt;
-          &lt;span&gt;Ordinamento note&lt;/span&gt;
-          &lt;select id="settingSort" class="select-ios"&gt;
-            &lt;option value="recenti"&gt;Più recenti&lt;/option&gt;
-            &lt;option value="vecchie"&gt;Più vecchie&lt;/option&gt;
-            &lt;option value="colore"&gt;Per colore categoria&lt;/option&gt;
-            &lt;option value="titolo"&gt;Titolo A‑Z&lt;/option&gt;
-          &lt;/select&gt;
-        &lt;/label&gt;
-
-        &lt;label class="settings-row"&gt;
-          &lt;span&gt;Animazioni avanzate&lt;/span&gt;
-          &lt;input type="checkbox" id="settingAnimations" class="toggle"&gt;
-        &lt;/label&gt;
-
-      &lt;/div&gt;
-
-      &lt;button id="infoAppBtn" class="settings-item"&gt;ℹ️ Info App&lt;/button&gt;
-      &lt;button id="exportBackupBtn" class="settings-item"&gt;📤 Esporta backup&lt;/button&gt;
-      &lt;button id="syncCloudBtn" class="settings-item"&gt;☁️ Sincronizza con Google Drive&lt;/button&gt;
-      &lt;button id="restoreCategoriesBtn" class="settings-item"&gt;🔄 Ripristina categorie iniziali&lt;/button&gt;
-      &lt;button id="resetDataBtn" class="settings-item"&gt;🗑️ Reset totale dati&lt;/button&gt;
-      &lt;button id="memoryStatusBtn" class="settings-item"&gt;💾 Stato memoria&lt;/button&gt;
-
-      &lt;button id="closeSettingsPanel" class="close"&gt;Chiudi&lt;/button&gt;
-
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;script src="script.js"&gt;&lt;/script&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-`;
+const database = {
+  html: `&lt;!-- Struttura Note App --&gt;\n&lt;div class="icon-bar"&gt; ... &lt;/div&gt;`,
+  css: `/* Stile Sandro App */\nbody { background: #0f0f0f; color: #fff; }`,
+  js: `// Logica di sistema\nfunction saveNote() { console.log("Nota salvata!"); }`,
+  python: `# Altea Utility V2.6\npassword = "ALTEA_PRO_2026"\nimport math`,
+  exe: `pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py`,
+  webapp: `&lt;!-- Codice Completo Web Dashboard Sandro --&gt;`
+};
 
 /* ===========================
-   POPUP LOGIC
+   LOGICA POPUP & BOTTONI
 =========================== */
-
 const popup = document.getElementById("popup");
 const popupTitle = document.getElementById("popupTitle");
 const popupBody = document.getElementById("popupBody");
 
-const closePopupBtn = document.getElementById("closePopup");
-const copyBtn = document.getElementById("copyBtn");
-const openEditorBtn = document.getElementById("openEditorBtn");
-const downloadBtn = document.getElementById("downloadBtn");
-const textareaBtn = document.getElementById("textareaBtn");
-
 function openPopup(type) {
   popup.style.display = "flex";
   popupTitle.textContent = type.toUpperCase();
-
-  let codice = "";
-
-  if (type === "html") {
-    popupBody.className = "language-html";
-    codice = codiceHTML;
-  }
-
-  popupBody.innerHTML = "";
-  popupBody.appendChild(document.createTextNode(codice));
-
-  if (window.hljs && hljs.highlightElement) {
-    hljs.highlightElement(popupBody);
-  }
+  popupBody.innerHTML = database[type];
+  hljs.highlightElement(popupBody);
 }
 
-closePopupBtn.onclick = () => popup.style.display = "none";
-popup.onclick = e => { if (e.target === popup) popup.style.display = "none"; };
+function closePopup() { popup.style.display = "none"; }
 
-copyBtn.onclick = async () => {
-  const text = popupBody.innerText;
-  try {
-    await navigator.clipboard.writeText(text);
-    copyBtn.textContent = "✔️";
-    setTimeout(() => copyBtn.textContent = "📋", 1500);
-  } catch (e) {}
+function quickCopy(type) {
+  const text = database[type].replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  navigator.clipboard.writeText(text);
+  alert("Copiato: " + type.toUpperCase());
+}
+
+function quickDownload() {
+    const blob = new Blob(["Report Archivio Sandro"], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "report_sandro.txt";
+    a.click();
+}
+
+document.getElementById("copyBtn").onclick = () => {
+  navigator.clipboard.writeText(popupBody.innerText);
+  alert("Copiato!");
 };
 
-openEditorBtn.onclick = () => {
-  const editorWindow = window.open("", "_blank");
-  editorWindow.document.write(`
-<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-</textarea>
-  `);
-  editorWindow.document.close();
-};
-
-downloadBtn.onclick = () => {
+document.getElementById("downloadBtn").onclick = () => {
   const blob = new Blob([popupBody.innerText], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = popupTitle.textContent + ".txt";
   a.click();
-  URL.revokeObjectURL(url);
-};
-
-textareaBtn.onclick = () => {
-  const box = window.open("", "_blank");
-  box.document.write(`
-<textarea style="width:100%;height:100%;font-size:14px;font-family:SF Mono,Menlo,monospace;">
-${popupBody.innerText}
-</textarea>
-  `);
-  box.document.close();
 };
   </script>
-
 </body>
 </html>
