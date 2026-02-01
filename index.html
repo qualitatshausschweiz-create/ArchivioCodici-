@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Archivio Sandro Master</title>
+  <title>Sandro Project OS</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --gray-btn: #2d2d2d; 
-      --danger: #ff7675; --undo: #fdcb6e; --glass: rgba(28, 28, 28, 0.8);
+      --copy-btn: #6c5ce7; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9);
     }
 
     body {
@@ -20,166 +19,155 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* TITOLO CON SFUMATURA */
-    h1 { 
-        font-size: 1.8rem; margin-bottom: 20px; 
-        background: linear-gradient(to right, #fff, #666);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
+    h1 { font-size: 1.8rem; margin-bottom: 15px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* TOOLBAR STYLE IOS */
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-    .btn-tool { 
-        padding: 12px 16px; border: none; border-radius: 14px; cursor: pointer; 
-        font-weight: 600; color: white; font-size: 11px;
-        backdrop-filter: blur(5px); transition: transform 0.2s;
-    }
-    .btn-tool:active { transform: scale(0.9); }
-    
-    /* RICERCA GLASSMORPHISM */
-    .search-container { display: flex; gap: 10px; margin-bottom: 25px; }
-    .search-box { 
-        flex-grow: 1; padding: 15px; border-radius: 15px; border: 1px solid #333; 
-        background: var(--glass); color: white; outline: none; backdrop-filter: blur(10px);
-    }
-    .btn-vai { 
-        background: var(--web); border: none; border-radius: 15px; 
-        padding: 0 25px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3);
-    }
+    /* BARRA AGGIUNGI */
+    .add-zone { margin-bottom: 25px; display: flex; gap: 10px; }
+    .input-style { flex-grow: 1; padding: 14px; border-radius: 15px; border: 1px solid #333; background: #111; color: white; outline: none; }
+    .btn-main { padding: 12px 18px; border: none; border-radius: 14px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
 
-    /* CARDS CON BORDO GLOW */
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-    .card { 
-        background: #111; border-radius: 20px; padding: 25px; text-align: center; 
-        border: 1px solid #222; position: relative; overflow: hidden;
+    /* GRID CARTELLE */
+    .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .item-box { 
+        background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
+        border: 1px solid #222; backdrop-filter: blur(10px); position: relative;
     }
-    .card::before {
-        content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
-        pointer-events: none;
-    }
+    .item-box:active { transform: scale(0.95); background: #222; }
+    .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
 
-    /* PANNELLO NOTE */
-    .panel { 
-        background: var(--glass); border-radius: 20px; padding: 20px; 
-        border: 1px solid #222; margin-bottom: 15px; backdrop-filter: blur(10px);
-    }
-    .quick-note-area { 
-        width: 100%; height: 100px; background: transparent; border: none; 
-        color: #ddd; font-size: 1rem; resize: none; outline: none; margin-top: 10px;
-    }
+    .btn-del-folder { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--danger); font-size: 1.2rem; cursor: pointer; }
 
-    .btn-trash { background: var(--danger); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; box-shadow: 0 4px 10px rgba(255, 118, 117, 0.3); }
-    .btn-undo { 
-        background: var(--undo); color: #000; border: none; border-radius: 10px; 
-        padding: 8px 15px; font-size: 0.75rem; font-weight: bold; display: none;
-    }
+    /* VIEW PROGETTO */
+    #projectView { display: none; }
+    .back-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
 
-    /* POPUP FULLSCREEN */
-    #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 999; }
+    /* POPUP */
+    #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; }
     #popupContent { height: 100%; display: flex; flex-direction: column; padding: 20px; }
-    #popupBody { background: #080808; border-radius: 15px; padding: 20px; overflow: auto; font-family: "SF Mono", monospace; font-size: 14px; flex-grow: 1; }
+    #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: "SF Mono", monospace; font-size: 13px; flex-grow: 1; white-space: pre; border: 1px solid #222; }
   </style>
 </head>
 <body>
 
-  <h1>Archivio Codici Sandro</h1>
-
-  <div class="toolbar">
-      <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
-      <button class="btn-tool" style="background:var(--report)" onclick="vibrate()">📊 REPORT</button>
-      <button class="btn-tool" style="background:var(--web)" onclick="openPopup('webapp')">🌐 WEB APP</button>
-      <button class="btn-tool" style="background:var(--gray-btn)" onclick="vibrate()">✏️ EDIT</button>
-  </div>
-
-  <div class="search-container">
-    <input type="text" id="searchInput" class="search-box" placeholder="Cerca nel tuo archivio...">
-    <button class="btn-vai" onclick="cerca()">VAI</button>
-  </div>
-
-  <div class="cards">
-    <div class="card" onclick="openPopup('html')">📄<br><span style="margin-top:10px; display:block; font-weight:600">HTML</span></div>
-    <div class="card" onclick="openPopup('css')">🎨<br><span style="margin-top:10px; display:block; font-weight:600">CSS</span></div>
-    <div class="card" onclick="openPopup('js')">⚡<br><span style="margin-top:10px; display:block; font-weight:600">JS</span></div>
-    <div class="card" onclick="openPopup('python')">🐍<br><span style="margin-top:10px; display:block; font-weight:600">PY</span></div>
-  </div>
-
-  <div class="panel">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="color: #666; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Note Rapide</span>
-        <div>
-            <button id="undoBtn" class="btn-undo" onclick="ripristinaNota()">↩️ ANNULLA</button>
-            <button class="btn-trash" onclick="eliminaNota()">🗑️</button>
-        </div>
+  <div id="homeView">
+    <h1>Sandro Project OS</h1>
+    
+    <div class="add-zone">
+        <input type="text" id="newFolderName" class="input-style" placeholder="Nome nuovo progetto...">
+        <button class="btn-main" style="background: var(--web);" onclick="creaCartella()">NUOVA 📂</button>
     </div>
-    <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi un appunto veloce..."></textarea>
+
+    <div class="folder-grid" id="folderGrid">
+        </div>
+  </div>
+
+  <div id="projectView">
+    <div class="back-bar">
+        <button class="btn-main" style="background: #333;" onclick="goHome()">⬅ Home</button>
+        <h2 id="activeProjectTitle" style="margin:0; font-size: 1.2rem; color: var(--folder);"></h2>
+    </div>
+    
+    <div class="folder-grid" id="fileGrid">
+        </div>
   </div>
 
   <div id="popup">
     <div id="popupContent">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 id="popupTitle" style="margin:0; font-weight: bold; color: var(--web)"></h2>
-        <button class="btn-tool" style="background:var(--danger); padding: 12px 25px;" onclick="closePopup()">CHIUDI</button>
+        <h2 id="popupTitle" style="margin:0; color: var(--web);"></h2>
+        <button class="btn-main" style="background: var(--danger);" onclick="closePopup()">CHIUDI</button>
       </div>
       <pre><code id="popupBody"></code></pre>
+      <button class="btn-main" style="background: var(--copy-btn); margin-top: 15px; width: 100%;" onclick="copyFromPopup()">📋 COPIA QUESTO CODICE</button>
     </div>
   </div>
 
   <script>
-    const database = {
-      html: "", 
-      css: "/* Master CSS 2026 */", 
-      js: "// Master JS 2026", 
-      python: "# Master PY 2026", 
-      webapp: ""
+    // DATABASE INIZIALE CON LA TUA APP NOTE DENTRO
+    let progetti = {
+      "App Note Sandro": {
+        "html": "\n<div class='app'>Sandro Dashboard</div>",
+        "css": "/* Master CSS 2026 */\nbody { background: #0f0f0f; backdrop-filter: blur(10px); }",
+        "js": "// Master JS 2026\nfunction vibrate() { navigator.vibrate(25); }"
+      }
     };
 
-    let notaTemporanea = "";
-    let undoTimeout;
+    let cartellaCorrente = "";
+    let fileCorrente = "";
 
-    function vibrate() { if (navigator.vibrate) navigator.vibrate(30); }
+    function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
 
-    function eliminaNota() {
+    function renderHome() {
+      const grid = document.getElementById('folderGrid');
+      grid.innerHTML = '';
+      Object.keys(progetti).forEach(nome => {
+        grid.innerHTML += `
+          <div class="item-box" onclick="openProject('${nome}')">
+            <button class="btn-del-folder" onclick="event.stopPropagation(); eliminaCartella('${nome}')">🗑️</button>
+            <span class="icon-big">📂</span>
+            <strong style="color: var(--folder); font-size: 0.9rem;">${nome}</strong>
+          </div>`;
+      });
+    }
+
+    function creaCartella() {
       vibrate();
-      const area = document.getElementById("noteArea");
-      if (area.value.trim() === "") return;
-      notaTemporanea = area.value;
-      area.value = "";
-      const btnUndo = document.getElementById("undoBtn");
-      btnUndo.style.display = "inline-block";
-      clearTimeout(undoTimeout);
-      undoTimeout = setTimeout(() => { btnUndo.style.display = "none"; notaTemporanea = ""; }, 5000);
+      const input = document.getElementById('newFolderName');
+      const nome = input.value.trim();
+      if (nome && !progetti[nome]) {
+        progetti[nome] = { "nuovo_file": "// Inizia a scrivere qui..." };
+        input.value = '';
+        renderHome();
+      }
     }
 
-    function ripristinaNota() {
+    function eliminaCartella(nome) {
       vibrate();
-      document.getElementById("noteArea").value = notaTemporanea;
-      document.getElementById("undoBtn").style.display = "none";
-      notaTemporanea = "";
+      if (confirm("Vuoi eliminare definitivamente la cartella " + nome + "?")) {
+        delete progetti[nome];
+        renderHome();
+      }
     }
 
-    function cerca() {
+    function openProject(nome) {
       vibrate();
-      const q = document.getElementById("searchInput").value.toLowerCase().trim();
-      const key = (q === 'py') ? 'python' : q;
-      if (database[key]) openPopup(key); else alert("Non trovato");
+      cartellaCorrente = nome;
+      document.getElementById('homeView').style.display = 'none';
+      document.getElementById('projectView').style.display = 'block';
+      document.getElementById('activeProjectTitle').textContent = nome;
+      
+      const fileGrid = document.getElementById('fileGrid');
+      fileGrid.innerHTML = '';
+      
+      Object.keys(progetti[nome]).forEach(file => {
+        fileGrid.innerHTML += `
+          <div class="item-box" onclick="viewCode('${file}')">
+            <span class="icon-big" style="color:#fff">📄</span>
+            <span style="font-size: 0.8rem; font-weight: bold;">${file.toUpperCase()}</span>
+          </div>`;
+      });
     }
 
-    function openPopup(type) {
+    function viewCode(fileName) {
       vibrate();
-      document.getElementById("popup").style.display = "flex";
-      document.getElementById("popupTitle").textContent = type.toUpperCase();
-      document.getElementById("popupBody").textContent = database[type];
-      hljs.highlightAll();
+      fileCorrente = fileName;
+      document.getElementById('popup').style.display = 'flex';
+      document.getElementById('popupTitle').textContent = fileName.toUpperCase();
+      const codeArea = document.getElementById('popupBody');
+      codeArea.textContent = progetti[cartellaCorrente][fileName];
+      hljs.highlightElement(codeArea);
     }
 
-    function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
-    
-    function copyAll() { 
-        vibrate(); 
-        navigator.clipboard.writeText(JSON.stringify(database, null, 2)); 
-        alert("✅ Archivio Completo Copiato!"); 
+    function copyFromPopup() {
+      vibrate();
+      navigator.clipboard.writeText(progetti[cartellaCorrente][fileCorrente]);
+      alert("✅ Codice copiato!");
     }
+
+    function goHome() { vibrate(); document.getElementById('homeView').style.display = 'block'; document.getElementById('projectView').style.display = 'none'; }
+    function closePopup() { vibrate(); document.getElementById('popup').style.display = 'none'; }
+
+    renderHome();
   </script>
 </body>
 </html>
