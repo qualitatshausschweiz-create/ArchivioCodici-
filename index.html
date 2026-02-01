@@ -3,106 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Note Sandro - Master</title>
+    <title>App Note Sandro - Master Utility</title>
+    
     <style>
-        /* --- 1. PRIORITÀ CSS: BOTTONI E TOOLBAR --- */
-        .toolbar-top {
+        /* === 1. CSS: STILE E COLORI DEI BOTTONI === */
+        :root {
+            --altea-purple: #6c5ce7;
+            --sandro-blue: #0984e3;
+            --success-green: #00b894;
+            --exe-orange: #e17055;
+            --dark-bg: #1e272e;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f2f6; margin: 0; padding: 0; }
+
+        .header-bar {
             background: #2d3436;
-            padding: 15px 25px;
+            color: white;
+            padding: 15px 30px;
             display: flex;
-            justify-content: flex-end; /* Bottoni a destra */
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: sticky; top: 0; z-index: 1000;
         }
 
+        .button-group { display: flex; gap: 10px; }
+
         .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
+            padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer;
+            font-weight: bold; color: white; transition: 0.3s ease;
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
+        }
+        
+        /* Colori assegnati ai bottoni */
+        .btn-python { background: var(--altea-purple); }
+        .btn-exe    { background: var(--exe-orange); }
+        .btn-report { background: var(--success-green); }
+        .btn-webapp { background: var(--sandro-blue); }
+        
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn:active { transform: translateY(1px); }
+
+        /* === 2. CSS: LAYOUT CONTENUTO === */
+        .main-container { padding: 30px; max-width: 1000px; margin: auto; }
+        
+        .card {
+            background: white; padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px;
         }
 
-        .btn-python { background-color: #6c5ce7; border-bottom: 3px solid #4834d4; }
-        .btn-exe    { background-color: #e17055; border-bottom: 3px solid #d35400; }
-        .btn-report { background-color: #00b894; border-bottom: 3px solid #009432; }
-        .btn-webapp { background-color: #0984e3; border-bottom: 3px solid #0652dd; }
+        textarea {
+            width: 100%; height: 180px; padding: 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box;
+        }
 
-        .btn:active { transform: translateY(2px); border-bottom: none; }
-        .btn:hover { filter: brightness(1.1); }
-
-        /* --- 2. CSS: STRUTTURA PAGINA --- */
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; }
-        .app-title { padding: 20px 30px; color: #2d3436; margin: 0; font-weight: 800; border-bottom: 2px solid #ddd; }
-        .content-area { padding: 30px; max-width: 1000px; margin: auto; }
-        textarea { width: 100%; height: 200px; padding: 20px; border-radius: 12px; border: 1px solid #ccc; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-        pre { background: #1e272e; color: #74b9ff; padding: 20px; border-radius: 8px; margin-top: 20px; overflow-x: auto; }
+        pre {
+            background: var(--dark-bg); color: #74b9ff; padding: 20px;
+            border-radius: 8px; overflow-x: auto; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="toolbar-top">
-        <button class="btn btn-python" onclick="copyPython()">📋 Copia Python</button>
-        <button class="btn btn-exe" onclick="copyExe()">📦 Comando .EXE</button>
-        <button class="btn btn-report" onclick="downloadNote()">📥 Scarica Report</button>
-        <button class="btn btn-webapp" onclick="copyFullHTML()">🌐 Copia Web App</button>
-    </nav>
+    <header class="header-bar">
+        <h1 style="margin:0; font-size: 1.4rem;">APP NOTE SANDRO</h1>
+        <div class="button-group">
+            <button class="btn btn-python" onclick="copyPython()">📋 COPIA PYTHON</button>
+            <button class="btn btn-exe" onclick="copyExe()">📦 COMANDO .EXE</button>
+            <button class="btn btn-report" onclick="downloadNote()">📥 SCARICA NOTA</button>
+            <button class="btn btn-webapp" onclick="copyFullWebApp()">🌐 COPIA WEB APP</button>
+        </div>
+    </header>
 
-    <h1 class="app-title">APP NOTE SANDRO</h1>
-
-    <div class="content-area">
-        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <h3 style="margin-top: 0;">📝 Nuova Nota / Codice</h3>
-            <textarea id="noteInput" placeholder="Inserisci qui il tuo testo o il codice da salvare..."></textarea>
+    <div class="main-container">
+        <div class="card">
+            <h3>📝 Scrivi la tua Nota</h3>
+            <textarea id="noteField" placeholder="Inserisci qui i tuoi appunti..."></textarea>
         </div>
 
-        <h3>🐍 Altea Utility V2.6 (Sorgente)</h3>
-        <pre id="pythonSource">
-# Altea System Integrated
-# Password: ALTEA_PRO_2026
+        <div class="card">
+            <h3>🐍 Codice Altea Utility (Python)</h3>
+            <pre id="pythonSource">
+# Altea Utility V2.6 - Integrated for Sandro Notes
 import math
 
-def altea_core():
-    print("Sistema Altea Attivo")
-        </pre>
+def main():
+    password = "ALTEA_PRO_2026"
+    print("Sistema Protetto Attivo")
+
+if __name__ == "__main__":
+    main()
+            </pre>
+        </div>
     </div>
 
     <script>
+        // Funzione per copiare il codice Python
         function copyPython() {
             const code = document.getElementById('pythonSource').innerText;
             navigator.clipboard.writeText(code);
-            alert("✅ Codice Python Altea copiato!");
+            alert("✅ Codice Python Altea copiato negli appunti!");
         }
 
+        // Funzione per il comando PyInstaller
         function copyExe() {
             const cmd = "pyinstaller --noconsole --onefile --icon=altea_logo.ico sandro_notes.py";
             navigator.clipboard.writeText(cmd);
-            alert("📦 Comando EXE copiato!");
+            alert("📦 Comando EXE (con icona) copiato!");
         }
 
+        // Funzione per scaricare la nota scritta
         function downloadNote() {
-            const content = document.getElementById('noteInput').value;
-            if(!content) return alert("L'area note è vuota!");
+            const content = document.getElementById('noteField').value;
+            if (!content) {
+                alert("L'area note è vuota!");
+                return;
+            }
             const blob = new Blob([content], {type: "text/plain"});
+            const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
+            a.href = url;
             a.download = "nota_sandro.txt";
             a.click();
+            URL.revokeObjectURL(url);
         }
 
-        function copyFullHTML() {
-            const fullHTML = document.documentElement.outerHTML;
-            navigator.clipboard.writeText(fullHTML);
-            alert("🌐 Web App completa copiata negli appunti!");
+        // Funzione per copiare l'intero codice HTML/CSS/JS di questa pagina
+        function copyFullWebApp() {
+            const fullCode = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(fullCode);
+            alert("🌐 Intera Web App copiata! Puoi incollarla in un file .html");
         }
     </script>
 </body>
