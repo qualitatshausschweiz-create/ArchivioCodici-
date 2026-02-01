@@ -10,7 +10,7 @@
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e;
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --export: #636e72;
     }
 
     body {
@@ -87,7 +87,7 @@
     <div class="toolbar">
         <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
         <button class="btn-tool" style="background:var(--report)" onclick="alertStats()">📊 STATS</button>
-        <button class="btn-tool" style="background:var(--web)" onclick="vibrate()">🌐 WEB APP</button>
+        <button class="btn-tool" style="background:var(--export)" onclick="esportaDatabase()">💾 ESPORTA DB</button>
         <button class="btn-tool" style="background:var(--gray-btn)" onclick="vibrate()">✏️ EDIT</button>
     </div>
 
@@ -141,7 +141,22 @@
     function alertStats() {
         const dataStr = JSON.stringify(database);
         const sizeKB = (dataStr.length / 1024).toFixed(2);
-        alert(`📊 STATISTICHE ARCHIVIO\n\nSpazio usato: ${sizeKB} KB\nProgetti totali: ${Object.keys(database).length}\nLimite GitHub consigliato: 1000 KB (1 MB)`);
+        alert(`📊 STATISTICHE ARCHIVIO\n\nSpazio usato: ${sizeKB} KB\nProgetti totali: ${Object.keys(database).length}`);
+    }
+
+    function esportaDatabase() {
+        vibrate();
+        const dataStr = JSON.stringify(database, null, 2);
+        const blob = new Blob([dataStr], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "backup_sandro_os_" + new Date().toISOString().split('T')[0] + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("✅ Backup scaricato con successo!");
     }
 
     function renderHome() {
@@ -226,7 +241,7 @@
       vibrate();
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popupTitle').textContent = type.toUpperCase();
-      document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Nessun codice inserito";
+      document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Nessun codice";
       hljs.highlightAll();
     }
 
