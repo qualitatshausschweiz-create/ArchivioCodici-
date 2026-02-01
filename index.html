@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Archivio Progetto Note - Versione Integrale + Ricerca</title>
+  <title>Archivio Progetto Note - Versione Integrale</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -20,7 +20,7 @@
     .btn-group button { border: none; background: #3a3a3c; color: #fff; width: 42px; height: 42px; border-radius: 10px; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     .btn-close { background: #ff3b30 !important; }
     pre { margin: 0; flex-grow: 1; overflow: hidden; display: flex; }
-    #popupBody { background: #000; width: 100%; padding: 20px !important; font-family: "SF Mono", "Menlo", monospace; font-size: 11px; line-height: 1.5; overflow-y: auto !important; white-space: pre; }
+    #popupBody { background: #000; width: 100%; padding: 20px !important; font-family: "SF Mono", "Menlo", monospace; font-size: 11px; line-height: 1.5; overflow-y: auto !important; -webkit-overflow-scrolling: touch; white-space: pre; }
   </style>
 </head>
 <body>
@@ -47,7 +47,7 @@
 
   <script>
     const archivio = {
-      // --- HTML INTEGRALE CON AGGIUNTA RICERCA ---
+      // --- CODICE HTML INTEGRALE ---
       html: `<!DOCTYPE html>
 <html lang="it">
 <head>
@@ -65,13 +65,7 @@
     <button id="trashBtn">🗑️</button>
     <button id="settingsBtn">⚙️</button>
   </div>
-
-  <div class="search-container">
-    <input type="text" id="mainSearch" placeholder="Cerca tra le note...">
-  </div>
-
   <div id="notesContainer"></div>
-
   <div id="notePanel" class="panel hidden">
     <div class="panel-content">
       <input id="noteTitle" placeholder="Titolo">
@@ -82,7 +76,6 @@
       <button id="closeNotePanel" class="close">Chiudi</button>
     </div>
   </div>
-
   <div id="categoryPanel" class="panel hidden">
     <div class="panel-content">
       <input id="newCategoryName" placeholder="Nome categoria">
@@ -93,14 +86,12 @@
       <button id="closeCategoryPanel" class="close">Chiudi</button>
     </div>
   </div>
-
   <div id="trashPanel" class="panel hidden">
     <div class="panel-content">
       <div id="trashList"></div>
       <button id="closeTrashPanel" class="close">Chiudi</button>
     </div>
   </div>
-
   <div id="settingsPanel" class="panel hidden">
     <div class="panel-content settings-box">
       <h2>Impostazioni ⚙️</h2>
@@ -110,16 +101,16 @@
         <label class="settings-row"><span>Ordinamento note</span><select id="settingSort" class="select-ios">
           <option value="recenti">Più recenti</option>
           <option value="vecchie">Più vecchie</option>
-          <option value="colore">Per colore</option>
+          <option value="colore">Per colore categoria</option>
           <option value="titolo">Titolo A-Z</option>
         </select></label>
-        <label class="settings-row"><span>Animazioni</span><input type="checkbox" id="settingAnimations" class="toggle"></label>
+        <label class="settings-row"><span>Animazioni avanzate</span><input type="checkbox" id="settingAnimations" class="toggle"></label>
       </div>
       <button id="infoAppBtn" class="settings-item">ℹ️ Info App</button>
       <button id="exportBackupBtn" class="settings-item">📤 Esporta backup</button>
-      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza Google Drive</button>
-      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie</button>
-      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale</button>
+      <button id="syncCloudBtn" class="settings-item">☁️ Sincronizza con Google Drive</button>
+      <button id="restoreCategoriesBtn" class="settings-item">🔄 Ripristina categorie iniziali</button>
+      <button id="resetDataBtn" class="settings-item">🗑️ Reset totale dati</button>
       <button id="memoryStatusBtn" class="settings-item">💾 Stato memoria</button>
       <button id="closeSettingsPanel" class="close">Chiudi</button>
     </div>
@@ -128,39 +119,58 @@
 </body>
 </html>`,
 
-      // --- CSS INTEGRALE + STILI RICERCA ---
+      // --- CODICE CSS INTEGRALE ---
       css: `body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
-:root { --bg: #ffffff; --text: #000000; --search-bg: #f2f2f7; }
-.dark { --bg: #111111; --text: #ffffff; --search-bg: #1c1c1e; }
-
-/* STILI RICERCA AGGIUNTI */
-.search-container { padding: 12px 16px; background: var(--bg); position: sticky; top: 0; z-index: 10; }
-#mainSearch { width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--search-bg); color: var(--text); font-size: 16px; outline: none; box-sizing: border-box; }
-
+:root { --bg: #ffffff; --text: #000000; }
+.dark { --bg: #111111; --text: #ffffff; }
 .icon-bar { display: flex; justify-content: space-around; padding: 10px; background: var(--bg); border-bottom: 1px solid #ccc; }
 .icon-bar button { font-size: 22px; background: none; border: none; cursor: pointer; }
-
 .panel { position: fixed; left: 0; bottom: 0; width: 100%; height: 70%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; backdrop-filter: blur(6px); transition: opacity 0.25s ease; }
 .panel.show { opacity: 1; }
 .hidden { display: none; }
 .panel-content { width: 100%; background: var(--bg); color: var(--text); padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -8px 25px rgba(0,0,0,0.25); animation: panelSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
-@keyframes panelSlideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
-
-.note { background: var(--bg); border-left: 8px solid; padding: 12px; margin: 10px; border-radius: 6px; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.category-btn { padding: 8px 12px; border-radius: 10px; border: none; color: white; margin: 5px; }
+@keyframes panelSlideUp { 0% { transform: translateY(100%); } 60% { transform: translateY(-6%); } 100% { transform: translateY(0); } }
+.settings-box { display: flex; flex-direction: column; gap: 12px; }
+.settings-item { width: 100%; padding: 14px; font-size: 17px; text-align: left; background: none; border: 1px solid rgba(0,0,0,0.15); border-radius: 12px; cursor: pointer; }
+textarea, input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top: 10px; }
+.category-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.category-btn { padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; color: white; font-size: 14px; }
 .palette { display: flex; gap: 10px; margin: 10px 0; }
 .color { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
 .color.selected { border: 2px solid #000; }
-.toggle { appearance: none; width: 48px; height: 28px; background: #ccc; border-radius: 20px; position: relative; cursor: pointer; }
+.note { background: var(--bg); border-left: 8px solid; padding: 12px; margin-bottom: 10px; border-radius: 6px; background: #ffffff; color: #000000; }
+.save, .close { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: none; cursor: pointer; }
+.settings-group { background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-radius: 16px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 6px; font-size: 17px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.toggle { appearance: none; width: 48px; height: 28px; background: #ccc; border-radius: 20px; position: relative; cursor: pointer; transition: background 0.25s ease; }
 .toggle:checked { background: #34c759; }
-.toggle::before { content: ""; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.25s; }
-.toggle:checked::before { transform: translateX(20px); }`,
+.toggle::before { content: ""; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.25s ease; }
+.toggle:checked::before { transform: translateX(20px); }
+.select-ios { padding: 8px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.2); background: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; }`,
 
-      // --- JS INTEGRALE + LOGICA RICERCA ---
+      // --- CODICE JS INTEGRALE ---
       js: `document.addEventListener("DOMContentLoaded", () => {
   const CLIENT_ID = "792122447047-u30lrb5oo1jjbnkibfh420ah0o95e3d8.apps.googleusercontent.com";
   const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
   let accessToken = null;
+
+  function getDriveToken(callback) {
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID, scope: DRIVE_SCOPE,
+      callback: (response) => { if (response.access_token) { accessToken = response.access_token; callback(); } else { alert("Errore token."); } }
+    });
+    tokenClient.requestAccessToken();
+  }
+
+  const themeToggle = document.getElementById("themeToggle");
+  if (localStorage.getItem("theme") === "dark") { document.body.classList.add("dark"); themeToggle.textContent = "🌙"; }
+
+  themeToggle.onclick = () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    themeToggle.textContent = isDark ? "🌙" : "☀️";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  };
 
   let notes = JSON.parse(localStorage.getItem("notes")) || [];
   let categories = JSON.parse(localStorage.getItem("categories")) || [{ name: "Lavoro", color: "#1e90ff" }, { name: "Idee", color: "#a55eea" }];
@@ -168,52 +178,32 @@
   let appSettings = JSON.parse(localStorage.getItem("appSettings")) || { themeAuto: false, vibration: true, sort: "recenti", animations: true };
 
   const notesContainer = document.getElementById("notesContainer");
-  const searchInput = document.getElementById("mainSearch");
 
   function saveNotes() { localStorage.setItem("notes", JSON.stringify(notes)); }
-  function saveTrash() { localStorage.setItem("trash", JSON.stringify(trash)); }
-
-  // FUNZIONE RENDER CON FILTRO RICERCA
   function renderNotes() {
-    const term = searchInput.value.toLowerCase();
     notesContainer.innerHTML = "";
-    
-    // Ordinamento
-    if (appSettings.sort === "recenti") notes.sort((a, b) => new Date(b.data) - new Date(a.data));
-    if (appSettings.sort === "titolo") notes.sort((a, b) => a.titolo.localeCompare(b.titolo));
-
     notes.forEach(n => {
-      if (n.titolo.toLowerCase().includes(term) || n.testo.toLowerCase().includes(term)) {
-        const div = document.createElement("div");
-        div.className = "note";
-        div.style.borderLeftColor = n.colore;
-        div.innerHTML = \`<h3>\${n.titolo}</h3><p>\${n.testo}</p><small>\${n.categoria}</small><br><button onclick="deleteNote(\${n.id})">Elimina</button>\`;
-        notesContainer.appendChild(div);
-      }
+      const div = document.createElement("div");
+      div.className = "note";
+      div.style.borderLeftColor = n.colore;
+      div.innerHTML = "<h3>" + n.titolo + "</h3><p>" + n.testo + "</p><small>" + n.categoria + "</small>";
+      notesContainer.appendChild(div);
     });
   }
 
-  window.deleteNote = (id) => {
-    const note = notes.find(x => x.id === id);
-    trash.push(note);
-    notes = notes.filter(x => x.id !== id);
-    saveNotes(); saveTrash(); renderNotes();
-  };
-
-  searchInput.oninput = () => renderNotes();
-
-  // Tema e Altre funzioni originali...
-  const themeToggle = document.getElementById("themeToggle");
-  themeToggle.onclick = () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-  };
-
-  // Apertura Pannelli
   document.getElementById("addNoteBtn").onclick = () => {
-    document.getElementById("notePanel").classList.remove("hidden");
-    setTimeout(() => document.getElementById("notePanel").classList.add("show"), 10);
+    const p = document.getElementById("notePanel");
+    p.classList.remove("hidden");
+    setTimeout(() => p.classList.add("show"), 10);
   };
+
+  document.querySelectorAll(".close").forEach(btn => {
+    btn.onclick = () => {
+      const p = btn.closest(".panel");
+      p.classList.remove("show");
+      setTimeout(() => p.classList.add("hidden"), 250);
+    };
+  });
 
   renderNotes();
 });`
@@ -222,8 +212,11 @@
     function openPopup(tipo) {
       const p = document.getElementById('popup');
       const b = document.getElementById('popupBody');
+      const t = document.getElementById('popupTitle');
       p.style.display = 'flex';
+      t.textContent = "FILE: " + tipo.toUpperCase();
       b.textContent = archivio[tipo];
+      b.className = "language-" + (tipo === 'js' ? 'javascript' : tipo === 'html' ? 'xml' : 'css');
       hljs.highlightElement(b);
     }
     function chiudiPopup() { document.getElementById('popup').style.display = 'none'; }
@@ -232,7 +225,7 @@
       const blob = new Blob([document.getElementById('popupBody').textContent], {type: "text/plain"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "progetto_note_completo.txt";
+      a.download = "progetto_note." + (fileAttivo || 'txt');
       a.click();
     }
   </script>
