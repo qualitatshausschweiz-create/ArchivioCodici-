@@ -10,45 +10,75 @@
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --gray-btn: #2d2d2d; --danger: #cc0000; --undo: #fdcb6e;
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --gray-btn: #2d2d2d; 
+      --danger: #ff7675; --undo: #fdcb6e; --glass: rgba(28, 28, 28, 0.8);
     }
 
     body {
-      font-family: -apple-system, system-ui, sans-serif;
-      margin: 0; padding: 20px; background: #0f0f0f; color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0; padding: 20px; background: #050505; color: #fff;
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* TOOLBAR & RICERCA */
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-    .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
-    
-    .search-container { display: flex; gap: 8px; margin-bottom: 25px; }
-    .search-box { flex-grow: 1; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1c1c1c; color: white; outline: none; }
-    .btn-vai { background: var(--web); border: none; border-radius: 12px; padding: 0 25px; color: white; font-weight: bold; }
-
-    /* CARDS */
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-    .card { background: #1c1c1c; border-radius: 16px; padding: 25px; text-align: center; border: 1px solid #333; }
-
-    /* PANNELLO NOTE CON UNDO */
-    .panel { background: #1c1c1c; border-radius: 16px; padding: 20px; border: 1px solid #333; margin-bottom: 15px; position: relative; }
-    .panel-title { color: #666; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 10px; }
-    .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; }
-
-    .btn-trash { background: var(--danger); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; }
-    .btn-undo { 
-        background: var(--undo); color: #000; border: none; border-radius: 8px; 
-        padding: 5px 10px; font-size: 0.7rem; font-weight: bold; 
-        display: none; margin-left: 10px; animation: fadeIn 0.3s;
+    /* TITOLO CON SFUMATURA */
+    h1 { 
+        font-size: 1.8rem; margin-bottom: 20px; 
+        background: linear-gradient(to right, #fff, #666);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    /* TOOLBAR STYLE IOS */
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn-tool { 
+        padding: 12px 16px; border: none; border-radius: 14px; cursor: pointer; 
+        font-weight: 600; color: white; font-size: 11px;
+        backdrop-filter: blur(5px); transition: transform 0.2s;
+    }
+    .btn-tool:active { transform: scale(0.9); }
+    
+    /* RICERCA GLASSMORPHISM */
+    .search-container { display: flex; gap: 10px; margin-bottom: 25px; }
+    .search-box { 
+        flex-grow: 1; padding: 15px; border-radius: 15px; border: 1px solid #333; 
+        background: var(--glass); color: white; outline: none; backdrop-filter: blur(10px);
+    }
+    .btn-vai { 
+        background: var(--web); border: none; border-radius: 15px; 
+        padding: 0 25px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3);
+    }
 
-    /* POPUP */
-    #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; z-index: 999; }
+    /* CARDS CON BORDO GLOW */
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+    .card { 
+        background: #111; border-radius: 20px; padding: 25px; text-align: center; 
+        border: 1px solid #222; position: relative; overflow: hidden;
+    }
+    .card::before {
+        content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    /* PANNELLO NOTE */
+    .panel { 
+        background: var(--glass); border-radius: 20px; padding: 20px; 
+        border: 1px solid #222; margin-bottom: 15px; backdrop-filter: blur(10px);
+    }
+    .quick-note-area { 
+        width: 100%; height: 100px; background: transparent; border: none; 
+        color: #ddd; font-size: 1rem; resize: none; outline: none; margin-top: 10px;
+    }
+
+    .btn-trash { background: var(--danger); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; box-shadow: 0 4px 10px rgba(255, 118, 117, 0.3); }
+    .btn-undo { 
+        background: var(--undo); color: #000; border: none; border-radius: 10px; 
+        padding: 8px 15px; font-size: 0.75rem; font-weight: bold; display: none;
+    }
+
+    /* POPUP FULLSCREEN */
+    #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 999; }
     #popupContent { height: 100%; display: flex; flex-direction: column; padding: 20px; }
-    #popupBody { background: #0d0d0d; border-radius: 10px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; }
+    #popupBody { background: #080808; border-radius: 15px; padding: 20px; overflow: auto; font-family: "SF Mono", monospace; font-size: 14px; flex-grow: 1; }
   </style>
 </head>
 <body>
@@ -57,39 +87,39 @@
 
   <div class="toolbar">
       <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
-      <button class="btn-tool" style="background:var(--report)" onclick="alert('📊 Report OK')">📊 REPORT</button>
+      <button class="btn-tool" style="background:var(--report)" onclick="vibrate()">📊 REPORT</button>
       <button class="btn-tool" style="background:var(--web)" onclick="openPopup('webapp')">🌐 WEB APP</button>
-      <button class="btn-tool" style="background:var(--gray-btn)" onclick="alert('✏️ Edit Mode')">✏️ EDIT</button>
+      <button class="btn-tool" style="background:var(--gray-btn)" onclick="vibrate()">✏️ EDIT</button>
   </div>
 
   <div class="search-container">
-    <input type="text" id="searchInput" class="search-box" placeholder="Cerca codice...">
+    <input type="text" id="searchInput" class="search-box" placeholder="Cerca nel tuo archivio...">
     <button class="btn-vai" onclick="cerca()">VAI</button>
   </div>
 
   <div class="cards">
-    <div class="card" onclick="openPopup('html')">📄<br>HTML</div>
-    <div class="card" onclick="openPopup('css')">🎨<br>CSS</div>
-    <div class="card" onclick="openPopup('js')">⚡<br>JS</div>
-    <div class="card" onclick="openPopup('python')">🐍<br>PY</div>
+    <div class="card" onclick="openPopup('html')">📄<br><span style="margin-top:10px; display:block; font-weight:600">HTML</span></div>
+    <div class="card" onclick="openPopup('css')">🎨<br><span style="margin-top:10px; display:block; font-weight:600">CSS</span></div>
+    <div class="card" onclick="openPopup('js')">⚡<br><span style="margin-top:10px; display:block; font-weight:600">JS</span></div>
+    <div class="card" onclick="openPopup('python')">🐍<br><span style="margin-top:10px; display:block; font-weight:600">PY</span></div>
   </div>
 
   <div class="panel">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <div class="panel-title">Note Rapide</div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #666; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Note Rapide</span>
         <div>
-            <button id="undoBtn" class="btn-undo" onclick="ripristinaNota()">↩️ RIPRISTINA</button>
+            <button id="undoBtn" class="btn-undo" onclick="ripristinaNota()">↩️ ANNULLA</button>
             <button class="btn-trash" onclick="eliminaNota()">🗑️</button>
         </div>
     </div>
-    <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi qui..."></textarea>
+    <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi un appunto veloce..."></textarea>
   </div>
 
   <div id="popup">
     <div id="popupContent">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 id="popupTitle" style="margin:0; color:var(--web)"></h2>
-        <button class="btn-tool" style="background:var(--danger)" onclick="closePopup()">CHIUDI</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 id="popupTitle" style="margin:0; font-weight: bold; color: var(--web)"></h2>
+        <button class="btn-tool" style="background:var(--danger); padding: 12px 25px;" onclick="closePopup()">CHIUDI</button>
       </div>
       <pre><code id="popupBody"></code></pre>
     </div>
@@ -97,33 +127,28 @@
 
   <script>
     const database = {
-      html: "", css: "/* Master CSS */", 
-      js: "// Master JS", python: "# Master PY", webapp: ""
+      html: "", 
+      css: "/* Master CSS 2026 */", 
+      js: "// Master JS 2026", 
+      python: "# Master PY 2026", 
+      webapp: ""
     };
 
     let notaTemporanea = "";
     let undoTimeout;
 
-    function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
+    function vibrate() { if (navigator.vibrate) navigator.vibrate(30); }
 
-    // LOGICA ELIMINA E RIPRISTINA
     function eliminaNota() {
       vibrate();
       const area = document.getElementById("noteArea");
       if (area.value.trim() === "") return;
-
-      notaTemporanea = area.value; // Salva la nota prima di cancellare
+      notaTemporanea = area.value;
       area.value = "";
-      
       const btnUndo = document.getElementById("undoBtn");
       btnUndo.style.display = "inline-block";
-
-      // Il tasto ripristina sparisce dopo 5 secondi
       clearTimeout(undoTimeout);
-      undoTimeout = setTimeout(() => {
-        btnUndo.style.display = "none";
-        notaTemporanea = "";
-      }, 5000);
+      undoTimeout = setTimeout(() => { btnUndo.style.display = "none"; notaTemporanea = ""; }, 5000);
     }
 
     function ripristinaNota() {
@@ -135,8 +160,9 @@
 
     function cerca() {
       vibrate();
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      if (database[q]) openPopup(q); else alert("Non trovato");
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      const key = (q === 'py') ? 'python' : q;
+      if (database[key]) openPopup(key); else alert("Non trovato");
     }
 
     function openPopup(type) {
@@ -149,7 +175,11 @@
 
     function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
     
-    function copyAll() { vibrate(); navigator.clipboard.writeText(JSON.stringify(database)); alert("Copiato!"); }
+    function copyAll() { 
+        vibrate(); 
+        navigator.clipboard.writeText(JSON.stringify(database, null, 2)); 
+        alert("✅ Archivio Completo Copiato!"); 
+    }
   </script>
 </body>
 </html>
