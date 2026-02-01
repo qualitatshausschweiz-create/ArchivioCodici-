@@ -23,12 +23,13 @@
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .item-box { 
         background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
-        border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s;
+        border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s; position: relative;
     }
     .item-box:active { transform: scale(0.95); }
     .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+    .btn-del { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--danger); font-size: 1.2rem; }
 
-    /* PROJECT VIEW (TUA VECCHIA GRAFICA) */
+    /* PROJECT VIEW (LAYOUT IDENTICO ALLE FOTO) */
     #projectView { display: none; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
@@ -38,32 +39,26 @@
     .btn-vai { background: var(--web); border: none; border-radius: 12px; padding: 0 25px; color: white; font-weight: bold; box-shadow: 0 0 10px rgba(9, 132, 227, 0.5); }
 
     .panel { background: #1c1c1c; border-radius: 20px; padding: 20px; border: 1px solid #333; margin-top: 20px; position: relative; }
-    .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; }
+    .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; margin-top: 10px; }
     .btn-trash { background: var(--danger); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; cursor: pointer; position: absolute; right: 15px; top: 15px; }
 
     /* POPUP */
     #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
-    #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; }
+    #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; margin-top: 15px;}
   </style>
 </head>
 <body>
 
   <div id="homeView">
     <h1 style="margin-bottom: 25px;">Sandro Project OS</h1>
-    <div class="folder-grid">
-      <div class="item-box" onclick="openProject('App Note Sandro')">
-        <span class="icon-big">📂</span>
-        <strong style="color: var(--folder);">App Note Sandro</strong>
+    <div class="folder-grid" id="mainFolderGrid">
       </div>
-      <div class="item-box" style="opacity: 0.5;">
-        <span class="icon-big">➕</span>
-        <strong>Nuovo Progetto</strong>
-      </div>
-    </div>
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅ Torna ai Progetti</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem; display:flex; align-items:center; gap:5px;">
+        <span style="font-size:1.2rem">⬅️</span> Torna ai Progetti
+    </button>
     <h2 id="activeProjectTitle" style="margin:0 0 20px 0;"></h2>
 
     <div class="toolbar">
@@ -86,14 +81,14 @@
     </div>
 
     <div class="panel">
-      <div style="color: #666; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px;">Note Rapide</div>
+      <div style="color: #666; font-size: 0.7rem; text-transform: uppercase;">Note Rapide</div>
       <button class="btn-trash" onclick="pulisciNote()">🗑️</button>
       <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi qui..."></textarea>
     </div>
   </div>
 
   <div id="popup">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 id="popupTitle" style="margin:0; color:var(--web)"></h2>
       <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="closePopup()">CHIUDI</button>
     </div>
@@ -101,43 +96,103 @@
   </div>
 
   <script>
-    const database = {
+    // Database iniziale con "App Note Sandro"
+    let database = {
       "App Note Sandro": {
         html: "", 
-        css: "/* Master CSS 2026 */", 
-        js: "// Master JS 2026", 
-        python: "# Master PY 2026"
+        css: "/* Master CSS App Note */", 
+        js: "// Master JS App Note", 
+        python: "# Master PY App Note",
+        note: "Note per App Note..."
       }
     };
 
+    let cartellaAttiva = "";
+
     function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
+
+    function renderHome() {
+      const grid = document.getElementById('mainFolderGrid');
+      grid.innerHTML = '';
+      
+      // Render cartelle esistenti
+      Object.keys(database).forEach(nome => {
+        grid.innerHTML += `
+          <div class="item-box" onclick="openProject('${nome}')">
+            <button class="btn-del" onclick="event.stopPropagation(); eliminaProgetto('${nome}')">🗑️</button>
+            <span class="icon-big">📂</span>
+            <strong style="color: var(--folder);">${nome}</strong>
+          </div>`;
+      });
+
+      // Tasto "Nuovo Progetto"
+      grid.innerHTML += `
+        <div class="item-box" onclick="nuovoProgetto()" style="border-style: dashed; border-color: #444;">
+          <span class="icon-big">➕</span>
+          <strong>Nuovo Progetto</strong>
+        </div>`;
+    }
+
+    function nuovoProgetto() {
+      vibrate();
+      const nome = prompt("Inserisci il nome del nuovo progetto:");
+      if (nome && !database[nome]) {
+        database[nome] = {
+          html: "",
+          css: "/* Nuovo CSS per " + nome + " */",
+          js: "// Nuovo JS per " + nome,
+          python: "# Nuovo PY per " + nome,
+          note: ""
+        };
+        renderHome();
+      } else if (database[nome]) {
+        alert("Questo progetto esiste già!");
+      }
+    }
+
+    function eliminaProgetto(nome) {
+      vibrate();
+      if (confirm("Sei sicuro di voler eliminare '" + nome + "'?")) {
+        delete database[nome];
+        renderHome();
+      }
+    }
 
     function openProject(nome) {
       vibrate();
+      cartellaAttiva = nome;
       document.getElementById('homeView').style.display = 'none';
       document.getElementById('projectView').style.display = 'block';
       document.getElementById('activeProjectTitle').textContent = nome;
+      document.getElementById('noteArea').value = database[nome].note;
     }
 
-    function goHome() { vibrate(); document.getElementById('homeView').style.display = 'block'; document.getElementById('projectView').style.display = 'none'; }
+    function goHome() { 
+      vibrate(); 
+      database[cartellaAttiva].note = document.getElementById('noteArea').value;
+      document.getElementById('homeView').style.display = 'block'; 
+      document.getElementById('projectView').style.display = 'none'; 
+    }
 
     function viewCode(type) {
       vibrate();
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popupTitle').textContent = type.toUpperCase();
-      document.getElementById('popupBody').textContent = database["App Note Sandro"][type];
+      document.getElementById('popupBody').textContent = database[cartellaAttiva][type];
       hljs.highlightAll();
     }
 
     function cerca() {
       vibrate();
       const q = document.getElementById("searchInput").value.toLowerCase();
-      if (database["App Note Sandro"][q]) viewCode(q); else alert("Codice non trovato");
+      if (database[cartellaAttiva][q]) viewCode(q); else alert("Codice non trovato");
     }
 
     function pulisciNote() { vibrate(); document.getElementById("noteArea").value = ""; }
     function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
-    function copyAll() { vibrate(); navigator.clipboard.writeText(JSON.stringify(database["App Note Sandro"])); alert("Copiato!"); }
+    function copyAll() { vibrate(); navigator.clipboard.writeText(JSON.stringify(database[cartellaAttiva])); alert("Copiato!"); }
+
+    renderHome();
   </script>
 </body>
 </html>
