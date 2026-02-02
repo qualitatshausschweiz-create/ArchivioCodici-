@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - Ultimate</title>
+  <title>Sandro Project OS - Archivio PRO</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -19,9 +19,11 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* STATS BAR IN TEMPO REALE */
     .stats-bar {
         background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
         font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
+        border: 1px solid #222;
     }
 
     #undoBar { 
@@ -61,7 +63,8 @@
 <body>
 
   <div id="homeView">
-    <h1>Sandro Project OS</h1>
+    <h1 style="color: var(--web);">Sandro Project OS</h1>
+    
     <div class="stats-bar">
         <span id="memUsage">Memoria: 0 KB</span>
         <span id="projCount">Progetti: 0</span>
@@ -76,12 +79,12 @@
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Torna ai Progetti</button>
-    <h2 id="activeTitle" style="margin:0 0 20px 0;"></h2>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Torna alla Home</button>
+    <h2 id="activeTitle" style="margin:0 0 20px 0; color: var(--folder);"></h2>
 
     <div class="toolbar">
-        <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ PLAY</button>
-        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA</button>
+        <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ TEST PLAY</button>
+        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
     </div>
 
     <div class="folder-grid">
@@ -93,28 +96,28 @@
 
   <div id="editView">
     <h2 id="editTitle" style="color:var(--web)"></h2>
-    <textarea id="editorTextarea" placeholder="Incolla qui il tuo codice..."></textarea>
+    <textarea id="editorTextarea" placeholder="Incolla qui il tuo codice per testarlo..."></textarea>
     <div style="display:flex; gap:10px;">
-        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA</button>
+        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA E AGGIORNA</button>
         <button class="btn-tool" style="background:var(--danger); flex:1; font-size:14px;" onclick="closeEditor()">❌ ANNULLA</button>
     </div>
   </div>
 
   <div id="playView">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 style="margin:0; color:var(--play)">Sandbox Live</h2>
-      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="document.getElementById('playView').style.display='none'">CHIUDI</button>
+      <h2 style="margin:0; color:var(--play)">Test App Live</h2>
+      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="document.getElementById('playView').style.display='none'">CHIUDI TEST</button>
     </div>
     <iframe id="playFrame"></iframe>
   </div>
 
   <script>
-    // HO INSERITO QUI I TUOI CODICI DELL'APP NOTE
+    // DATABASE INIZIALE CON LA TUA CARTELLA PREFERITA
     let database = { 
-        "Archivio codici app note": { 
-            html: "\n<div class='app'>\n  <h2>LE MIE NOTE</h2>\n  <textarea id='n' placeholder='Scrivi nota...'></textarea>\n  <button onclick='save()'>SALVA</button>\n</div>", 
-            css: "body { background: #000; color: #fdcb6e; font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }\n.app { text-align: center; border: 1px solid #fdcb6e; padding: 20px; border-radius: 20px; }\ntextarea { width: 100%; background: #111; color: white; border: 1px solid #333; border-radius: 10px; padding: 10px; margin: 10px 0; }\nbutton { background: #fdcb6e; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; }", 
-            js: "function save() { alert('Nota salvata nel sistema!'); }" 
+        "Archivio codici note app": { 
+            html: "<div style='text-align:center; padding:20px;'>\n  <h2>LE MIE NOTE</h2>\n  <textarea style='width:80%; height:100px;' placeholder='Scrivi qui...'></textarea>\n  <br><button style='padding:10px; background:orange; border:none; border-radius:10px;'>SALVA NOTA</button>\n</div>", 
+            css: "body { background: #111; color: orange; font-family: sans-serif; }", 
+            js: "console.log('App Note pronta!');" 
         } 
     };
     
@@ -163,13 +166,14 @@
 
     function openEditor(type) {
         currentType = type;
-        document.getElementById('editTitle').innerText = "SCRIVI " + type.toUpperCase();
+        document.getElementById('editTitle').innerText = "MODIFICA " + type.toUpperCase();
         document.getElementById('editorTextarea').value = database[currentProj][type];
         document.getElementById('editView').style.display = 'flex';
     }
 
     function salvaCodice() {
         database[currentProj][currentType] = document.getElementById('editorTextarea').value;
+        updateStats(); // Aggiorna memoria in tempo reale
         closeEditor();
     }
 
@@ -188,7 +192,7 @@
         document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
     }
 
-    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Copiato!"); }
+    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Codice Progetto Copiato!"); }
 
     render();
   </script>
