@@ -10,7 +10,7 @@
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --export: #636e72;
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --export: #636e72; --play: #00d2d3;
     }
 
     body {
@@ -19,13 +19,11 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* STATS BAR */
     .stats-bar {
         background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
         font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
     }
 
-    /* HOME VIEW */
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .item-box { 
         background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
@@ -44,7 +42,6 @@
         justify-content: space-between; align-items: center;
     }
 
-    /* PROJECT VIEW */
     #projectView { display: none; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
@@ -55,40 +52,36 @@
     .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; margin-top: 10px; }
     .btn-trash-note { background: var(--danger); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; cursor: pointer; position: absolute; right: 15px; top: 15px; }
 
-    /* POPUP */
-    #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
+    /* MODALE PLAY & POPUP */
+    #popup, #playView { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
     #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; margin-top: 15px;}
+    #playFrame { background: #111; border-radius: 15px; flex-grow: 1; border: 1px solid #333; margin-top: 15px; }
   </style>
 </head>
 <body>
 
   <div id="homeView">
     <h1 style="margin-bottom: 10px;">Sandro Project OS</h1>
-    
     <div class="stats-bar">
         <span id="memUsage">Memoria: 0 KB</span>
         <span id="projCount">Progetti: 0</span>
     </div>
-
     <div id="undoBar">
         <span>Cartella eliminata</span>
         <button onclick="ripristinaProgetto()" style="background:#000; color:#fff; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">↩️ RIPRISTINA</button>
     </div>
-
     <div class="folder-grid" id="mainFolderGrid"></div>
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem; display:flex; align-items:center; gap:5px;">
-        ⬅️ Torna ai Progetti
-    </button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem; display:flex; align-items:center; gap:5px;">⬅️ Torna ai Progetti</button>
     <h2 id="activeProjectTitle" style="margin:0 0 20px 0;"></h2>
 
     <div class="toolbar">
-        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
+        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA</button>
         <button class="btn-tool" style="background:var(--report)" onclick="alertStats()">📊 STATS</button>
-        <button class="btn-tool" style="background:var(--export)" onclick="esportaDatabase()">💾 ESPORTA DB</button>
-        <button class="btn-tool" style="background:var(--gray-btn)" onclick="vibrate()">✏️ EDIT</button>
+        <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ PLAY</button>
+        <button class="btn-tool" style="background:var(--export)" onclick="esportaDatabase()">💾 BACKUP</button>
     </div>
 
     <div class="search-container">
@@ -118,17 +111,39 @@
     <pre><code id="popupBody"></code></pre>
   </div>
 
+  <div id="playView">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0; color:var(--play)">Sandbox Live</h2>
+      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="chiudiPlay()">CHIUDI</button>
+    </div>
+    <iframe id="playFrame"></iframe>
+  </div>
+
   <script>
+    // DATABASE INIZIALE CON CODICI REALI DI ESEMPIO
     let database = {
-      "App Note Sandro": { html: "", css: "/* CSS Note */", js: "// JS Note", python: "# PY Note", note: "Appunti..." }
+      "App Note Sandro": { 
+        html: "<div class='container'>\n  <h1>Sandro OS Live</h1>\n  <p>L'anteprima funziona!</p>\n  <button id='btn'>Clicca qui</button>\n  <div id='box'></div>\n</div>", 
+        css: "body { background: #111; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }\n.container { text-align: center; border: 2px solid #00d2d3; padding: 30px; border-radius: 20px; background: #1a1a1a; }\nbutton { background: #00d2d3; border: none; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold; cursor: pointer; }\n#box { margin-top: 20px; height: 20px; color: #00d2d3; }", 
+        js: "document.getElementById('btn').onclick = function() {\n  document.getElementById('box').innerText = '🔥 Codice JS Eseguito!';\n  console.log('Test Sandbox OK');\n};", 
+        python: "# Python non gira in browser", 
+        note: "Questa è l'app di esempio per testare il tasto PLAY." 
+      }
     };
 
-    let backupProgetto = null;
-    let backupNome = "";
-    let undoTimeout;
-    let cartellaAttiva = "";
+    let backupProgetto = null; let backupNome = ""; let undoTimeout; let cartellaAttiva = "";
 
     function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
+
+    function avviaPlay() {
+        vibrate();
+        const p = database[cartellaAttiva];
+        const fullCode = `<html><head><style>${p.css}</style></head><body>${p.html}<script>${p.js}<\/script></body></html>`;
+        document.getElementById('playView').style.display = 'flex';
+        document.getElementById('playFrame').srcdoc = fullCode;
+    }
+
+    function chiudiPlay() { vibrate(); document.getElementById('playView').style.display = 'none'; document.getElementById('playFrame').srcdoc = ""; }
 
     function updateStats() {
         const dataStr = JSON.stringify(database);
@@ -140,8 +155,7 @@
 
     function alertStats() {
         const dataStr = JSON.stringify(database);
-        const sizeKB = (dataStr.length / 1024).toFixed(2);
-        alert(`📊 STATISTICHE ARCHIVIO\n\nSpazio usato: ${sizeKB} KB\nProgetti totali: ${Object.keys(database).length}`);
+        alert(`📊 STATISTICHE\n\nSpazio: ${(dataStr.length / 1024).toFixed(2)} KB\nProgetti: ${Object.keys(database).length}`);
     }
 
     function esportaDatabase() {
@@ -151,19 +165,15 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "backup_sandro_os_" + new Date().toISOString().split('T')[0] + ".txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        a.download = "backup_sandro_os.txt";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        alert("✅ Backup scaricato con successo!");
     }
 
     function renderHome() {
       updateStats();
       const grid = document.getElementById('mainFolderGrid');
       grid.innerHTML = '';
-      
       Object.keys(database).forEach(nome => {
         grid.innerHTML += `
           <div class="item-box" onclick="openProject('${nome}')">
@@ -173,83 +183,37 @@
             <strong style="color: var(--folder);">${nome}</strong>
           </div>`;
       });
-
-      grid.innerHTML += `
-        <div class="item-box" onclick="nuovoProgetto()" style="border-style: dashed; border-color: #444;">
-          <span class="icon-big">➕</span>
-          <strong>Nuovo Progetto</strong>
-        </div>`;
+      grid.innerHTML += `<div class="item-box" onclick="nuovoProgetto()" style="border-style: dashed; border-color: #444;"><span class="icon-big">➕</span><strong>Nuovo</strong></div>`;
     }
 
     function nuovoProgetto() {
       vibrate();
-      const nome = prompt("Nome del nuovo progetto:");
-      if (nome && !database[nome]) {
-        database[nome] = { html: "", css: "", js: "", python: "", note: "" };
-        renderHome();
-      }
+      const nome = prompt("Nome progetto:");
+      if (nome && !database[nome]) { database[nome] = { html: "", css: "", js: "", python: "", note: "" }; renderHome(); }
     }
 
     function rinominaProgetto(vecchioNome) {
       vibrate();
       const nuovoNome = prompt("Modifica nome:", vecchioNome);
-      if (nuovoNome && nuovoNome !== vecchioNome) {
-        database[nuovoNome] = database[vecchioNome];
-        delete database[vecchioNome];
-        renderHome();
-      }
+      if (nuovoNome && nuovoNome !== vecchioNome) { database[nuovoNome] = database[vecchioNome]; delete database[vecchioNome]; renderHome(); }
     }
 
     function eliminaProgetto(nome) {
       vibrate();
-      backupNome = nome;
-      backupProgetto = { ...database[nome] };
-      delete database[nome];
-      renderHome();
+      backupNome = nome; backupProgetto = { ...database[nome] }; delete database[nome]; renderHome();
       document.getElementById('undoBar').style.display = 'flex';
-      clearTimeout(undoTimeout);
-      undoTimeout = setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
+      clearTimeout(undoTimeout); undoTimeout = setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
     }
 
-    function ripristinaProgetto() {
-      vibrate();
-      if (backupNome) {
-        database[backupNome] = backupProgetto;
-        document.getElementById('undoBar').style.display = 'none';
-        renderHome();
-      }
-    }
+    function ripristinaProgetto() { vibrate(); if (backupNome) { database[backupNome] = backupProgetto; document.getElementById('undoBar').style.display = 'none'; renderHome(); } }
 
-    function openProject(nome) {
-      vibrate();
-      cartellaAttiva = nome;
-      document.getElementById('homeView').style.display = 'none';
-      document.getElementById('projectView').style.display = 'block';
-      document.getElementById('activeProjectTitle').textContent = nome;
-      document.getElementById('noteArea').value = database[nome].note || "";
-    }
+    function openProject(nome) { vibrate(); cartellaAttiva = nome; document.getElementById('homeView').style.display = 'none'; document.getElementById('projectView').style.display = 'block'; document.getElementById('activeProjectTitle').textContent = nome; document.getElementById('noteArea').value = database[nome].note || ""; }
 
-    function goHome() { 
-      vibrate(); 
-      database[cartellaAttiva].note = document.getElementById('noteArea').value;
-      document.getElementById('homeView').style.display = 'block'; 
-      document.getElementById('projectView').style.display = 'none'; 
-      updateStats();
-    }
+    function goHome() { vibrate(); database[cartellaAttiva].note = document.getElementById('noteArea').value; document.getElementById('homeView').style.display = 'block'; document.getElementById('projectView').style.display = 'none'; updateStats(); }
 
-    function viewCode(type) {
-      vibrate();
-      document.getElementById('popup').style.display = 'flex';
-      document.getElementById('popupTitle').textContent = type.toUpperCase();
-      document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Nessun codice";
-      hljs.highlightAll();
-    }
+    function viewCode(type) { vibrate(); document.getElementById('popup').style.display = 'flex'; document.getElementById('popupTitle').textContent = type.toUpperCase(); document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Vuoto"; hljs.highlightAll(); }
 
-    function cerca() {
-      vibrate();
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      if (database[cartellaAttiva][q]) viewCode(q); else alert("Codice non trovato");
-    }
+    function cerca() { vibrate(); const q = document.getElementById("searchInput").value.toLowerCase(); if (database[cartellaAttiva][q]) viewCode(q); else alert("Non trovato"); }
 
     function pulisciNote() { vibrate(); document.getElementById("noteArea").value = ""; }
     function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
