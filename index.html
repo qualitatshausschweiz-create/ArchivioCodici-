@@ -3,71 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - Editor</title>
+  <title>Sandro Project OS - PRO</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
   <style>
-    :root { --web: #0984e3; --play: #00d2d3; --danger: #ff7675; --folder: #fdcb6e; }
-    body { font-family: sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; }
+    :root {
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0; padding: 20px; background: #050505; color: #fff;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stats-bar {
+        background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
+        font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
+    }
+
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; position: relative; }
-    #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #050505; padding: 20px; flex-direction: column; z-index: 100; }
-    .btn { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; margin-bottom: 10px; }
-    textarea { width: 100%; flex-grow: 1; background: #111; color: #00ff00; border: 1px solid #333; border-radius: 10px; padding: 15px; font-family: monospace; font-size: 14px; outline: none; }
-    iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 15px; border: none; margin-top: 10px; }
+    .item-box { 
+        background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
+        border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s; position: relative;
+    }
+    
+    .btn-folder-action { position: absolute; top: 10px; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
+    .btn-del { right: 10px; color: var(--danger); }
+    .btn-edit { left: 10px; color: var(--web); }
+
+    #projectView, #editView, #playView { 
+        display: none; position: fixed; inset: 0; background: #050505; 
+        padding: 20px; flex-direction: column; z-index: 100; 
+    }
+
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+    .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
+    
+    /* EDITOR TEXTAREA */
+    textarea { 
+        width: 100%; flex-grow: 1; background: #000; color: #00ff00; 
+        border: 1px solid #333; border-radius: 15px; padding: 15px; 
+        font-family: monospace; font-size: 16px; outline: none; margin: 15px 0;
+    }
+
+    iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 20px; border: none; margin-top: 15px; }
+    .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
   <div id="homeView">
     <h1>Sandro Project OS</h1>
-    <div class="folder-grid" id="grid"></div>
+    <div class="stats-bar">
+        <span id="memUsage">Memoria: 0 KB</span>
+        <span id="projCount">Progetti: 0</span>
+    </div>
+    <div class="folder-grid" id="mainGrid"></div>
   </div>
 
   <div id="projectView">
-    <button class="btn" style="background:#444" onclick="goHome()">⬅️ INDIETRO</button>
-    <h2 id="projTitle"></h2>
-    <button class="btn" style="background:var(--play)" onclick="avviaPlay()">▶️ PLAY</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Torna ai Progetti</button>
+    <h2 id="activeTitle" style="margin:0 0 20px 0;"></h2>
+
+    <div class="toolbar">
+        <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ PLAY</button>
+        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA</button>
+    </div>
+
     <div class="folder-grid">
-      <div class="item-box" onclick="openEditor('html')">📄 HTML</div>
-      <div class="item-box" onclick="openEditor('css')">🎨 CSS</div>
-      <div class="item-box" onclick="openEditor('js')">⚡ JS</div>
+      <div class="item-box" onclick="openEditor('html')"><span class="icon-big">📄</span><strong>HTML</strong></div>
+      <div class="item-box" onclick="openEditor('css')"><span class="icon-big">🎨</span><strong>CSS</strong></div>
+      <div class="item-box" onclick="openEditor('js')"><span class="icon-big">⚡</span><strong>JS</strong></div>
     </div>
   </div>
 
   <div id="editView">
-    <h2 id="editTitle">MODIFICA</h2>
-    <textarea id="editorTextarea" placeholder="Incolla qui il codice..."></textarea>
-    <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn" style="background:var(--web); flex:1;" onclick="salvaCodice()">✅ SALVA</button>
-        <button class="btn" style="background:var(--danger); flex:1;" onclick="closeEditor()">❌ ANNULLA</button>
+    <h2 id="editTitle" style="color:var(--web)"></h2>
+    <textarea id="editorTextarea" placeholder="Incolla qui il tuo codice..."></textarea>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA CODICE</button>
+        <button class="btn-tool" style="background:var(--danger); flex:1; font-size:14px;" onclick="closeEditor()">❌ ANNULLA</button>
     </div>
   </div>
 
   <div id="playView">
-    <button class="btn" style="background:var(--danger)" onclick="document.getElementById('playView').style.display='none'">CHIUDI</button>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0; color:var(--play)">Sandbox Live</h2>
+      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="document.getElementById('playView').style.display='none'">CHIUDI</button>
+    </div>
     <iframe id="playFrame"></iframe>
   </div>
 
   <script>
-    let database = { "Test": { html: "<h1>Ciao!</h1>", css: "h1{color:red}", js: "" } };
+    let database = { 
+        "App Note Sandro": { html: "<h1>Benvenuto Sandro</h1>", css: "body{background:black; color:cyan; text-align:center; padding-top:50px;}", js: "" } 
+    };
     let currentProj = "";
     let currentType = "";
 
     function render() {
-        const g = document.getElementById('grid'); g.innerHTML = '';
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = '';
         Object.keys(database).forEach(n => {
-            g.innerHTML += `<div class="item-box" onclick="openProj('${n}')">📂<br>${n}</div>`;
+            grid.innerHTML += `
+              <div class="item-box" onclick="openProj('${n}')">
+                <button class="btn-folder-action btn-del" onclick="event.stopPropagation(); elimina('${n}')">🗑️</button>
+                <span class="icon-big">📂</span><strong style="color:var(--folder)">${n}</strong>
+              </div>`;
         });
-        g.innerHTML += `<div class="item-box" onclick="nuovo()">➕ NUOVO</div>`;
+        grid.innerHTML += `<div class="item-box" onclick="nuovo()" style="border-style:dashed; border-color:#444;"><span class="icon-big">➕</span><strong>Nuovo</strong></div>`;
+        updateStats();
     }
 
-    function nuovo() { let n = prompt("Nome?"); if(n) { database[n] = {html:"", css:"", js:""}; render(); } }
-    function openProj(n) { currentProj = n; document.getElementById('projTitle').innerText = n; document.getElementById('projectView').style.display = 'flex'; }
-    function goHome() { document.getElementById('projectView').style.display = 'none'; render(); }
+    function nuovo() { let n = prompt("Nome Progetto?"); if(n) { database[n] = {html:"", css:"", js:""}; render(); } }
     
-    // QUI RISPONDO ALLA TUA DOMANDA: Come inserire i codici
+    function elimina(n) { if(confirm("Eliminare "+n+"?")) { delete database[n]; render(); } }
+
+    function openProj(n) { 
+        currentProj = n; 
+        document.getElementById('activeTitle').innerText = n; 
+        document.getElementById('projectView').style.display = 'flex'; 
+    }
+
+    function goHome() { document.getElementById('projectView').style.display = 'none'; render(); }
+
     function openEditor(type) {
         currentType = type;
-        document.getElementById('editTitle').innerText = "MODIFICA " + type.toUpperCase();
+        document.getElementById('editTitle').innerText = "SCRIVI " + type.toUpperCase();
         document.getElementById('editorTextarea').value = database[currentProj][type];
         document.getElementById('editView').style.display = 'flex';
     }
@@ -85,6 +150,14 @@
         document.getElementById('playView').style.display = 'flex';
         document.getElementById('playFrame').srcdoc = code;
     }
+
+    function updateStats() {
+        const size = (JSON.stringify(database).length / 1024).toFixed(2);
+        document.getElementById('memUsage').textContent = `Memoria: ${size} KB`;
+        document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
+    }
+
+    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Copiato!"); }
 
     render();
   </script>
