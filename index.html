@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sandro Project OS - Archivio PRO</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
   <style>
     :root {
       --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --play: #00d2d3;
@@ -19,13 +16,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* STATS BAR IN TEMPO REALE */
+    /* BARRA STATISTICHE */
     .stats-bar {
         background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
         font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
         border: 1px solid #222;
     }
 
+    /* BARRA RIPRISTINO (UNDO) */
     #undoBar { 
         display: none; background: var(--undo); color: #000; padding: 15px; 
         border-radius: 15px; margin-bottom: 20px; font-weight: bold; 
@@ -33,6 +31,7 @@
     }
 
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    
     .item-box { 
         background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
         border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s; position: relative;
@@ -42,6 +41,7 @@
     .btn-del { right: 10px; color: var(--danger); }
     .btn-edit { left: 10px; color: var(--web); }
 
+    /* VISTE */
     #projectView, #editView, #playView { 
         display: none; position: fixed; inset: 0; background: #050505; 
         padding: 20px; flex-direction: column; z-index: 100; 
@@ -79,7 +79,7 @@
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Torna alla Home</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Indietro</button>
     <h2 id="activeTitle" style="margin:0 0 20px 0; color: var(--folder);"></h2>
 
     <div class="toolbar">
@@ -96,28 +96,28 @@
 
   <div id="editView">
     <h2 id="editTitle" style="color:var(--web)"></h2>
-    <textarea id="editorTextarea" placeholder="Incolla qui il tuo codice per testarlo..."></textarea>
+    <textarea id="editorTextarea" placeholder="Incolla o scrivi il codice qui..."></textarea>
     <div style="display:flex; gap:10px;">
-        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA E AGGIORNA</button>
-        <button class="btn-tool" style="background:var(--danger); flex:1; font-size:14px;" onclick="closeEditor()">❌ ANNULLA</button>
+        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA</button>
+        <button class="btn-tool" style="background:var(--danger); flex:1; font-size:14px;" onclick="closeEditor()">❌ CHIUDI</button>
     </div>
   </div>
 
   <div id="playView">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 style="margin:0; color:var(--play)">Test App Live</h2>
+      <h2 style="margin:0; color:var(--play)">Sandbox Play</h2>
       <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="document.getElementById('playView').style.display='none'">CHIUDI TEST</button>
     </div>
     <iframe id="playFrame"></iframe>
   </div>
 
   <script>
-    // DATABASE INIZIALE CON LA TUA CARTELLA PREFERITA
+    // IL TUO ARCHIVIO CON I CODICI APP NOTE GESTITI SEPARATAMENTE
     let database = { 
-        "Archivio codici note app": { 
-            html: "<div style='text-align:center; padding:20px;'>\n  <h2>LE MIE NOTE</h2>\n  <textarea style='width:80%; height:100px;' placeholder='Scrivi qui...'></textarea>\n  <br><button style='padding:10px; background:orange; border:none; border-radius:10px;'>SALVA NOTA</button>\n</div>", 
-            css: "body { background: #111; color: orange; font-family: sans-serif; }", 
-            js: "console.log('App Note pronta!');" 
+        "Archivio Codici Nota App": { 
+            html: "<div class='nota-box'>\n  <h2>LE MIE NOTE</h2>\n  <textarea id='areaNota' placeholder='Scrivi qualcosa...'></textarea>\n  <button onclick='avviso()'>SALVA</button>\n</div>", 
+            css: "body { background: #000; color: #fdcb6e; display: flex; justify-content: center; padding: 20px; font-family: sans-serif; }\n.nota-box { border: 2px solid #fdcb6e; padding: 20px; border-radius: 15px; text-align: center; }\ntextarea { width: 100%; margin-bottom: 10px; border-radius: 5px; }\nbutton { background: #fdcb6e; border: none; padding: 10px; border-radius: 5px; font-weight: bold; }", 
+            js: "function avviso() { alert('Nota inviata correttamente!'); }" 
         } 
     };
     
@@ -144,7 +144,7 @@
         backupNome = n; backupProgetto = { ...database[n] };
         delete database[n]; render();
         document.getElementById('undoBar').style.display = 'flex';
-        setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
+        setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 6000);
     }
 
     function ripristinaProgetto() {
@@ -152,7 +152,7 @@
     }
 
     function rinomina(n) {
-        let nuovo = prompt("Nuovo nome:", n);
+        let nuovo = prompt("Nuovo nome progetto:", n);
         if(nuovo && nuovo !== n) { database[nuovo] = database[n]; delete database[n]; render(); }
     }
 
@@ -173,7 +173,7 @@
 
     function salvaCodice() {
         database[currentProj][currentType] = document.getElementById('editorTextarea').value;
-        updateStats(); // Aggiorna memoria in tempo reale
+        updateStats();
         closeEditor();
     }
 
@@ -187,12 +187,13 @@
     }
 
     function updateStats() {
-        const size = (JSON.stringify(database).length / 1024).toFixed(2);
+        const raw = JSON.stringify(database);
+        const size = (raw.length / 1024).toFixed(2);
         document.getElementById('memUsage').textContent = `Memoria: ${size} KB`;
         document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
     }
 
-    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Codice Progetto Copiato!"); }
+    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Copiato!"); }
 
     render();
   </script>
