@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - PRO</title>
+  <title>Sandro Project OS - Ultimate</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
     :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
+      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --play: #00d2d3;
     }
 
     body {
@@ -22,6 +22,12 @@
     .stats-bar {
         background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
         font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
+    }
+
+    #undoBar { 
+        display: none; background: var(--undo); color: #000; padding: 15px; 
+        border-radius: 15px; margin-bottom: 20px; font-weight: bold; 
+        justify-content: space-between; align-items: center;
     }
 
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -42,7 +48,6 @@
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
     
-    /* EDITOR TEXTAREA */
     textarea { 
         width: 100%; flex-grow: 1; background: #000; color: #00ff00; 
         border: 1px solid #333; border-radius: 15px; padding: 15px; 
@@ -61,6 +66,12 @@
         <span id="memUsage">Memoria: 0 KB</span>
         <span id="projCount">Progetti: 0</span>
     </div>
+
+    <div id="undoBar">
+        <span>Cartella eliminata</span>
+        <button onclick="ripristinaProgetto()" style="background:#000; color:#fff; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">↩️ RIPRISTINA</button>
+    </div>
+
     <div class="folder-grid" id="mainGrid"></div>
   </div>
 
@@ -84,7 +95,7 @@
     <h2 id="editTitle" style="color:var(--web)"></h2>
     <textarea id="editorTextarea" placeholder="Incolla qui il tuo codice..."></textarea>
     <div style="display:flex; gap:10px;">
-        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA CODICE</button>
+        <button class="btn-tool" style="background:var(--report); flex:1; font-size:14px;" onclick="salvaCodice()">✅ SALVA</button>
         <button class="btn-tool" style="background:var(--danger); flex:1; font-size:14px;" onclick="closeEditor()">❌ ANNULLA</button>
     </div>
   </div>
@@ -99,10 +110,9 @@
 
   <script>
     let database = { 
-        "App Note Sandro": { html: "<h1>Benvenuto Sandro</h1>", css: "body{background:black; color:cyan; text-align:center; padding-top:50px;}", js: "" } 
+        "App Note codici Sandro": { html: "<h1>Pronto a testare!</h1>", css: "body{background:#000; color:gold; text-align:center;}", js: "" } 
     };
-    let currentProj = "";
-    let currentType = "";
+    let backupProgetto = null; let backupNome = ""; let currentProj = ""; let currentType = "";
 
     function render() {
         const grid = document.getElementById('mainGrid');
@@ -110,6 +120,7 @@
         Object.keys(database).forEach(n => {
             grid.innerHTML += `
               <div class="item-box" onclick="openProj('${n}')">
+                <button class="btn-folder-action btn-edit" onclick="event.stopPropagation(); rinomina('${n}')">✏️</button>
                 <button class="btn-folder-action btn-del" onclick="event.stopPropagation(); elimina('${n}')">🗑️</button>
                 <span class="icon-big">📂</span><strong style="color:var(--folder)">${n}</strong>
               </div>`;
@@ -118,9 +129,23 @@
         updateStats();
     }
 
-    function nuovo() { let n = prompt("Nome Progetto?"); if(n) { database[n] = {html:"", css:"", js:""}; render(); } }
+    function nuovo() { let n = prompt("Nome Progetto?"); if(n && !database[n]) { database[n] = {html:"", css:"", js:""}; render(); } }
     
-    function elimina(n) { if(confirm("Eliminare "+n+"?")) { delete database[n]; render(); } }
+    function elimina(n) { 
+        backupNome = n; backupProgetto = { ...database[n] };
+        delete database[n]; render();
+        document.getElementById('undoBar').style.display = 'flex';
+        setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
+    }
+
+    function ripristinaProgetto() {
+        if (backupNome) { database[backupNome] = backupProgetto; document.getElementById('undoBar').style.display = 'none'; render(); }
+    }
+
+    function rinomina(n) {
+        let nuovo = prompt("Nuovo nome:", n);
+        if(nuovo && nuovo !== n) { database[nuovo] = database[n]; delete database[n]; render(); }
+    }
 
     function openProj(n) { 
         currentProj = n; 
