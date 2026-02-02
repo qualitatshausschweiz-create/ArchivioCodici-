@@ -109,9 +109,15 @@
   </div>
 
   <script>
+    // HO INSERITO QUI I TUOI CODICI DELL'APP NOTE
     let database = { 
-        "App Note codici Sandro": { html: "<h1>Pronto a testare!</h1>", css: "body{background:#000; color:gold; text-align:center;}", js: "" } 
+        "Archivio codici app note": { 
+            html: "\n<div class='app'>\n  <h2>LE MIE NOTE</h2>\n  <textarea id='n' placeholder='Scrivi nota...'></textarea>\n  <button onclick='save()'>SALVA</button>\n</div>", 
+            css: "body { background: #000; color: #fdcb6e; font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }\n.app { text-align: center; border: 1px solid #fdcb6e; padding: 20px; border-radius: 20px; }\ntextarea { width: 100%; background: #111; color: white; border: 1px solid #333; border-radius: 10px; padding: 10px; margin: 10px 0; }\nbutton { background: #fdcb6e; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; }", 
+            js: "function save() { alert('Nota salvata nel sistema!'); }" 
+        } 
     };
+    
     let backupProgetto = null; let backupNome = ""; let currentProj = ""; let currentType = "";
 
     function render() {
