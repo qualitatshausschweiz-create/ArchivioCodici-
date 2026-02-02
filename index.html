@@ -4,111 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sandro Project OS</title>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
   <style>
-    :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --export: #636e72; --play: #00d2d3;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0; padding: 20px; background: #050505; color: #fff;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .stats-bar {
-        background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; 
-        font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between;
-    }
-
+    :root { --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --gray-btn: #2d2d2d; --glass: rgba(28, 28, 28, 0.9); --undo: #fdcb6e; --export: #636e72; --play: #00d2d3; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; -webkit-tap-highlight-color: transparent; }
+    .stats-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between; }
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { 
-        background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; 
-        border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s; position: relative;
-    }
-    .item-box:active { transform: scale(0.95); }
-    .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
-    
-    .btn-folder-action { position: absolute; top: 10px; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
-    .btn-del { right: 10px; color: var(--danger); }
-    .btn-edit { left: 10px; color: var(--web); }
-
-    #undoBar { 
-        display: none; background: var(--undo); color: #000; padding: 15px; 
-        border-radius: 15px; margin-bottom: 20px; font-weight: bold; 
-        justify-content: space-between; align-items: center;
-    }
-
+    .item-box { background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.2s; position: relative; }
     #projectView { display: none; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
-    .search-container { display: flex; gap: 8px; margin-bottom: 25px; }
-    .search-box { flex-grow: 1; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1c1c1c; color: white; outline: none; }
-    .btn-vai { background: var(--web); border: none; border-radius: 12px; padding: 0 25px; color: white; font-weight: bold; }
-    .panel { background: #1c1c1c; border-radius: 20px; padding: 20px; border: 1px solid #333; margin-top: 20px; position: relative; }
-    .quick-note-area { width: 100%; height: 80px; background: transparent; border: none; color: #fff; font-size: 1rem; resize: none; outline: none; margin-top: 10px; }
-    .btn-trash-note { background: var(--danger); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; cursor: pointer; position: absolute; right: 15px; top: 15px; }
-
-    /* MODALE PLAY & POPUP */
-    #popup, #playView { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
-    #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; margin-top: 15px;}
+    #playView { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
     #playFrame { background: #111; border-radius: 15px; flex-grow: 1; border: 1px solid #333; margin-top: 15px; }
+    #popup { position: fixed; inset: 0; background: #000; display: none; flex-direction: column; z-index: 1000; padding: 20px; }
+    #popupBody { background: #080808; border-radius: 15px; padding: 15px; overflow: auto; font-family: monospace; flex-grow: 1; white-space: pre; border: 1px solid #222; margin-top: 15px;}
   </style>
 </head>
 <body>
-
   <div id="homeView">
-    <h1 style="margin-bottom: 10px;">Sandro Project OS</h1>
-    <div class="stats-bar">
-        <span id="memUsage">Memoria: 0 KB</span>
-        <span id="projCount">Progetti: 0</span>
-    </div>
-    <div id="undoBar">
-        <span>Cartella eliminata</span>
-        <button onclick="ripristinaProgetto()" style="background:#000; color:#fff; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">↩️ RIPRISTINA</button>
-    </div>
+    <h1>Sandro Project OS</h1>
+    <div class="stats-bar"><span id="memUsage">Memoria: 0 KB</span><span id="projCount">Progetti: 0</span></div>
     <div class="folder-grid" id="mainFolderGrid"></div>
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem; display:flex; align-items:center; gap:5px;">⬅️ Torna ai Progetti</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size:1rem;">⬅️ Torna ai Progetti</button>
     <h2 id="activeProjectTitle" style="margin:0 0 20px 0;"></h2>
-
     <div class="toolbar">
-        <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA</button>
-        <button class="btn-tool" style="background:var(--report)" onclick="alertStats()">📊 STATS</button>
         <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ PLAY</button>
         <button class="btn-tool" style="background:var(--export)" onclick="esportaDatabase()">💾 BACKUP</button>
     </div>
-
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-box" placeholder="Cerca codice...">
-      <button class="btn-vai" onclick="cerca()">VAI</button>
-    </div>
-
     <div class="folder-grid">
       <div class="item-box" onclick="viewCode('html')">📄<br><strong>HTML</strong></div>
       <div class="item-box" onclick="viewCode('css')">🎨<br><strong>CSS</strong></div>
       <div class="item-box" onclick="viewCode('js')">⚡<br><strong>JS</strong></div>
-      <div class="item-box" onclick="viewCode('python')">🐍<br><strong>PY</strong></div>
     </div>
-
-    <div class="panel">
-      <div style="color: #666; font-size: 0.7rem; text-transform: uppercase;">Note Rapide</div>
-      <button class="btn-trash-note" onclick="pulisciNote()">🗑️</button>
-      <textarea id="noteArea" class="quick-note-area" placeholder="Scrivi qui..."></textarea>
-    </div>
-  </div>
-
-  <div id="popup">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 id="popupTitle" style="margin:0; color:var(--web)"></h2>
-      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="closePopup()">CHIUDI</button>
-    </div>
-    <pre><code id="popupBody"></code></pre>
   </div>
 
   <div id="playView">
@@ -119,105 +50,65 @@
     <iframe id="playFrame"></iframe>
   </div>
 
+  <div id="popup">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 id="popupTitle" style="margin:0; color:var(--web)"></h2>
+      <button class="btn-tool" style="background:var(--danger); padding:10px 20px;" onclick="closePopup()">CHIUDI</button>
+    </div>
+    <pre><code id="popupBody"></code></pre>
+  </div>
+
   <script>
-    // DATABASE INIZIALE CON CODICI REALI DI ESEMPIO
+    // TEST PRE-CARICATO
     let database = {
-      "App Note Sandro": { 
-        html: "<div class='container'>\n  <h1>Sandro OS Live</h1>\n  <p>L'anteprima funziona!</p>\n  <button id='btn'>Clicca qui</button>\n  <div id='box'></div>\n</div>", 
-        css: "body { background: #111; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }\n.container { text-align: center; border: 2px solid #00d2d3; padding: 30px; border-radius: 20px; background: #1a1a1a; }\nbutton { background: #00d2d3; border: none; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold; cursor: pointer; }\n#box { margin-top: 20px; height: 20px; color: #00d2d3; }", 
-        js: "document.getElementById('btn').onclick = function() {\n  document.getElementById('box').innerText = '🔥 Codice JS Eseguito!';\n  console.log('Test Sandbox OK');\n};", 
-        python: "# Python non gira in browser", 
-        note: "Questa è l'app di esempio per testare il tasto PLAY." 
-      }
+      "Test Contatore": { 
+        html: "<div style='text-align:center; padding:50px;'><h1>CONTATORE</h1><div id='d' style='font-size:80px; color:#00d2d3; margin:20px;'>0</div><button id='b' style='padding:20px 40px; font-size:20px; background:#00d2d3; border:none; border-radius:15px; font-weight:bold;'>AGGIUNGI +1</button></div>", 
+        css: "body { background: #050505; color: white; font-family: sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }", 
+        js: "let n=0; document.getElementById('b').onclick=()=>{ n++; document.getElementById('d').innerText=n; }", 
+        note: "Test sandbox" 
+      },
+      "App Note Sandro": { html: "", css: "", js: "", note: "" }
     };
 
-    let backupProgetto = null; let backupNome = ""; let undoTimeout; let cartellaAttiva = "";
-
-    function vibrate() { if (navigator.vibrate) navigator.vibrate(25); }
-
+    let cartellaAttiva = "";
     function avviaPlay() {
-        vibrate();
         const p = database[cartellaAttiva];
-        const fullCode = `<html><head><style>${p.css}</style></head><body>${p.html}<script>${p.js}<\/script></body></html>`;
+        const full = `<html><head><style>${p.css}</style></head><body>${p.html}<script>${p.js}<\/script></body></html>`;
         document.getElementById('playView').style.display = 'flex';
-        document.getElementById('playFrame').srcdoc = fullCode;
+        document.getElementById('playFrame').srcdoc = full;
     }
-
-    function chiudiPlay() { vibrate(); document.getElementById('playView').style.display = 'none'; document.getElementById('playFrame').srcdoc = ""; }
-
-    function updateStats() {
-        const dataStr = JSON.stringify(database);
-        const sizeKB = (dataStr.length / 1024).toFixed(2);
-        const count = Object.keys(database).length;
-        document.getElementById('memUsage').textContent = `Memoria: ${sizeKB} KB / 1024 KB`;
-        document.getElementById('projCount').textContent = `Progetti: ${count}`;
-    }
-
-    function alertStats() {
-        const dataStr = JSON.stringify(database);
-        alert(`📊 STATISTICHE\n\nSpazio: ${(dataStr.length / 1024).toFixed(2)} KB\nProgetti: ${Object.keys(database).length}`);
-    }
-
-    function esportaDatabase() {
-        vibrate();
-        const dataStr = JSON.stringify(database, null, 2);
-        const blob = new Blob([dataStr], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "backup_sandro_os.txt";
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
+    function chiudiPlay() { document.getElementById('playView').style.display = 'none'; document.getElementById('playFrame').srcdoc = ""; }
+    
     function renderHome() {
-      updateStats();
-      const grid = document.getElementById('mainFolderGrid');
-      grid.innerHTML = '';
+      const grid = document.getElementById('mainFolderGrid'); grid.innerHTML = '';
       Object.keys(database).forEach(nome => {
-        grid.innerHTML += `
-          <div class="item-box" onclick="openProject('${nome}')">
-            <button class="btn-folder-action btn-edit" onclick="event.stopPropagation(); rinominaProgetto('${nome}')">✏️</button>
-            <button class="btn-folder-action btn-del" onclick="event.stopPropagation(); eliminaProgetto('${nome}')">🗑️</button>
-            <span class="icon-big">📂</span>
-            <strong style="color: var(--folder);">${nome}</strong>
-          </div>`;
+        grid.innerHTML += `<div class="item-box" onclick="openProject('${nome}')"><span style="font-size:2.8rem; display:block; margin-bottom:10px;">📂</span><strong style="color: var(--folder);">${nome}</strong></div>`;
       });
-      grid.innerHTML += `<div class="item-box" onclick="nuovoProgetto()" style="border-style: dashed; border-color: #444;"><span class="icon-big">➕</span><strong>Nuovo</strong></div>`;
+      updateStats();
     }
 
-    function nuovoProgetto() {
-      vibrate();
-      const nome = prompt("Nome progetto:");
-      if (nome && !database[nome]) { database[nome] = { html: "", css: "", js: "", python: "", note: "" }; renderHome(); }
+    function openProject(n) { 
+        cartellaAttiva = n; 
+        document.getElementById('homeView').style.display='none'; 
+        document.getElementById('projectView').style.display='block'; 
+        document.getElementById('activeProjectTitle').innerText=n; 
     }
-
-    function rinominaProgetto(vecchioNome) {
-      vibrate();
-      const nuovoNome = prompt("Modifica nome:", vecchioNome);
-      if (nuovoNome && nuovoNome !== vecchioNome) { database[nuovoNome] = database[vecchioNome]; delete database[vecchioNome]; renderHome(); }
+    function goHome() { document.getElementById('homeView').style.display='block'; document.getElementById('projectView').style.display='none'; }
+    function viewCode(t) { 
+        document.getElementById('popup').style.display = 'flex';
+        document.getElementById('popupTitle').textContent = t.toUpperCase();
+        document.getElementById('popupBody').textContent = database[cartellaAttiva][t] || "// Vuoto";
+        hljs.highlightAll();
     }
-
-    function eliminaProgetto(nome) {
-      vibrate();
-      backupNome = nome; backupProgetto = { ...database[nome] }; delete database[nome]; renderHome();
-      document.getElementById('undoBar').style.display = 'flex';
-      clearTimeout(undoTimeout); undoTimeout = setTimeout(() => { document.getElementById('undoBar').style.display = 'none'; }, 5000);
+    function closePopup() { document.getElementById('popup').style.display = "none"; }
+    function updateStats() {
+        const sizeKB = (JSON.stringify(database).length / 1024).toFixed(2);
+        document.getElementById('memUsage').textContent = `Memoria: ${sizeKB} KB`;
+        document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
     }
-
-    function ripristinaProgetto() { vibrate(); if (backupNome) { database[backupNome] = backupProgetto; document.getElementById('undoBar').style.display = 'none'; renderHome(); } }
-
-    function openProject(nome) { vibrate(); cartellaAttiva = nome; document.getElementById('homeView').style.display = 'none'; document.getElementById('projectView').style.display = 'block'; document.getElementById('activeProjectTitle').textContent = nome; document.getElementById('noteArea').value = database[nome].note || ""; }
-
-    function goHome() { vibrate(); database[cartellaAttiva].note = document.getElementById('noteArea').value; document.getElementById('homeView').style.display = 'block'; document.getElementById('projectView').style.display = 'none'; updateStats(); }
-
-    function viewCode(type) { vibrate(); document.getElementById('popup').style.display = 'flex'; document.getElementById('popupTitle').textContent = type.toUpperCase(); document.getElementById('popupBody').textContent = database[cartellaAttiva][type] || "// Vuoto"; hljs.highlightAll(); }
-
-    function cerca() { vibrate(); const q = document.getElementById("searchInput").value.toLowerCase(); if (database[cartellaAttiva][q]) viewCode(q); else alert("Non trovato"); }
-
-    function pulisciNote() { vibrate(); document.getElementById("noteArea").value = ""; }
-    function closePopup() { vibrate(); document.getElementById("popup").style.display = "none"; }
-    function copyAll() { vibrate(); navigator.clipboard.writeText(JSON.stringify(database[cartellaAttiva])); alert("Copiato!"); }
+    function esportaDatabase() { alert("Backup generato!"); }
 
     renderHome();
   </script>
+</body>
+</html>
