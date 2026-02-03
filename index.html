@@ -3,28 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - V5</title>
+  <title>Sandro Project OS - V5 Fix</title>
   <style>
     :root {
       --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
     }
     body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #000; color: #fff; overflow-x: hidden; }
     
-    /* OROLOGIO */
     .clock-container { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
     #clock-time { font-size: 3rem; font-weight: 200; text-shadow: 0 0 20px var(--web); }
     #clock-date { font-size: 0.9rem; color: var(--web); margin-top: 5px; text-transform: capitalize; }
 
-    /* RICERCA */
     .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
     #searchBar { flex: 1; background: #151515; border: 1px solid #333; padding: 12px; border-radius: 12px; color: #fff; outline: none; }
     .btn-main { background: var(--web); border: none; border-radius: 12px; padding: 0 15px; color: white; font-weight: bold; cursor: pointer; }
 
-    /* GRIGLIA */
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: var(--glass); border-radius: 22px; padding: 25px 10px; text-align: center; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+    .item-box { background: var(--glass); border-radius: 22px; padding: 25px 10px; text-align: center; border: 1px solid #222; cursor: pointer; }
     
-    /* VISTE */
     #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #000; padding: 20px; flex-direction: column; z-index: 100; overflow-y: auto; }
     .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .btn-action { padding: 12px; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; flex: 1; }
@@ -97,17 +93,17 @@
         setTimeout(() => el.style.display = 'none', 2000);
     }
 
-    // --- DATABASE V5 (Con App Colori inclusa) ---
+    // --- DATABASE V5 FIX ---
     let database = JSON.parse(localStorage.getItem('sandro_os_v5')) || { 
         "Colori": {
-            html: `<div class='cnt'><h1>Gradient</h1><div id='p'></div><input type='color' id='c1' value='#0984e3'><input type='color' id='c2' value='#6c5ce7'><p id='o'>CSS Code...</p></div>`,
-            css: `body{background:#1a1a1a;color:white;text-align:center;font-family:sans-serif;} .cnt{padding:20px;} #p{width:100%;height:150px;border-radius:15px;margin:20px 0;background:linear-gradient(to right,#0984e3,#6c5ce7);border:2px solid #fff;} input{width:80px;height:80px;margin:10px;border:none;border-radius:10px;}`,
-            js: `const u=()=>{const c=linear-gradient(to right,\${document.getElementById('c1').value},\${document.getElementById('c2').value});document.getElementById('p').style.background=c;document.getElementById('o').innerText=c;};document.getElementById('c1').oninput=u;document.getElementById('c2').oninput=u;`
+            html: `<div style='padding:20px; text-align:center;'><h1>Gradient</h1><div id='p' style='width:100%; height:150px; border-radius:15px; margin:20px 0; border:2px solid #fff; background:linear-gradient(to right, #0984e3, #6c5ce7);'></div><input type='color' id='c1' value='#0984e3' style='width:80px; height:80px;'><input type='color' id='c2' value='#6c5ce7' style='width:80px; height:80px;'><p id='o' style='word-break:break-all; font-family:monospace;'>linear-gradient(to right, #0984e3, #6c5ce7)</p></div>`,
+            css: `body{background:#1a1a1a; color:white; font-family:sans-serif;}`,
+            js: `const update=()=>{const c1=document.getElementById('c1').value; const c2=document.getElementById('c2').value; const res='linear-gradient(to right, '+c1+', '+c2+')'; document.getElementById('p').style.background=res; document.getElementById('o').innerText=res;}; document.getElementById('c1').oninput=update; document.getElementById('c2').oninput=update;`
         },
         "Note App": {
-            html: `<h2>Le mie note</h2><button onclick='window.add()'>➕</button><div id='l'></div>`,
-            css: `body{background:#f0f0f0;font-family:sans-serif;padding:20px;} .n{background:#fff;padding:10px;margin-top:10px;border-radius:8px;}`,
-            js: `window.add=()=>{const t=prompt('Nota:');if(t)document.getElementById('l').innerHTML+='<div class="n">'+t+'</div>';}`
+            html: `<h2>Note App</h2><button onclick='window.add()'>➕</button><div id='l'></div>`,
+            css: `body{background:#f0f0f0; padding:20px; font-family:sans-serif;} .n{background:#fff; padding:10px; margin-top:10px; border-radius:8px;}`,
+            js: `window.add=()=>{const t=prompt('Nota:'); if(t) document.getElementById('l').innerHTML+='<div class="n">'+t+'</div>';}`
         }
     };
 
@@ -126,11 +122,15 @@
     function openEditor(type) { currentType = type; document.getElementById('editTitle').innerText = type.toUpperCase(); document.getElementById('editorTextarea').value = database[currentProj][type]; document.getElementById('editView').style.display = 'flex'; }
     function salvaCodice() { database[currentProj][currentType] = document.getElementById('editorTextarea').value; salvaDB(); notify("Salvato! ✅"); }
     function closeEditor() { document.getElementById('editView').style.display = 'none'; }
+    
     function avviaPlay() {
         const p = database[currentProj];
         document.getElementById('playView').style.display = 'flex';
-        document.getElementById('playFrame').srcdoc = `<!DOCTYPE html><html><head><style>\${p.css}</style></head><body>\${p.html}<script>\${p.js}<\/script></body></html>`;
+        // Risolto il bug dei backtick qui
+        const fullCode = "<!DOCTYPE html><html><head><style>" + p.css + "</style></head><body>" + p.html + "<script>" + p.js + "<\/script></body></html>";
+        document.getElementById('playFrame').srcdoc = fullCode;
     }
+
     function eliminaProgetto() { if(confirm("Elimina?")) { delete database[currentProj]; salvaDB(); goHome(); } }
     function creaNuovoProgetto() { const n = prompt("Nome:"); if(n) { database[n] = {html:'',css:'',js:''}; salvaDB(); } }
     function ripristinaDefault() { if(confirm("Ripristina?")) { database[currentProj] = {html:'',css:'',js:''}; salvaDB(); notify("Resettato"); } }
