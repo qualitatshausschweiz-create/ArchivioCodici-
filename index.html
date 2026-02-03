@@ -3,37 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - Multi App</title>
+  <title>Sandro Project OS - Definitive</title>
   <style>
     :root {
       --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
     }
     body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #000; color: #fff; overflow-x: hidden; }
     
-    .clock-container { text-align: center; margin-bottom: 25px; padding: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); }
-    #clock-time { font-size: 3.2rem; font-weight: 200; color: #fff; margin: 0; text-shadow: 0 0 20px var(--web); }
-    #clock-date { font-size: 1rem; color: var(--web); text-transform: capitalize; margin-top: 5px; }
+    /* OROLOGIO */
+    .clock-container { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+    #clock-time { font-size: 3rem; font-weight: 200; text-shadow: 0 0 20px var(--web); }
+    #clock-date { font-size: 0.9rem; color: var(--web); margin-top: 5px; text-transform: capitalize; }
 
+    /* RICERCA */
     .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
-    #searchBar { flex: 1; background: #151515; border: 1px solid #333; padding: 14px; border-radius: 15px; color: #fff; outline: none; }
-    .btn-main { background: var(--web); border: none; border-radius: 15px; padding: 0 20px; color: white; font-weight: bold; cursor: pointer; }
+    #searchBar { flex: 1; background: #151515; border: 1px solid #333; padding: 12px; border-radius: 12px; color: #fff; outline: none; }
+    .btn-main { background: var(--web); border: none; border-radius: 12px; padding: 0 15px; color: white; font-weight: bold; cursor: pointer; }
 
-    .stats-bar { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 12px; font-size: 0.75rem; color: #777; margin-bottom: 20px; display: flex; justify-content: space-between; border: 1px solid #222; }
+    /* GRIGLIA */
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: var(--glass); border-radius: 22px; padding: 30px 15px; text-align: center; border: 1px solid #222; backdrop-filter: blur(15px); transition: 0.3s; cursor: pointer; }
+    .item-box { background: var(--glass); border-radius: 22px; padding: 25px 10px; text-align: center; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+    .item-box:active { transform: scale(0.95); }
     
+    /* VISTE */
     #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #000; padding: 20px; flex-direction: column; z-index: 100; overflow-y: auto; }
-    .toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .btn-tool { padding: 12px 16px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
-    textarea { width: 100%; flex-grow: 1; min-height: 400px; background: #080808; color: #00ff9d; border: 1px solid #222; border-radius: 15px; padding: 15px; font-family: monospace; font-size: 14px; margin: 15px 0; outline: none; }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .btn-action { padding: 12px; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; flex: 1; }
+    
+    textarea { width: 100%; flex-grow: 1; min-height: 400px; background: #080808; color: #00ff9d; border: 1px solid #222; border-radius: 15px; padding: 15px; font-family: 'Courier New', monospace; font-size: 14px; margin-bottom: 15px; }
     iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 20px; border: none; }
-    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--report); padding: 10px 20px; border-radius: 10px; display: none; z-index: 1000; }
+    
+    .status-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--report); padding: 10px 20px; border-radius: 10px; display: none; z-index: 1000; }
   </style>
 </head>
 <body>
 
   <div id="homeView">
-    <h1>SANDRO <span style="color:var(--web)">OS</span></h1>
+    <h1 style="margin-bottom:10px;">SANDRO <span style="color:var(--web)">OS</span></h1>
     <div class="clock-container">
         <div id="clock-time">00:00:00</div>
         <div id="clock-date">-- -- --</div>
@@ -42,44 +48,47 @@
         <input type="text" id="searchBar" placeholder="Cerca progetto..." oninput="render()">
         <button class="btn-main" onclick="creaNuovoProgetto()">➕ NUOVO</button>
     </div>
-    <div class="stats-bar">
-        <span id="projCount">Progetti: 0</span>
-        <span id="memUsage">0 KB</span>
-    </div>
     <div class="folder-grid" id="mainGrid"></div>
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:var(--web); margin-bottom:15px; font-weight:bold;">⬅ INDIETRO</button>
-    <h2 id="activeTitle"></h2>
-    <div class="toolbar">
-        <button class="btn-tool" style="background:var(--play); flex:1;" onclick="avviaPlay()">▶ AVVIA APP</button>
-        <button class="btn-tool" style="background:var(--danger);" onclick="eliminaProgetto()">🗑️</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <button onclick="goHome()" style="background:none; border:none; color:var(--web); font-weight:bold; font-size:1rem;">⬅ Archivio</button>
+        <button onclick="eliminaProgetto()" style="background:var(--danger); border:none; padding:8px 15px; border-radius:10px; color:white; font-weight:bold;">🗑️ ELIMINA</button>
     </div>
+    <h2 id="activeTitle" style="margin:0 0 20px 0; color:var(--folder);"></h2>
+    
+    <div class="toolbar">
+        <button class="btn-action" style="background:var(--play);" onclick="avviaPlay()">▶ AVVIA APP</button>
+        <button class="btn-action" style="background:var(--copy-btn);" onclick="ripristinaDefault()">🔄 RIPRISTINA</button>
+    </div>
+
+    <p style="color:#666; font-size:0.8rem;">GESTIONE CODICI:</p>
     <div class="folder-grid">
-      <div class="item-box" onclick="openEditor('html')">📄 HTML</div>
-      <div class="item-box" onclick="openEditor('css')">🎨 CSS</div>
-      <div class="item-box" onclick="openEditor('js')">⚡ JS</div>
+      <div class="item-box" onclick="openEditor('html')">📄<br><strong>HTML</strong></div>
+      <div class="item-box" onclick="openEditor('css')">🎨<br><strong>CSS</strong></div>
+      <div class="item-box" onclick="openEditor('js')">⚡<br><strong>JS</strong></div>
     </div>
   </div>
 
   <div id="editView">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 id="editTitle" style="color:var(--web)"></h2>
-        <button class="btn-tool" style="background:var(--report);" onclick="salvaCodice()">SALVA ✅</button>
-    </div>
+    <h2 id="editTitle" style="color:var(--web); margin-top:0;"></h2>
     <textarea id="editorTextarea" spellcheck="false"></textarea>
-    <button class="btn-tool" style="background:var(--danger); width:100%;" onclick="closeEditor()">CHIUDI</button>
+    <div class="toolbar">
+        <button class="btn-action" style="background:var(--report);" onclick="salvaCodice()">✅ SALVA MODIFICA</button>
+        <button class="btn-action" style="background:var(--danger);" onclick="closeEditor()">❌ ANNULLA</button>
+    </div>
   </div>
 
   <div id="playView">
-    <button onclick="document.getElementById('playView').style.display='none'" style="background:var(--danger); color:white; border:none; padding:10px; width:100%; border-radius:10px; margin-bottom:10px;">ESCI DALL'APP</button>
+    <button onclick="document.getElementById('playView').style.display='none'" style="background:var(--danger); color:white; border:none; padding:12px; width:100%; border-radius:12px; margin-bottom:10px; font-weight:bold;">CHIUDI ANTEPRIMA</button>
     <iframe id="playFrame"></iframe>
   </div>
 
-  <div id="toast"></div>
+  <div id="statusMsg" class="status-msg">Salvato!</div>
 
   <script>
+    // 1. OROLOGIO
     function updateClock() {
         const now = new Date();
         document.getElementById('clock-time').textContent = now.toLocaleTimeString('it-IT');
@@ -87,51 +96,88 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 2000);
+    function notify(msg) {
+        const el = document.getElementById('statusMsg');
+        el.innerText = msg; el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 2000);
     }
 
-    // --- DATABASE CON ENTRAMBE LE APP ---
-    let database = JSON.parse(localStorage.getItem('sandro_db_v3')) || { 
-        "Note App Sandro": { 
-            html: `<div class="icon-bar"><button id="addNoteBtn">➕</button><button id="trashBtn">🗑️</button></div><div id="notesContainer"></div><div id="notePanel" class="panel hidden"><input id="noteTitle" placeholder="Titolo"><textarea id="noteText" placeholder="Testo"></textarea><button id="saveNoteBtn">Salva</button><button onclick="this.parentElement.classList.add('hidden')">Chiudi</button></div><div id="trashPanel" class="panel hidden"><h2>Cestino</h2><div id="trashList"></div><button onclick="this.parentElement.classList.add('hidden')">Chiudi</button></div>`,
-            css: `body{background:#f0f0f7; font-family:sans-serif; padding:10px;} .icon-bar{display:flex; gap:10px; background:#fff; padding:10px; border-radius:10px;} .note{background:#fff; padding:15px; margin-top:10px; border-radius:10px; border-left:5px solid #007aff;} .panel{position:fixed; inset:0; background:#fff; padding:20px; z-index:100;} .hidden{display:none;}`,
-            js: `let notes=JSON.parse(localStorage.getItem('notes'))||[]; let trash=JSON.parse(localStorage.getItem('trash'))||[]; function render(){ const c=document.getElementById('notesContainer'); c.innerHTML=''; notes.forEach((n,i)=>{ c.innerHTML+='<div class="note"><h3>'+n.t+'</h3><p>'+n.txt+'</p><button onclick="del('+i+')">Elimina</button></div>'});} window.del=(i)=>{trash.push(notes[i]); notes.splice(i,1); save();}; function save(){localStorage.setItem('notes',JSON.stringify(notes)); localStorage.setItem('trash',JSON.stringify(trash)); render();} document.getElementById('addNoteBtn').onclick=()=>document.getElementById('notePanel').classList.remove('hidden'); document.getElementById('saveNoteBtn').onclick=()=>{ const t=document.getElementById('noteTitle').value; const txt=document.getElementById('noteText').value; notes.push({t,txt}); save(); document.getElementById('notePanel').classList.add('hidden'); }; render();`
-        },
-        "Sito Test Sandro": {
-            html: `<h1>Benvenuto nel Test!</h1><button onclick="alert('Funziona!')">Clicca qui</button>`,
-            css: `body{text-align:center; padding-top:50px; background:linear-gradient(to bottom, #0f172a, #1e293b); color:white;}`,
-            js: `console.log('Test caricato');`
-        }
+    // 2. DATABASE INIZIALE
+    const defaultApp = {
+        html: `\n<div id='app'>\n  <button onclick='window.addN()'>➕ Nuova</button>\n  <div id='list'></div>\n</div>`,
+        css: `body { background: #f0f0f0; font-family: sans-serif; }\nbutton { padding: 10px; width: 100%; background: #007aff; color: white; border: none; border-radius: 8px; }`,
+        js: `window.addN = () => { const t = prompt('Titolo:'); if(t) document.getElementById('list').innerHTML += '<h3>'+t+'</h3>'; };`
     };
 
-    function salvaDB() { localStorage.setItem('sandro_db_v3', JSON.stringify(database)); render(); }
+    let database = JSON.parse(localStorage.getItem('sandro_os_v4')) || { 
+        "Note App": {...defaultApp},
+        "Sito Test": { html: "<h1>Sandro OS</h1>", css: "body{background:navy; color:white;}", js: "" }
+    };
+
+    function salvaDB() { localStorage.setItem('sandro_os_v4', JSON.stringify(database)); render(); }
+
     function render() {
         const grid = document.getElementById('mainGrid');
         const search = document.getElementById('searchBar').value.toLowerCase();
         grid.innerHTML = '';
         Object.keys(database).filter(n => n.toLowerCase().includes(search)).forEach(n => {
-            grid.innerHTML += `<div class="item-box" onclick="openProj('${n}')">📂<br><strong>${n}</strong></div>`;
+            grid.innerHTML += `<div class="item-box" onclick="openProj('${n}')">📂<br><br><strong>${n}</strong></div>`;
         });
-        document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
-        document.getElementById('memUsage').textContent = `${(JSON.stringify(database).length/1024).toFixed(2)} KB`;
     }
 
+    // 3. LOGICA PULSANTI
     let currentProj = ""; let currentType = "";
+
     function openProj(n) { currentProj = n; document.getElementById('activeTitle').innerText = n; document.getElementById('projectView').style.display = 'flex'; }
     function goHome() { document.getElementById('projectView').style.display = 'none'; }
-    function openEditor(type) { currentType = type; document.getElementById('editTitle').innerText = type.toUpperCase(); document.getElementById('editorTextarea').value = database[currentProj][type]; document.getElementById('editView').style.display = 'flex'; }
-    function salvaCodice() { database[currentProj][currentType] = document.getElementById('editorTextarea').value; salvaDB(); showToast("Salvato ✅"); }
+    
+    function openEditor(type) { 
+        currentType = type; 
+        document.getElementById('editTitle').innerText = "MODIFICA " + type.toUpperCase(); 
+        document.getElementById('editorTextarea').value = database[currentProj][type]; 
+        document.getElementById('editView').style.display = 'flex'; 
+    }
+
+    function salvaCodice() { 
+        database[currentProj][currentType] = document.getElementById('editorTextarea').value; 
+        salvaDB(); 
+        notify("Codice Aggiornato! ✅");
+        closeEditor();
+    }
+
+    function ripristinaDefault() {
+        if(confirm("Ripristinare i codici originali di questo progetto?")) {
+            database[currentProj] = {...defaultApp};
+            salvaDB();
+            notify("Ripristinato! 🔄");
+        }
+    }
+
+    function eliminaProgetto() {
+        if(confirm("Sei sicuro di voler eliminare l'intero progetto?")) {
+            delete database[currentProj];
+            salvaDB();
+            goHome();
+            notify("Progetto eliminato 🗑️");
+        }
+    }
+
+    function creaNuovoProgetto() {
+        const n = prompt("Nome del nuovo progetto:");
+        if(n) {
+            database[n] = { html: '', css: '', js: '' };
+            salvaDB();
+            notify("Creato! 📂");
+        }
+    }
+
     function closeEditor() { document.getElementById('editView').style.display = 'none'; }
+
     function avviaPlay() {
         const p = database[currentProj];
         document.getElementById('playView').style.display = 'flex';
         document.getElementById('playFrame').srcdoc = `<!DOCTYPE html><html><head><style>${p.css}</style></head><body>${p.html}<script>${p.js}<\/script></body></html>`;
     }
-    function creaNuovoProgetto() { const n = prompt("Nome progetto:"); if(n) { database[n] = {html:'',css:'',js:''}; salvaDB(); } }
-    function eliminaProgetto() { if(confirm("Elimina?")) { delete database[currentProj]; salvaDB(); goHome(); } }
 
     render();
   </script>
