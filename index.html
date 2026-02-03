@@ -8,22 +8,44 @@
     :root {
       --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
     }
-    body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; overflow-x: hidden; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; overflow-x: hidden; }
     
-    /* STILE OROLOGIO */
-    .clock-container { text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(145deg, #1e1e1e, #111); border-radius: 20px; border: 1px solid #333; }
-    #clock-time { font-size: 2.5rem; font-weight: 200; color: var(--web); margin: 0; }
-    #clock-date { font-size: 0.9rem; color: #888; text-transform: capitalize; margin-top: 5px; }
+    /* OROLOGIO SANDRO OS */
+    .clock-container { 
+      text-align: center; 
+      margin-bottom: 25px; 
+      padding: 20px; 
+      background: rgba(255, 255, 255, 0.03); 
+      border-radius: 24px; 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    #clock-time { 
+      font-size: 3rem; 
+      font-weight: 300; 
+      color: #fff; 
+      margin: 0; 
+      letter-spacing: -1px;
+      text-shadow: 0 0 20px rgba(9, 132, 227, 0.5);
+    }
+    #clock-date { 
+      font-size: 1rem; 
+      color: var(--web); 
+      text-transform: capitalize; 
+      margin-top: 5px; 
+      font-weight: 500;
+    }
 
     .stats-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between; border: 1px solid #222; }
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; backdrop-filter: blur(10px); position: relative; transition: 0.2s; cursor: pointer; }
+    .item-box { background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.3s ease; cursor: pointer; }
+    .item-box:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
     
     #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #050505; padding: 20px; flex-direction: column; z-index: 100; overflow-y: auto; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
     
-    textarea { width: 100%; flex-grow: 1; min-height: 350px; background: #000; color: #00ff00; border: 1px solid #333; border-radius: 15px; padding: 15px; font-family: monospace; font-size: 14px; margin: 15px 0; outline: none; }
+    textarea { width: 100%; flex-grow: 1; min-height: 350px; background: #000; color: #00ff00; border: 1px solid #333; border-radius: 15px; padding: 15px; font-family: 'Courier New', monospace; font-size: 14px; margin: 15px 0; outline: none; }
     iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 20px; border: none; margin-top: 10px; }
     .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
   </style>
@@ -31,11 +53,11 @@
 <body>
 
   <div id="homeView">
-    <h1 style="color: var(--web); margin-bottom: 5px;">Sandro Project OS</h1>
+    <h1 style="color: #fff; margin-bottom: 15px; font-weight: 700;">Sandro <span style="color: var(--web);">OS</span></h1>
     
     <div class="clock-container">
         <div id="clock-time">00:00:00</div>
-        <div id="clock-date">Caricamento data...</div>
+        <div id="clock-date">-- -- --</div>
     </div>
 
     <div class="stats-bar">
@@ -46,7 +68,7 @@
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size: 1.1rem;">⬅️ Archivio</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size: 1.1rem; cursor:pointer;">⬅️ Archivio</button>
     <h2 id="activeTitle" style="margin:0 0 20px 0; color: var(--folder);"></h2>
     <div class="toolbar">
         <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ TEST PLAY</button>
@@ -77,7 +99,7 @@
   </div>
 
   <script>
-    // FUNZIONE OROLOGIO
+    // GESTIONE OROLOGIO
     function updateClock() {
         const now = new Date();
         const h = String(now.getHours()).padStart(2, '0');
@@ -85,12 +107,13 @@
         const s = String(now.getSeconds()).padStart(2, '0');
         document.getElementById('clock-time').textContent = `${h}:${m}:${s}`;
         
-        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
         document.getElementById('clock-date').textContent = now.toLocaleDateString('it-IT', options);
     }
     setInterval(updateClock, 1000);
     updateClock();
 
+    // DATABASE PROGETTI
     let database = { 
         "Codici Note app Sandro": { 
             html: `<div class="icon-bar">
@@ -101,109 +124,13 @@
   <button id="settingsBtn">⚙️</button>
 </div>
 <div id="notesContainer"></div>
-<div id="notePanel" class="panel hidden"><div class="panel-content"><h2 id="panelTitle">Nuova Nota</h2><input id="noteTitle" placeholder="Titolo"><textarea id="noteText" placeholder="Scrivi qui..."></textarea><button id="saveNoteBtn" class="save">Salva Nota</button><button id="closeNotePanel" class="close">Chiudi</button></div></div>
-<div id="categoryPanel" class="panel hidden"><div class="panel-content"><h2>Categorie</h2><input id="newCategoryName" placeholder="Nuova categoria"><input type="color" id="categoryColorPicker" value="#34c759"><button id="saveCategoryBtn" class="save">Crea Categoria</button><div id="categoryList"></div><button id="closeCategoryPanel" class="close">Chiudi</button></div></div>
-<div id="trashPanel" class="panel hidden"><div class="panel-content"><h2>Cestino 🗑️</h2><div id="trashList"></div><button id="closeTrashPanel" class="close">Chiudi</button></div></div>
-<div id="settingsPanel" class="panel hidden"><div class="panel-content"><h2>Impostazioni ⚙️</h2><p>v2.1</p><button id="closeSettingsPanel" class="close">Chiudi</button></div></div>`,
-
-            css: `/* CSS AGGIORNATO */
-body { margin: 0; font-family: -apple-system, sans-serif; background: #f2f2f7; color: #000; transition: 0.3s; }
-.dark { background: #000; color: #fff; }
-.icon-bar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 1px solid #ccc; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
-.icon-bar button { font-size: 26px; background: none; border: none; cursor: pointer; }
-.panel { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
-.panel.show { opacity: 1; visibility: visible; }
-.panel-content { width: 100%; background: #fff; padding: 25px; border-radius: 30px 30px 0 0; transform: translateY(100%); transition: 0.3s; color: #000; }
-.panel.show .panel-content { transform: translateY(0); }
-.hidden { display: none !important; }
-.note { background: #fff; padding: 20px; margin: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 12px solid #007aff; }
-.dark .note { background: #1c1c1e; color: #fff; }
-.note-actions { display: flex; gap: 10px; margin-top: 15px; }
-.btn-action { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
-input, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
-.save { background: #34c759; color: #fff; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: bold; }
-.close { background: #ff3b30; color: #fff; border: none; padding: 15px; border-radius: 15px; width: 100%; margin-top: 10px; }
-.category-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }`,
-
-            js: `/* JS AGGIORNATO */
-document.addEventListener("DOMContentLoaded", () => {
-  let notes = JSON.parse(localStorage.getItem("notes")) || [];
-  let trash = JSON.parse(localStorage.getItem("trash")) || [];
-  let categories = JSON.parse(localStorage.getItem("categories")) || [];
-  let editingIndex = -1;
-
-  const openP = (id) => { 
-    const p = document.getElementById(id); p.classList.remove("hidden");
-    setTimeout(() => p.classList.add("show"), 10);
-    if(id === "trashPanel") renderTrash();
-  };
-  const closeP = (id) => { 
-    const p = document.getElementById(id); p.classList.remove("show");
-    setTimeout(() => p.classList.add("hidden"), 300);
-  };
-
-  document.getElementById("addNoteBtn").onclick = () => { editingIndex = -1; document.getElementById("panelTitle").innerText = "Nuova Nota"; document.getElementById("noteTitle").value = ""; document.getElementById("noteText").value = ""; openP("notePanel"); };
-  document.getElementById("categoriesBtn").onclick = () => openP("categoryPanel");
-  document.getElementById("trashBtn").onclick = () => openP("trashPanel");
-  document.getElementById("settingsBtn").onclick = () => openP("settingsPanel");
-  document.getElementById("themeToggle").onclick = () => document.body.classList.toggle("dark");
-
-  document.getElementById("closeNotePanel").onclick = () => closeP("notePanel");
-  document.getElementById("closeCategoryPanel").onclick = () => closeP("categoryPanel");
-  document.getElementById("closeTrashPanel").onclick = () => closeP("trashPanel");
-  document.getElementById("closeSettingsPanel").onclick = () => closeP("settingsPanel");
-
-  window.renderNotes = () => {
-    const cont = document.getElementById("notesContainer");
-    cont.innerHTML = notes.length === 0 ? "<p style='text-align:center; padding:20px; opacity:0.5;'>Nessuna nota</p>" : "";
-    notes.forEach((n, i) => {
-      const d = document.createElement("div"); d.className = "note";
-      d.innerHTML = "<h3>"+n.t+"</h3><p>"+n.txt+"</p><div class='note-actions'><button class='btn-action' style='background:#007aff; color:white;' onclick='window.editNote("+i+")'>✏️ Modifica</button><button class='btn-action' style='background:#ff3b30; color:white;' onclick='window.moveToTrash("+i+")'>🗑️ Elimina</button></div>";
-      cont.appendChild(d);
-    });
-  };
-
-  document.getElementById("saveNoteBtn").onclick = () => {
-    const t = document.getElementById("noteTitle").value;
-    const txt = document.getElementById("noteText").value;
-    if(t || txt) {
-      if(editingIndex === -1) { notes.push({t, txt}); } 
-      else { notes[editingIndex] = {t, txt}; }
-      localStorage.setItem("notes", JSON.stringify(notes));
-      renderNotes(); closeP("notePanel");
-    }
-  };
-
-  window.editNote = (i) => { editingIndex = i; document.getElementById("panelTitle").innerText = "Modifica Nota"; document.getElementById("noteTitle").value = notes[i].t; document.getElementById("noteText").value = notes[i].txt; openP("notePanel"); };
-
-  window.moveToTrash = (i) => { trash.push(notes[i]); notes.splice(i, 1); localStorage.setItem("notes", JSON.stringify(notes)); localStorage.setItem("trash", JSON.stringify(trash)); renderNotes(); };
-
-  window.renderTrash = () => {
-    const l = document.getElementById("trashList"); l.innerHTML = trash.length === 0 ? "Vuoto" : "";
-    trash.forEach((n, i) => { l.innerHTML += "<div class='category-row'><span>"+n.t+"</span><div><button onclick='window.restore("+i+")' style='background:#34c759; color:white; border:none; padding:8px; border-radius:8px;'>🔄</button><button onclick='window.delP("+i+")' style='background:#ff3b30; color:white; border:none; padding:8px; border-radius:8px;'>❌</button></div></div>"; });
-  };
-
-  window.restore = (i) => { notes.push(trash[i]); trash.splice(i, 1); localStorage.setItem("notes", JSON.stringify(notes)); localStorage.setItem("trash", JSON.stringify(trash)); renderTrash(); renderNotes(); };
-  window.delP = (i) => { trash.splice(i, 1); localStorage.setItem("trash", JSON.stringify(trash)); renderTrash(); };
-
-  window.renderCats = () => {
-    const l = document.getElementById("categoryList"); l.innerHTML = "";
-    categories.forEach((c, i) => { l.innerHTML += "<div class='category-row'><div style='display:flex; align-items:center;'><div style='width:15px; height:15px; border-radius:50%; background:"+c.c+"; margin-right:10px;'></div>"+c.n+"</div><button onclick='window.delC("+i+")' style='background:none; border:none;'>🗑️</button></div>"; });
-  };
-
-  document.getElementById("saveCategoryBtn").onclick = () => {
-    const n = document.getElementById("newCategoryName").value;
-    const c = document.getElementById("categoryColorPicker").value;
-    if(n) { categories.push({n, c}); localStorage.setItem("categories", JSON.stringify(categories)); renderCats(); document.getElementById("newCategoryName").value = ""; }
-  };
-
-  window.delC = (i) => { categories.splice(i, 1); localStorage.setItem("categories", JSON.stringify(categories)); renderCats(); };
-
-  renderNotes(); renderCats();
-});`
+`,
+            css: `/* CSS APP NOTE */`,
+            js: `/* JS APP NOTE */`
         } 
     };
-    
+
+    // LOGICA SISTEMA
     function render() {
         const grid = document.getElementById('mainGrid'); grid.innerHTML = '';
         Object.keys(database).forEach(n => {
@@ -223,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('playView').style.display = 'flex';
         document.getElementById('playFrame').srcdoc = code;
     }
-    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Copiato!"); }
+    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Progetto copiato!"); }
     render();
   </script>
 </body>
