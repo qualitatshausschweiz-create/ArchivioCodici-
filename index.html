@@ -8,44 +8,26 @@
     :root {
       --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; overflow-x: hidden; }
+    body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #050505; color: #fff; overflow-x: hidden; }
     
-    /* OROLOGIO SANDRO OS */
-    .clock-container { 
-      text-align: center; 
-      margin-bottom: 25px; 
-      padding: 20px; 
-      background: rgba(255, 255, 255, 0.03); 
-      border-radius: 24px; 
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    #clock-time { 
-      font-size: 3rem; 
-      font-weight: 300; 
-      color: #fff; 
-      margin: 0; 
-      letter-spacing: -1px;
-      text-shadow: 0 0 20px rgba(9, 132, 227, 0.5);
-    }
-    #clock-date { 
-      font-size: 1rem; 
-      color: var(--web); 
-      text-transform: capitalize; 
-      margin-top: 5px; 
-      font-weight: 500;
-    }
+    .clock-container { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); }
+    #clock-time { font-size: 3rem; font-weight: 300; color: #fff; margin: 0; text-shadow: 0 0 20px rgba(9, 132, 227, 0.5); }
+    #clock-date { font-size: 1rem; color: var(--web); text-transform: capitalize; margin-top: 5px; }
+
+    /* BARRA DI RICERCA */
+    .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
+    #searchBar { flex: 1; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 12px; color: #fff; outline: none; }
+    .btn-add-proj { background: var(--report); border: none; border-radius: 12px; padding: 0 15px; color: white; font-weight: bold; cursor: pointer; }
 
     .stats-bar { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; font-size: 0.75rem; color: #888; margin-bottom: 20px; display: flex; justify-content: space-between; border: 1px solid #222; }
     .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.3s ease; cursor: pointer; }
-    .item-box:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
+    .item-box { background: var(--glass); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; backdrop-filter: blur(10px); transition: 0.3s; cursor: pointer; }
     
     #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #050505; padding: 20px; flex-direction: column; z-index: 100; overflow-y: auto; }
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
     .btn-tool { padding: 12px 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
     
-    textarea { width: 100%; flex-grow: 1; min-height: 350px; background: #000; color: #00ff00; border: 1px solid #333; border-radius: 15px; padding: 15px; font-family: 'Courier New', monospace; font-size: 14px; margin: 15px 0; outline: none; }
+    textarea { width: 100%; flex-grow: 1; min-height: 350px; background: #000; color: #00ff00; border: 1px solid #333; border-radius: 15px; padding: 15px; font-family: monospace; font-size: 14px; margin: 15px 0; outline: none; }
     iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 20px; border: none; margin-top: 10px; }
     .icon-big { font-size: 2.8rem; display: block; margin-bottom: 10px; }
   </style>
@@ -53,26 +35,32 @@
 <body>
 
   <div id="homeView">
-    <h1 style="color: #fff; margin-bottom: 15px; font-weight: 700;">Sandro <span style="color: var(--web);">OS</span></h1>
+    <h1 style="color: #fff; margin-bottom: 15px;">Sandro OS</h1>
     
     <div class="clock-container">
         <div id="clock-time">00:00:00</div>
         <div id="clock-date">-- -- --</div>
     </div>
 
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Cerca progetto..." oninput="render()">
+        <button class="btn-add-proj" onclick="creaNuovoProgetto()">➕ NUOVO</button>
+    </div>
+
     <div class="stats-bar">
         <span id="memUsage">Memoria: 0 KB</span>
-        <span id="projCount">Progetti: 1</span>
+        <span id="projCount">Progetti: 0</span>
     </div>
     <div class="folder-grid" id="mainGrid"></div>
   </div>
 
   <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size: 1.1rem; cursor:pointer;">⬅️ Archivio</button>
+    <button onclick="goHome()" style="background:none; border:none; color:#888; margin-bottom:15px; font-size: 1.1rem;">⬅️ Archivio</button>
     <h2 id="activeTitle" style="margin:0 0 20px 0; color: var(--folder);"></h2>
     <div class="toolbar">
         <button class="btn-tool" style="background:var(--play)" onclick="avviaPlay()">▶️ TEST PLAY</button>
         <button class="btn-tool" style="background:var(--copy-btn)" onclick="copyAll()">📋 COPIA TUTTO</button>
+        <button class="btn-tool" style="background:var(--danger)" onclick="eliminaProgetto()">🗑️ ELIMINA PROGETTO</button>
     </div>
     <div class="folder-grid">
       <div class="item-box" onclick="openEditor('html')"><span class="icon-big">📄</span><strong>HTML</strong></div>
@@ -92,65 +80,76 @@
 
   <div id="playView">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-      <h2 style="margin:0; color:var(--play)">Note App Pro</h2>
+      <h2 style="margin:0; color:var(--play)">Sandbox</h2>
       <button class="btn-tool" style="background:var(--danger);" onclick="document.getElementById('playView').style.display='none'">ESCI</button>
     </div>
     <iframe id="playFrame"></iframe>
   </div>
 
   <script>
-    // GESTIONE OROLOGIO
+    // OROLOGIO
     function updateClock() {
         const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const s = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('clock-time').textContent = `${h}:${m}:${s}`;
-        
-        const options = { weekday: 'long', day: 'numeric', month: 'long' };
-        document.getElementById('clock-date').textContent = now.toLocaleDateString('it-IT', options);
+        document.getElementById('clock-time').textContent = now.toLocaleTimeString('it-IT');
+        document.getElementById('clock-date').textContent = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    // DATABASE PROGETTI
-    let database = { 
-        "Codici Note app Sandro": { 
-            html: `<div class="icon-bar">
-  <button id="themeToggle">☀️</button>
-  <button id="addNoteBtn">➕</button>
-  <button id="categoriesBtn">📁</button>
-  <button id="trashBtn">🗑️</button>
-  <button id="settingsBtn">⚙️</button>
-</div>
-<div id="notesContainer"></div>
-`,
-            css: `/* CSS APP NOTE */`,
-            js: `/* JS APP NOTE */`
-        } 
+    // DATABASE E PERSISTENZA
+    let database = JSON.parse(localStorage.getItem('sandro_os_db')) || { 
+        "Note App Sandro": { html: "", css: "", js: "" } 
     };
 
-    // LOGICA SISTEMA
+    function salvaDB() {
+        localStorage.setItem('sandro_os_db', JSON.stringify(database));
+        render();
+    }
+
     function render() {
-        const grid = document.getElementById('mainGrid'); grid.innerHTML = '';
-        Object.keys(database).forEach(n => {
+        const grid = document.getElementById('mainGrid');
+        const search = document.getElementById('searchBar').value.toLowerCase();
+        grid.innerHTML = '';
+        
+        const filtered = Object.keys(database).filter(name => name.toLowerCase().includes(search));
+        
+        filtered.forEach(n => {
             grid.innerHTML += `<div class="item-box" onclick="openProj('${n}')"><span class="icon-big">📂</span><strong>${n}</strong></div>`;
         });
+        
+        document.getElementById('projCount').textContent = `Progetti: ${Object.keys(database).length}`;
         const size = (JSON.stringify(database).length / 1024).toFixed(2);
-        document.getElementById('memUsage').textContent = 'Memoria: ' + size + ' KB';
+        document.getElementById('memUsage').textContent = `Memoria: ${size} KB`;
     }
+
+    function creaNuovoProgetto() {
+        const nome = prompt("Nome del nuovo progetto:");
+        if(nome && !database[nome]) {
+            database[nome] = { html: "", css: "body { background: white; }", js: "// Scrivi qui" };
+            salvaDB();
+        }
+    }
+
+    function eliminaProgetto() {
+        if(confirm(`Sei sicuro di voler eliminare definitivamente ${currentProj}?`)) {
+            delete database[currentProj];
+            salvaDB();
+            goHome();
+        }
+    }
+
+    // LOGICA EDITOR (UGUALE A PRIMA MA CON SALVADB)
+    let currentProj = ""; let currentType = "";
     function openProj(n) { currentProj = n; document.getElementById('activeTitle').innerText = n; document.getElementById('projectView').style.display = 'flex'; }
-    function goHome() { document.getElementById('projectView').style.display = 'none'; render(); }
+    function goHome() { document.getElementById('projectView').style.display = 'none'; }
     function openEditor(type) { currentType = type; document.getElementById('editTitle').innerText = type.toUpperCase(); document.getElementById('editorTextarea').value = database[currentProj][type]; document.getElementById('editView').style.display = 'flex'; }
-    function salvaCodice() { database[currentProj][currentType] = document.getElementById('editorTextarea').value; render(); closeEditor(); }
+    function salvaCodice() { database[currentProj][currentType] = document.getElementById('editorTextarea').value; salvaDB(); closeEditor(); }
     function closeEditor() { document.getElementById('editView').style.display = 'none'; }
     function avviaPlay() {
         const p = database[currentProj];
-        const code = "<!DOCTYPE html><html><head><style>"+p.css+"</style></head><body>"+p.html+"<script>"+p.js+"<\/script></body></html>";
+        const code = `<!DOCTYPE html><html><head><style>${p.css}</style></head><body>${p.html}<script>${p.js}<\/script></body></html>`;
         document.getElementById('playView').style.display = 'flex';
         document.getElementById('playFrame').srcdoc = code;
     }
-    function copyAll() { navigator.clipboard.writeText(JSON.stringify(database[currentProj])); alert("Progetto copiato!"); }
     render();
   </script>
 </body>
