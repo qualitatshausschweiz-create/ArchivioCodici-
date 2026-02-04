@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sandro Desktop System</title>
+    <title>Sandro Desktop System Pro</title>
     <style>
-        :root { --black: #111; --green: #1b4d3e; --white: #fff; --gray: #f4f4f4; }
+        :root { --black: #111; --green: #1b4d3e; --white: #fff; --gray: #f4f4f4; --accent: #007bff; }
         * { box-sizing: border-box; -webkit-appearance: none; }
         body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
 
         .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; font-size: 22px; }
         
-        .desktop { display: flex; justify-content: space-around; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
-        .folder { text-align: center; width: 45%; cursor: pointer; }
-        .folder-icon { font-size: 40px; display: block; margin-bottom: 5px; }
-        .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; }
+        /* DESKTOP GRID */
+        .desktop { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
+        
+        .folder { text-align: center; cursor: pointer; position: relative; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 12px; transition: 0.2s; border: 1px solid transparent; }
+        .folder:active { transform: scale(0.95); background: #e0e0e0; }
+        .folder-icon { font-size: 45px; display: block; margin-bottom: 5px; }
+        .folder-name { font-size: 11px; font-weight: 900; text-transform: uppercase; color: #333; word-break: break-all; }
+        
+        .btn-folder-delete { position: absolute; top: 0; right: 0; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: none; }
+        .editing .btn-folder-delete { display: block; }
 
-        .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; }
+        /* CONTROLLI DESKTOP */
+        .desktop-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-add-folder { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; cursor: pointer; }
+        .btn-edit-mode { background: var(--black); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; cursor: pointer; }
+
+        /* WINDOWS */
+        .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; position: relative; z-index: 100; }
         .active { display: block !important; }
 
         .stats-box { background: #222; color: #0f0; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; margin-bottom: 15px; }
 
+        /* EDITOR UI */
         .btn-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
         .btn { flex: 1; min-width: 60px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 10px; text-transform: uppercase; text-align: center; }
-        
         .btn-html { background: #e34c26 !important; } 
         .btn-css { background: #264de4 !important; }  
         .btn-js { background: #f7df1e !important; color: #000 !important; }   
-        
-        .btn-edit { background: #007bff !important; } 
+        .btn-edit { background: var(--accent) !important; } 
         .btn-red { background: #d9534f !important; }
-        .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; font-size: 12px; }
-        .btn-green { background: var(--green) !important; width: 100%; font-size: 12px; }
+        .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; }
+        .btn-green { background: var(--green) !important; width: 100%; }
 
         #live-preview { width: 100%; height: 450px; border: 2px solid #000; margin-top: 15px; background: white; }
-
         .note-card { border: 2px solid #000; padding: 15px; margin-top: 15px; background: #fff; }
         textarea, input { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 8px; font-family: monospace; }
         
@@ -45,7 +55,12 @@
 
     <div class="clock" id="clk">00:00:00</div>
 
-    <div class="desktop">
+    <div class="desktop-controls">
+        <button class="btn-add-folder" onclick="createNewFolder()">➕ NUOVA CARTELLA</button>
+        <button class="btn-edit-mode" onclick="toggleEditMode()">⚙️ MODIFICA</button>
+    </div>
+
+    <div class="desktop" id="main-desktop">
         <div class="folder" onclick="openApp('app-note')">
             <span class="folder-icon">📂</span>
             <span class="folder-name">App Note Sandro</span>
@@ -54,217 +69,96 @@
             <span class="folder-icon">🛠️</span>
             <span class="folder-name">Play Test</span>
         </div>
-    </div>
+        </div>
 
     <div id="app-note" class="app-window">
-        <h2>📂 ARCHIVIO CODICI</h2>
-        <div class="stats-box">> MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span></div>
+        <h2>📂 ARCHIVIO PROGETTI</h2>
+        <div class="stats-box">> STORAGE: <span id="mem-val">0</span> KB | ITEMS: <span id="note-count">0</span></div>
         <div id="notes-list"></div>
-        <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
+        <button class="btn btn-black" onclick="closeApps()">CHIUDI DESKTOP</button>
     </div>
 
     <div id="play-test" class="app-window">
-        <h2>🛠️ EDITOR & ANTEPRIMA LIVE</h2>
+        <h2>🛠️ EDITOR LIVE</h2>
         <input type="text" id="p-title" placeholder="Titolo Progetto...">
-        <textarea id="p-html" placeholder="HTML..." rows="3"></textarea>
-        <textarea id="p-css" placeholder="CSS..." rows="2"></textarea>
-        <textarea id="p-js" placeholder="JS..." rows="2"></textarea>
+        <textarea id="p-html" placeholder="Inserisci HTML..."></textarea>
+        <textarea id="p-css" placeholder="Inserisci CSS..."></textarea>
+        <textarea id="p-js" placeholder="Inserisci JS..."></textarea>
         
         <div class="btn-group">
             <button class="btn btn-green" onclick="runTest()">▶️ TESTA LIVE</button>
-            <button class="btn btn-edit" onclick="saveNew()">💾 MEMORIZZA</button>
+            <button class="btn btn-edit" onclick="saveNew()">💾 SALVA IN ARCHIVIO</button>
             <button class="btn btn-red" onclick="resetEditor()">🔄 RESET</button>
         </div>
-
-        <label style="display:block; margin-top:15px; font-size:10px; font-weight:bold;">SIMULATORE LIVE:</label>
         <iframe id="live-preview"></iframe>
     </div>
 
-    <div class="footer-text">Archivio Personale Sandro - 2026</div>
+    <div class="footer-text">Sandro System Cloud - 2026</div>
 
     <script>
+        /* OROLOGIO SVIZZERO */
         function updateClock() {
             document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH');
         }
         setInterval(updateClock, 1000); updateClock();
 
-        function resetEditor() {
-            document.getElementById('p-title').value = '';
-            document.getElementById('p-html').value = '';
-            document.getElementById('p-css').value = '';
-            document.getElementById('p-js').value = '';
-            document.getElementById('live-preview').srcdoc = '';
+        /* GESTIONE CARTELLE DINAMICHE */
+        let customFolders = JSON.parse(localStorage.getItem('sandro_folders')) || [];
+
+        function renderDesktop() {
+            const container = document.getElementById('main-desktop');
+            // Mantiene le prime due fisse
+            container.innerHTML = `
+                <div class="folder" onclick="openApp('app-note')">
+                    <span class="folder-icon">📂</span>
+                    <span class="folder-name">App Note Sandro</span>
+                </div>
+                <div class="folder" onclick="openApp('play-test')">
+                    <span class="folder-icon">🛠️</span>
+                    <span class="folder-name">Play Test</span>
+                </div>
+            `;
+            // Aggiunge le custom
+            customFolders.forEach((f, index) => {
+                container.innerHTML += `
+                    <div class="folder">
+                        <button class="btn-folder-delete" onclick="deleteFolder(${index})">X</button>
+                        <div onclick="openCustomFolder(${index})">
+                            <span class="folder-icon">${f.icon || '📁'}</span>
+                            <span class="folder-name">${f.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
-            id: 'original',
-            t: 'APP NOTE ORIGINALE',
-            h: `<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note App</title>
-    <script src="https://accounts.google.com/gsi/client" async defer><\/script>
-</head>
-<body>
-    <div class="icon-bar">
-        <button id="themeToggle">☀️</button>
-        <button id="addNoteBtn">➕</button>
-        <button id="categoriesBtn">📁</button>
-        <button id="trashBtn">🗑️</button>
-        <button id="settingsBtn">⚙️</button>
-    </div>
+        function createNewFolder() {
+            const name = prompt("Nome della nuova cartella:");
+            if (!name) return;
+            const icon = prompt("Scegli un'emoji per l'icona (es: 🚀, 🧪, 🎨) o lascia vuoto:", "📁");
+            customFolders.push({ name: name.toUpperCase(), icon: icon || '📁', content: [] });
+            saveFolders();
+            renderDesktop();
+        }
 
-    <div id="notesContainer"></div>
+        function deleteFolder(index) {
+            if (confirm("Eliminare questa cartella e tutto il suo contenuto?")) {
+                customFolders.splice(index, 1);
+                saveFolders();
+                renderDesktop();
+            }
+        }
 
-    <div id="notePanel" class="panel hidden">
-        <div class="panel-content">
-            <h3>Nuova Nota</h3>
-            <input type="text" id="noteTitle" placeholder="Titolo">
-            <textarea id="noteText" placeholder="Scrivi..."></textarea>
-            <div id="categoryButtons" class="category-buttons"></div>
-            <div id="notePalette" class="palette"></div>
-            <button id="saveNoteBtn" class="save">Salva Nota</button>
-            <button id="closeNotePanel" class="close">Chiudi</button>
-        </div>
-    </div>
+        function toggleEditMode() {
+            document.getElementById('main-desktop').classList.toggle('editing');
+        }
 
-    <div id="categoryPanel" class="panel hidden">
-        <div class="panel-content">
-            <h3>Gestisci Categorie</h3>
-            <input type="text" id="newCategoryName" placeholder="Nome Categoria">
-            <div id="categoryPalette" class="palette"></div>
-            <input type="color" id="categoryColorPicker" style="height:40px;">
-            <button id="saveCategoryBtn" class="save">Aggiungi</button>
-            <div id="categoryList" style="margin-top:15px; max-height:200px; overflow-y:auto;"></div>
-            <button id="closeCategoryPanel" class="close">Chiudi</button>
-        </div>
-    </div>
+        function saveFolders() {
+            localStorage.setItem('sandro_folders', JSON.stringify(customFolders));
+        }
 
-    <div id="trashPanel" class="panel hidden">
-        <div class="panel-content">
-            <h3>Cestino</h3>
-            <div id="trashList"></div>
-            <button id="closeTrashPanel" class="close">Chiudi</button>
-        </div>
-    </div>
-
-    <div id="settingsPanel" class="panel hidden">
-        <div class="panel-content modern-settings">
-            <div class="settings-title">Impostazioni</div>
-            <div class="settings-group">
-                <div class="settings-row">
-                    <span>Tema Automatico</span>
-                    <input type="checkbox" id="settingThemeAuto" class="toggle">
-                </div>
-                <div class="settings-row">
-                    <span>Vibrazione</span>
-                    <input type="checkbox" id="settingVibration" class="toggle">
-                </div>
-                <div class="settings-row">
-                    <span>Animazioni</span>
-                    <input type="checkbox" id="settingAnimations" class="toggle">
-                </div>
-                <div class="settings-row">
-                    <span>Ordina per</span>
-                    <select id="settingSort" class="select-ios">
-                        <option value="recenti">Recenti</option>
-                        <option value="vecchie">Vecchie</option>
-                    </select>
-                </div>
-            </div>
-            <button id="syncCloudBtn" class="modern-btn">☁️ Sincronizza Cloud</button>
-            <button id="exportBackupBtn" class="modern-btn">📤 Esporta Backup</button>
-            <button id="resetDataBtn" class="modern-btn" style="color:red;">🗑️ Cancella Tutto</button>
-            <button id="closeSettingsPanel" class="modern-close">CHIUDI</button>
-        </div>
-    </div>
-</body>
-</html>`,
-            c: `body { margin: 0; font-family: system-ui, -apple-system; background: var(--bg); color: var(--text); transition: background 0.3s; }
-:root { --bg: #ffffff; --text: #000; }
-.dark { --bg: #111; --text: #fff; }
-.icon-bar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 1px solid #ccc; background: var(--bg); }
-.icon-bar button { font-size: 24px; background: none; border: none; cursor: pointer; color: var(--text); }
-.panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 9999; }
-.hidden { display: none; }
-.panel-content { width: 100%; background: var(--bg); color: var(--text); padding: 20px; border-radius: 20px 20px 0 0; max-height: 80%; overflow-y: auto; }
-.note { background: #fff; color: #000; padding: 15px; margin: 10px; border-radius: 10px; border-left: 8px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.category-btn { padding: 8px; margin: 4px; border-radius: 8px; border: none; color: #fff; }
-.palette { display: flex; gap: 8px; margin: 10px 0; }
-.color { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; }
-.color.selected { border-color: #000; }
-.toggle { width: 40px; height: 20px; }
-.modern-btn { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: none; background: #eee; text-align: left; }
-.modern-close { width: 100%; padding: 12px; background: #ff3b30; color: #fff; border: none; border-radius: 10px; margin-top: 10px; }`,
-            j: `document.addEventListener("DOMContentLoaded", () => {
-  const CLIENT_ID = "792122447047-u30lrb5oo1jjbnkibfh420ah0o95e3d8.apps.googleusercontent.com";
-  const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
-  let accessToken = null;
-
-  function getDriveToken(callback) {
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID, scope: DRIVE_SCOPE,
-      callback: (response) => { if (response.access_token) { accessToken = response.access_token; callback(); } }
-    });
-    tokenClient.requestAccessToken();
-  }
-
-  const themeToggle = document.getElementById("themeToggle");
-  themeToggle.onclick = () => {
-    document.body.classList.toggle("dark");
-    themeToggle.textContent = document.body.classList.contains("dark") ? "🌙" : "☀️";
-  };
-
-  let categories = JSON.parse(localStorage.getItem("categories")) || [
-    { name: "Lavoro", color: "#1e90ff" }, { name: "Spesa", color: "#ffa502" }
-  ];
-  let notes = JSON.parse(localStorage.getItem("notes")) || [];
-  let trash = JSON.parse(localStorage.getItem("trash")) || [];
-
-  const addNoteBtn = document.getElementById("addNoteBtn");
-  const notePanel = document.getElementById("notePanel");
-  const closeNotePanel = document.getElementById("closeNotePanel");
-  const saveNoteBtn = document.getElementById("saveNoteBtn");
-
-  function openPanel(p) { p.classList.remove("hidden"); }
-  function closePanel(p) { p.classList.add("hidden"); }
-
-  addNoteBtn.onclick = () => { openPanel(notePanel); renderCategoryButtons(); };
-  closeNotePanel.onclick = () => closePanel(notePanel);
-
-  function renderCategoryButtons() {
-    const container = document.getElementById("categoryButtons");
-    container.innerHTML = "";
-    categories.forEach(c => {
-      const b = document.createElement("button");
-      b.className = "category-btn"; b.style.background = c.color; b.textContent = c.name;
-      b.onclick = () => { window.selectedCat = c.name; };
-      container.appendChild(b);
-    });
-  }
-
-  saveNoteBtn.onclick = () => {
-    const n = { id: Date.now(), titolo: document.getElementById("noteTitle").value, testo: document.getElementById("noteText").value, colore: "#1e90ff", categoria: window.selectedCat || "Generale", data: new Date() };
-    notes.push(n); localStorage.setItem("notes", JSON.stringify(notes));
-    renderNotes(); closePanel(notePanel);
-  };
-
-  function renderNotes() {
-    const c = document.getElementById("notesContainer");
-    c.innerHTML = notes.map(n => \`<div class="note" style="border-left-color:\${n.colore}"><h3>\${n.titolo}</h3><p>\${n.testo}</p></div>\`).join("");
-  }
-  renderNotes();
-
-  document.getElementById("categoriesBtn").onclick = () => openPanel(document.getElementById("categoryPanel"));
-  document.getElementById("closeCategoryPanel").onclick = () => closePanel(document.getElementById("categoryPanel"));
-  document.getElementById("trashBtn").onclick = () => openPanel(document.getElementById("trashPanel"));
-  document.getElementById("closeTrashPanel").onclick = () => closePanel(document.getElementById("trashPanel"));
-  document.getElementById("settingsBtn").onclick = () => openPanel(document.getElementById("settingsPanel"));
-  document.getElementById("closeSettingsPanel").onclick = () => closePanel(document.getElementById("settingsPanel"));
-});`
-        }];
+        /* LOGICA APP & ARCHIVIO */
+        let database = JSON.parse(localStorage.getItem('sandro_db')) || [];
 
         function openApp(id) {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
@@ -284,14 +178,14 @@
         function saveNew() {
             const entry = {
                 id: Date.now(),
-                t: document.getElementById('p-title').value.toUpperCase() || "PROGETTO",
+                t: document.getElementById('p-title').value.toUpperCase() || "NUOVO PROGETTO",
                 h: document.getElementById('p-html').value,
                 c: document.getElementById('p-css').value,
                 j: document.getElementById('p-js').value
             };
             database.push(entry);
             localStorage.setItem('sandro_db', JSON.stringify(database));
-            alert("Salvato in Archivio!");
+            alert("Salvato nell'Archivio Generale!");
             renderNotes();
         }
 
@@ -301,12 +195,12 @@
                 <div class="note-card">
                     <strong>📁 ${n.t}</strong>
                     <div class="btn-group">
-                        <button class="btn btn-html" onclick="alert('Codice HTML:\\n'+database.find(x=>x.id=='${n.id}').h)">HTML</button>
-                        <button class="btn btn-css" onclick="alert('Codice CSS:\\n'+database.find(x=>x.id=='${n.id}').c)">CSS</button>
-                        <button class="btn btn-js" onclick="alert('Codice JS:\\n'+database.find(x=>x.id=='${n.id}').j)">JS</button>
+                        <button class="btn btn-html" onclick="alert(database.find(x=>x.id==${n.id}).h)">HTML</button>
+                        <button class="btn btn-css" onclick="alert(database.find(x=>x.id==${n.id}).c)">CSS</button>
+                        <button class="btn btn-js" onclick="alert(database.find(x=>x.id==${n.id}).j)">JS</button>
                     </div>
-                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA NELL'EDITOR & TESTA LIVE</button>
-                    <button class="btn btn-red" style="width:100%; margin-top:5px;" onclick="deleteNote('${n.id}')">ELIMINA</button>
+                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor(${n.id})">APRI NELL'EDITOR</button>
+                    <button class="btn btn-red" style="width:100%; margin-top:5px;" onclick="deleteNote(${n.id})">ELIMINA</button>
                 </div>
             `).reverse().join('');
             document.getElementById('note-count').innerText = database.length;
@@ -324,14 +218,24 @@
         }
 
         function deleteNote(id) {
-            if(id === 'original') return;
-            if(confirm("Eliminare permanentemente?")) {
-                database = database.filter(x => x.id != id);
-                localStorage.setItem('sandro_db', JSON.stringify(database));
-                renderNotes();
-            }
+            database = database.filter(x => x.id != id);
+            localStorage.setItem('sandro_db', JSON.stringify(database));
+            renderNotes();
         }
 
+        function resetEditor() {
+            document.getElementById('p-title').value = '';
+            document.getElementById('p-html').value = '';
+            document.getElementById('p-css').value = '';
+            document.getElementById('p-js').value = '';
+        }
+
+        function openCustomFolder(index) {
+            const folder = customFolders[index];
+            alert("Cartella: " + folder.name + "\nQuesta cartella è pronta per ospitare i tuoi futuri codici specifici!");
+        }
+
+        renderDesktop();
         renderNotes();
     </script>
 </body>
