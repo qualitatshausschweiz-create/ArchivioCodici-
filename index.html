@@ -2,51 +2,129 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Essenz Schweiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Archivio Codici</title>
     <style>
-        /* Qui ho inserito tutto il CSS che rimpicciolisce i bottoni */
-        :root { --black: #111111; --green: #1b4d3e; --white: #ffffff; }
-        * { box-sizing: border-box; -webkit-appearance: none !important; }
-        body { background: #f2f2f2; margin: 0; font-family: -apple-system, sans-serif; padding-bottom: env(safe-area-inset-bottom, 100px); }
-        .super-wrapper { max-width: 500px; margin: auto; }
-        .top-bar { background: var(--black); color: white; text-align: center; padding: 12px; font-size: 11px; font-weight: bold; }
-        .hero-section { padding: 20px; }
-        .hero-card { background: var(--white); border: 4px solid var(--black); padding: 25px; box-shadow: 10px 10px 0px var(--green); }
-        .green-txt { color: var(--green); font-weight: 900; }
-        .grid-prodotti { padding: 20px; }
-        .item-box { background: white; border: 3px solid var(--black); margin-bottom: 20px; display: flex; align-items: center; }
-        .img-placeholder { width: 70px; height: 70px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 30px; border-right: 3px solid var(--black); }
-        .info { padding: 15px; flex: 1; }
-        .btn-micro { display: block !important; width: 100px !important; height: 32px !important; background: var(--black) !important; color: white !important; border: none !important; font-size: 11px !important; font-weight: bold !important; border-radius: 6px !important; margin-top: 10px !important; cursor: pointer; }
-        .iphone-safe-spacer { height: 200px !important; display: block !important; }
-        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #000; }
-        footer { text-align: center; padding: 20px; font-size: 10px; }
+        :root {
+            --bg: #f4f4f4;
+            --box: #ffffff;
+            --accent: #1b4d3e; /* Il tuo verde svizzero */
+            --text: #111111;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-appearance: none; /* Fondamentale per bloccare lo stile Apple */
+        }
+
+        body {
+            font-family: -apple-system, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            color: var(--text);
+            /* Spazio in alto per non toccare l'orologio dell'iPhone */
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+
+        .header {
+            background: var(--text);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .note-card {
+            background: var(--box);
+            border: 3px solid var(--text);
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 8px 8px 0px var(--accent);
+        }
+
+        /* --- FIX BOTTONE: Piccolo e posizionato bene --- */
+        .btn-archivio {
+            display: block !important;
+            width: 120px !important;    /* Molto stretto */
+            height: 36px !important;    /* Molto basso */
+            background: var(--text) !important;
+            color: white !important;
+            border: none !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+            border-radius: 6px !important;
+            margin: 10px auto !important;
+            cursor: pointer;
+        }
+
+        .btn-green { background: var(--accent) !important; }
+
+        /* Input che non attivano il "Salva" dell'iPhone */
+        input, textarea {
+            width: 100%;
+            border: 2px solid var(--text);
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px; /* Evita lo zoom automatico su iPhone */
+        }
+
+        /* --- SPAZIO DI SICUREZZA PER CHIUDERE PLAY --- */
+        /* Questo crea il vuoto in fondo così puoi fare lo swipe per chiudere l'app */
+        .chiudi-app-spacer {
+            height: 250px !important;
+            display: block !important;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            padding: 20px;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
-<div class="super-wrapper">
-    <div class="top-bar">ESSENZ SCHWEIZ 🇨🇭</div>
-    <header class="hero-section">
-        <div class="hero-card">
-            <h1>ESSENZ <span class="green-txt">CH</span></h1>
-            <p>Spedizione discreta da Zurigo.</p>
-        </div>
-    </header>
-    <div class="grid-prodotti">
-        <div class="item-box">
-            <div class="img-placeholder">🌿</div>
-            <div class="info">
-                <h3>GOLDEN FLOWERS</h3>
-                <div class="prezzo">35.- CHF</div>
-                <button type="button" class="btn-micro">PRENDI</button>
-            </div>
-        </div>
+
+<div class="header">ARCHIVIO CODICI & NOTE</div>
+
+<div class="container">
+    
+    <div class="note-card">
+        <h3>NUOVO CODICE</h3>
+        <input type="text" placeholder="Titolo App/Progetto" autocomplete="off">
+        <textarea placeholder="Incolla qui il codice o la nota..." rows="5" autocomplete="off"></textarea>
+        <button type="button" class="btn-archivio btn-green">MEMORIZZA</button>
     </div>
-    <div class="iphone-safe-spacer"></div>
-    <footer>ESSENZ SCHWEIZ — 2026</footer>
+
+    <div class="note-card">
+        <h3>APP CBD SCHWEIZ</h3>
+        <p style="font-family: monospace; font-size: 12px; background: #eee; padding: 10px;">
+            Codice: 1234-ABCD-2026
+        </p>
+        <button type="button" class="btn-archivio">COPIA</button>
+    </div>
+
+    <div class="chiudi-app-spacer"></div>
+
+    <footer>Sandro - Sistema Archivio Sicuro</footer>
 </div>
+
+<script>
+    // Funzione per non ricaricare la pagina al click
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("Azione eseguita");
+        });
+    });
+</script>
+
 </body>
 </html>
