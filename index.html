@@ -33,6 +33,10 @@
         .btn-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
         .btn { flex: 1; min-width: 60px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 10px; text-transform: uppercase; text-align: center; }
         
+        .btn-html { background: #e34c26 !important; } 
+        .btn-css { background: #264de4 !important; }  
+        .btn-js { background: #f7df1e !important; color: #000 !important; }   
+        
         .btn-edit { background: #007bff !important; } 
         .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; font-size: 12px; }
         .btn-green { background: var(--green) !important; width: 100%; font-size: 12px; }
@@ -66,6 +70,7 @@
 
     <div id="app-note" class="app-window">
         <h2>📂 ARCHIVIO CODICI</h2>
+        <div class="stats-box">> MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span></div>
         <div id="notes-list"></div>
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
@@ -98,14 +103,13 @@
                 grid.innerHTML += `
                     <div class="folder ${editMode ? 'editing' : ''}" onclick="openProject(${i})">
                         <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
-                        <span class="folder-icon">📁</span>
-                        <span class="folder-name">${f.name}</span>
+                        <span class="folder-icon">📁</span><span class="folder-name">${f.name}</span>
                     </div>`;
             });
         }
 
         function addFolder() {
-            const n = prompt("Nome della nuova cartella (es. SITO CBD):");
+            const n = prompt("Nome della nuova cartella:");
             if(n) { folders.push({name: n.toUpperCase()}); saveF(); renderDesktop(); }
         }
 
@@ -126,12 +130,45 @@
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
+        // --- IL DATABASE SACRO CON I CODICI COMPLETI ---
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'note-v1',
-            t: 'NOTE APP COMPLETA',
-            h: '<div class="note-app"><div class="toolbar"><button id="btn-theme">☀️</button><button id="btn-add">➕</button><button id="btn-cat">📁</button><button id="btn-trash">🗑️</button><button id="btn-settings">⚙️</button></div><div id="main-content" style="padding:20px; text-align:center;"><h3>Benvenuto Sandro</h3></div></div>',
-            c: '.note-app { font-family: sans-serif; height: 100vh; background: #fff; } .toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; } .toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }',
-            j: "document.getElementById('btn-theme').onclick = () => alert('Tema Cambiato!');"
+            t: 'NOTE APP COMPLETA 4 FEB',
+            h: `<div class="note-app">
+    <div class="toolbar">
+        <button id="btn-theme">☀️</button>
+        <button id="btn-add">➕</button>
+        <button id="btn-cat">📁</button>
+        <button id="btn-trash">🗑️</button>
+        <button id="btn-settings">⚙️</button>
+    </div>
+    <div id="main-content" style="padding:20px; text-align:center;">
+        <h3>Sandro Note System</h3>
+        <p>I bottoni sopra sono ora tutti collegati al JS.</p>
+    </div>
+    <div id="panel" style="display:none; position:fixed; bottom:0; width:100%; background:white; border-top:2px solid black; padding:20px;">
+        <h4 id="panel-title">Pannello</h4>
+        <button onclick="document.getElementById('panel').style.display='none'">CHIUDI</button>
+    </div>
+</div>`,
+            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; transition: 0.3s; }
+.toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; background: #f8f8f8; }
+.toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }
+.dark-mode { background: #222 !important; color: white !important; }
+.dark-mode .toolbar { background: #333 !important; border-bottom-color: #555; }`,
+            j: `const btnTheme = document.getElementById('btn-theme');
+const panel = document.getElementById('panel');
+const panelTitle = document.getElementById('panel-title');
+
+btnTheme.onclick = () => {
+    document.querySelector('.note-app').classList.toggle('dark-mode');
+    btnTheme.innerText = document.querySelector('.note-app').classList.contains('dark-mode') ? '🌙' : '☀️';
+};
+
+document.getElementById('btn-add').onclick = () => { panel.style.display='block'; panelTitle.innerText='NUOVA NOTA'; };
+document.getElementById('btn-cat').onclick = () => { panel.style.display='block'; panelTitle.innerText='CATEGORIE'; };
+document.getElementById('btn-trash').onclick = () => { panel.style.display='block'; panelTitle.innerText='CESTINO'; };
+document.getElementById('btn-settings').onclick = () => { panel.style.display='block'; panelTitle.innerText='IMPOSTAZIONI'; };`
         }];
 
         function openApp(id) {
@@ -145,9 +182,16 @@
             list.innerHTML = database.map(n => `
                 <div class="note-card">
                     <strong>📁 ${n.t}</strong>
+                    <div class="btn-group">
+                        <button class="btn btn-html" onclick="alert(database.find(x=>x.id=='${n.id}').h)">HTML</button>
+                        <button class="btn btn-css" onclick="alert(database.find(x=>x.id=='${n.id}').c)">CSS</button>
+                        <button class="btn btn-js" onclick="alert(database.find(x=>x.id=='${n.id}').j)">JS</button>
+                    </div>
                     <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA & TESTA LIVE</button>
                 </div>
             `).reverse().join('');
+            document.getElementById('note-count').innerText = database.length;
+            document.getElementById('mem-val').innerText = (JSON.stringify(database).length / 1024).toFixed(2);
         }
 
         function loadToEditor(id) {
@@ -172,7 +216,6 @@
             database.push(entry);
             localStorage.setItem('sandro_db', JSON.stringify(database));
             renderNotes();
-            alert("Salvato!");
         }
 
         function toggleEdit() { editMode = !editMode; renderDesktop(); }
