@@ -11,7 +11,6 @@
 
         .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; font-size: 22px; }
         
-        /* BOTTONI GESTIONE DESKTOP - COME RICHIESTI */
         .desktop-admin { display: flex; gap: 5px; margin-bottom: 20px; }
         .btn-admin { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 10px; text-transform: uppercase; }
         .btn-add { background: #28a745; }
@@ -138,7 +137,7 @@
                 const n = prompt("Rinomina:", folders[i].name);
                 if(n) { folders[i].name = n.toUpperCase(); save(); renderDesktop(); }
             } else {
-                alert("Cartella " + folders[i].name + " aperta (Contenuto Vuoto)");
+                alert("Cartella " + folders[i].name + " aperta");
             }
         }
 
@@ -146,7 +145,6 @@
         function resetFolders() { if(confirm("Ripristinare tutto?")) { folders = []; localStorage.clear(); location.reload(); } }
         function save() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
 
-        // --- IL TUO CODICE SACRO ORIGINALE ---
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
@@ -158,12 +156,39 @@
             document.getElementById('live-preview').srcdoc = '';
         }
 
+        // --- DATABASE CON I TUOI CODICI NOTE APP ---
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'original',
             t: 'APP NOTE ORIGINALE',
-            h: ``,
-            c: `/* CSS NOTE APP */`,
-            j: `// JS NOTE APP`
+            h: `<!DOCTYPE html>
+<html lang="it">
+<body>
+    <div class="icon-bar" style="display: flex; justify-content: space-around; padding: 15px; border-bottom: 1px solid #ccc;">
+        <button id="themeToggle">☀️</button>
+        <button id="addNoteBtn">➕</button>
+        <button id="categoriesBtn">📁</button>
+        <button id="trashBtn">🗑️</button>
+        <button id="settingsBtn">⚙️</button>
+    </div>
+    <div id="notesContainer"></div>
+    <div id="notePanel" class="panel hidden"><h3>Nuova Nota</h3><button id="saveNoteBtn">Salva</button><button id="closeNotePanel">Chiudi</button></div>
+    <div id="categoryPanel" class="panel hidden"><h3>Categorie</h3><button id="closeCategoryPanel">Chiudi</button></div>
+    <div id="trashPanel" class="panel hidden"><h3>Cestino</h3><button id="closeTrashPanel">Chiudi</button></div>
+    <div id="settingsPanel" class="panel hidden"><h3>Impostazioni</h3><button id="closeSettingsPanel">Chiudi</button></div>
+</body>
+</html>`,
+            c: `body { margin: 0; font-family: sans-serif; }
+.panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; padding: 20px; z-index: 99; }
+.hidden { display: none; }
+.icon-bar button { font-size: 20px; cursor: pointer; border: none; background: none; }`,
+            j: `document.getElementById('addNoteBtn').onclick = () => document.getElementById('notePanel').classList.remove('hidden');
+document.getElementById('closeNotePanel').onclick = () => document.getElementById('notePanel').classList.add('hidden');
+document.getElementById('categoriesBtn').onclick = () => document.getElementById('categoryPanel').classList.remove('hidden');
+document.getElementById('closeCategoryPanel').onclick = () => document.getElementById('categoryPanel').classList.add('hidden');
+document.getElementById('trashBtn').onclick = () => document.getElementById('trashPanel').classList.remove('hidden');
+document.getElementById('closeTrashPanel').onclick = () => document.getElementById('trashPanel').classList.add('hidden');
+document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsPanel').classList.remove('hidden');
+document.getElementById('closeSettingsPanel').onclick = () => document.getElementById('settingsPanel').classList.add('hidden');`
         }];
 
         function openApp(id) {
@@ -204,7 +229,7 @@
                         <button class="btn btn-css" onclick="alert('CSS:\\n'+database.find(x=>x.id=='${n.id}').c)">CSS</button>
                         <button class="btn btn-js" onclick="alert('JS:\\n'+database.find(x=>x.id=='${n.id}').j)">JS</button>
                     </div>
-                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">EDIT & TEST</button>
+                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">EDIT & TEST LIVE</button>
                 </div>
             `).reverse().join('');
             document.getElementById('note-count').innerText = database.length;
