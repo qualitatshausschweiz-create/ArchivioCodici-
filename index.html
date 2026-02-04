@@ -3,128 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Archivio Codici</title>
+    <title>Archivio Codici Pro</title>
     <style>
         :root {
-            --bg: #f4f4f4;
-            --box: #ffffff;
-            --accent: #1b4d3e; /* Il tuo verde svizzero */
-            --text: #111111;
+            --black: #111111;
+            --green: #1b4d3e;
+            --white: #ffffff;
+            --gray: #f4f4f4;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-appearance: none; /* Fondamentale per bloccare lo stile Apple */
-        }
+        * { box-sizing: border-box; -webkit-appearance: none; }
 
         body {
             font-family: -apple-system, sans-serif;
-            background-color: var(--bg);
+            background: var(--gray);
             margin: 0;
-            color: var(--text);
-            /* Spazio in alto per non toccare l'orologio dell'iPhone */
-            padding-top: env(safe-area-inset-top, 20px);
+            padding: env(safe-area-inset-top, 20px) 15px 0 15px;
         }
 
-        .header {
-            background: var(--text);
-            color: white;
-            padding: 15px;
+        /* Orologio Svizzero */
+        .clock-box {
             text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 500px;
-            margin: auto;
-        }
-
-        .note-card {
-            background: var(--box);
-            border: 3px solid var(--text);
-            padding: 15px;
+            font-weight: 900;
+            font-size: 24px;
+            padding: 10px;
+            background: var(--black);
+            color: var(--white);
             margin-bottom: 20px;
-            box-shadow: 8px 8px 0px var(--accent);
+            border-radius: 8px;
         }
 
-        /* --- FIX BOTTONE: Piccolo e posizionato bene --- */
-        .btn-archivio {
-            display: block !important;
-            width: 120px !important;    /* Molto stretto */
-            height: 36px !important;    /* Molto basso */
-            background: var(--text) !important;
-            color: white !important;
-            border: none !important;
-            font-size: 12px !important;
-            font-weight: bold !important;
-            border-radius: 6px !important;
-            margin: 10px auto !important;
-            cursor: pointer;
+        .main-card {
+            background: var(--white);
+            border: 3px solid var(--black);
+            padding: 20px;
+            box-shadow: 8px 8px 0px var(--green);
+            margin-bottom: 30px;
         }
 
-        .btn-green { background: var(--accent) !important; }
+        h2 { font-size: 18px; margin-top: 0; text-transform: uppercase; }
 
-        /* Input che non attivano il "Salva" dell'iPhone */
         input, textarea {
             width: 100%;
-            border: 2px solid var(--text);
-            padding: 10px;
+            border: 2px solid var(--black);
+            padding: 12px;
             margin-bottom: 10px;
-            font-size: 16px; /* Evita lo zoom automatico su iPhone */
+            font-size: 16px; /* Impedisce lo zoom su iPhone */
         }
 
-        /* --- SPAZIO DI SICUREZZA PER CHIUDERE PLAY --- */
-        /* Questo crea il vuoto in fondo così puoi fare lo swipe per chiudere l'app */
-        .chiudi-app-spacer {
-            height: 250px !important;
+        /* BOTTONI PICCOLI E SICURI */
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+        .btn {
+            display: inline-block !important;
+            width: 100px !important; /* Molto piccoli per non attivare blocchi */
+            height: 35px !important;
+            border: none !important;
+            font-weight: bold !important;
+            font-size: 11px !important;
+            cursor: pointer;
+            border-radius: 4px !important;
+            color: white !important;
+            text-transform: uppercase;
+        }
+
+        .btn-save { background: var(--green) !important; }
+        .btn-edit { background: var(--black) !important; }
+        .btn-delete { background: #b22222 !important; }
+        .btn-reset { background: #555 !important; }
+
+        /* LISTA NOTE */
+        .note-item {
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        /* --- IL FIX PER CHIUDERE PLAY --- */
+        .iphone-chiudi-fix {
+            height: 300px !important; /* 300 pixel di vuoto totale */
             display: block !important;
+            clear: both;
         }
 
-        footer {
-            text-align: center;
-            font-size: 10px;
-            padding: 20px;
-            opacity: 0.6;
-        }
+        footer { text-align: center; padding: 20px; font-size: 10px; opacity: 0.5; }
     </style>
 </head>
 <body>
 
-<div class="header">ARCHIVIO CODICI & NOTE</div>
+    <div id="clock" class="clock-box">00:00:00</div>
 
-<div class="container">
-    
-    <div class="note-card">
-        <h3>NUOVO CODICE</h3>
-        <input type="text" placeholder="Titolo App/Progetto" autocomplete="off">
-        <textarea placeholder="Incolla qui il codice o la nota..." rows="5" autocomplete="off"></textarea>
-        <button type="button" class="btn-archivio btn-green">MEMORIZZA</button>
+    <div class="main-card">
+        <h2>Nuovo Codice</h2>
+        <input type="text" id="title" placeholder="Titolo App" autocomplete="off">
+        <textarea id="code" placeholder="Incolla codice o nota..." rows="4" autocomplete="off"></textarea>
+        
+        <div class="btn-group">
+            <button class="btn btn-save" onclick="saveNote()">Memorizza</button>
+            <button class="btn btn-reset" onclick="resetForm()">Reset</button>
+        </div>
     </div>
 
-    <div class="note-card">
-        <h3>APP CBD SCHWEIZ</h3>
-        <p style="font-family: monospace; font-size: 12px; background: #eee; padding: 10px;">
-            Codice: 1234-ABCD-2026
-        </p>
-        <button type="button" class="btn-archivio">COPIA</button>
-    </div>
+    <div id="notes-list">
+        </div>
 
-    <div class="chiudi-app-spacer"></div>
+    <div class="iphone-chiudi-fix"></div>
 
-    <footer>Sandro - Sistema Archivio Sicuro</footer>
-</div>
+    <footer>Archivio Personale Sandro - 2026</footer>
 
-<script>
-    // Funzione per non ricaricare la pagina al click
-    document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log("Azione eseguita");
-        });
-    });
-</script>
+    <script>
+        // Orologio
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('it-IT');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
+        // Logica Archivio
+        let notes = JSON.parse(localStorage.getItem('my_codes')) || [];
+
+        function saveNote() {
+            const title = document.getElementById('title').value;
+            const code = document.getElementById('code').value;
+            if(!title || !code) return alert("Inserisci dati!");
+
+            notes.push({ title, code, id: Date.now() });
+            localStorage.setItem('my_codes', JSON.stringify(notes));
+            renderNotes();
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('title').value = '';
+            document.getElementById('code').value = '';
+        }
+
+        function deleteNote(id) {
+            notes = notes.filter(n => n.id !== id);
+            localStorage.setItem('my_codes', JSON.stringify(notes));
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = notes.map(n => `
+                <div class="note-item">
+                    <strong>${n.title}</strong>
+                    <pre style="font-size:11px; background:#f9f9f9; padding:5px; border:1px solid #ddd; overflow-x:auto;">${n.code}</pre>
+                    <div class="btn-group" style="margin-top:10px;">
+                        <button class="btn btn-delete" onclick="deleteNote(${n.id})">Elimina</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        renderNotes();
+    </script>
 </body>
 </html>
