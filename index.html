@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Archivio Codici Pro</title>
+    <title>Archivio Codici & Stats Pro</title>
     <style>
         :root { --black: #111; --green: #1b4d3e; --white: #fff; --gray: #f4f4f4; }
         * { box-sizing: border-box; -webkit-appearance: none; }
-        body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; padding-bottom: 300px; }
+        body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
         
+        /* Orologio */
         .clock { background: var(--black); color: #fff; text-align: center; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 22px; }
+        
+        /* Box Principale Note */
         .card { background: var(--white); border: 3px solid var(--black); padding: 20px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 20px; }
-        
         h2 { font-size: 16px; margin: 0 0 15px 0; text-transform: uppercase; }
-        label { font-size: 11px; font-weight: bold; display: block; margin-bottom: 5px; }
+        label { font-size: 10px; font-weight: bold; display: block; margin-bottom: 5px; color: var(--green); }
         
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 15px; font-family: monospace; font-size: 14px; background: #fafafa; }
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 12px; font-family: monospace; font-size: 14px; background: #fafafa; }
         
-        .btn-group { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        /* Dashboard Extra (Statistiche e Memoria) */
+        .extra-folder { background: #e8e8e8; border: 2px dashed var(--black); padding: 15px; margin-top: 20px; border-radius: 10px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: var(--black); color: #fff; padding: 10px; border-radius: 5px; text-align: center; font-size: 10px; }
+        .stat-box span { display: block; font-size: 14px; color: #0f0; font-weight: bold; }
+
+        /* Bottoni */
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
         .btn-save { background: var(--green); }
         .btn-reset { background: #666; }
+        .btn-delete { background: #d9534f; }
 
-        .note-item { background: white; border: 2px solid #000; padding: 15px; margin-top: 15px; position: relative; }
-        .code-preview { background: #222; color: #0f0; padding: 10px; font-size: 10px; overflow-x: auto; margin-top: 5px; border-radius: 4px; }
+        .note-item { background: white; border: 2px solid #000; padding: 15px; margin-top: 15px; box-shadow: 4px 4px 0px #ccc; }
+        .code-preview { background: #222; color: #0f0; padding: 8px; font-size: 9px; overflow-x: auto; margin-top: 5px; border-radius: 4px; border-left: 3px solid var(--green); }
         
-        .spacer { height: 350px; } /* Fondamentale per chiudere l'app senza intoppi */
+        .spacer { height: 350px; } /* Per chiudere Play facilmente */
     </style>
 </head>
 <body>
@@ -34,29 +44,46 @@
 
     <div class="card">
         <h2>Nuovo Progetto</h2>
-        <input type="text" id="title" placeholder="Nome (es. Shop Online)" autocomplete="off" inputmode="text">
+        <input type="text" id="title" placeholder="Nome Progetto..." autocomplete="off" inputmode="text">
         
-        <label>CODICE HTML</label>
-        <textarea id="html_c" placeholder="Incolla HTML..." rows="3" autocomplete="off" inputmode="text"></textarea>
+        <label>HTML</label>
+        <textarea id="html_c" placeholder="Codice HTML..." rows="2" autocomplete="off" inputmode="text"></textarea>
         
-        <label>CODICE CSS</label>
-        <textarea id="css_c" placeholder="Incolla CSS..." rows="3" autocomplete="off" inputmode="text"></textarea>
+        <label>CSS</label>
+        <textarea id="css_c" placeholder="Codice CSS..." rows="2" autocomplete="off" inputmode="text"></textarea>
         
-        <label>CODICE JS</label>
-        <textarea id="js_c" placeholder="Incolla JS..." rows="3" autocomplete="off" inputmode="text"></textarea>
+        <label>JAVASCRIPT</label>
+        <textarea id="js_c" placeholder="Codice JS..." rows="2" autocomplete="off" inputmode="text"></textarea>
 
         <div class="btn-group">
-            <button class="btn btn-save" onclick="save()">MEMORIZZA</button>
-            <button class="btn btn-reset" onclick="reset()">RESET</button>
+            <button class="btn btn-save" onclick="save()">Memorizza</button>
+            <button class="btn btn-reset" onclick="reset()">Reset</button>
         </div>
     </div>
 
     <div id="output"></div>
+
+    <div class="extra-folder">
+        <h2 style="font-size: 12px; color: var(--green);">📂 Dashboard Statistiche</h2>
+        <div class="stats-grid">
+            <div class="stat-box">NOTE SALVATE<span id="stat-count">0</span></div>
+            <div class="stat-box">MEMORIA USATA<span id="stat-mem">0 KB</span></div>
+            <div class="stat-box">DATA APP<span id="stat-date">--/--</span></div>
+            <div class="stat-box">STATO SISTEMA<span id="stat-status">OK</span></div>
+        </div>
+    </div>
+
     <div class="spacer"></div>
 
     <script>
-        function update() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
-        setInterval(update, 1000); update();
+        // Funzione Orologio e Data
+        function updateClock() { 
+            const now = new Date();
+            document.getElementById('clk').innerText = now.toLocaleTimeString('it-CH'); 
+            document.getElementById('stat-date').innerText = now.toLocaleDateString('it-CH', {day:'2-digit', month:'2-digit'});
+        }
+        setInterval(updateClock, 1000); 
+        updateClock();
 
         let db = JSON.parse(localStorage.getItem('archivio_sandro')) || [];
 
@@ -80,21 +107,34 @@
         }
 
         function del(id) {
-            db = db.filter(n => n.id !== id);
-            localStorage.setItem('archivio_sandro', JSON.stringify(db));
-            render();
+            if(confirm("Eliminare definitivamente?")) {
+                db = db.filter(n => n.id !== id);
+                localStorage.setItem('archivio_sandro', JSON.stringify(db));
+                render();
+            }
+        }
+
+        function updateStats() {
+            // Conta Note
+            document.getElementById('stat-count').innerText = db.length;
+            // Calcola Memoria (approssimativa in KB)
+            const stringDb = JSON.stringify(db);
+            const size = (stringDb.length / 1024).toFixed(2);
+            document.getElementById('stat-mem').innerText = size + " KB";
         }
 
         function render() {
             const out = document.getElementById('output');
             out.innerHTML = db.map(n => `
                 <div class="note-item">
-                    <b>${n.t}</b>
-                    <div class="code-preview">HTML: ${n.h.substring(0,20)}...</div>
-                    <div class="code-preview">CSS: ${n.c.substring(0,20)}...</div>
-                    <button onclick="del(${n.id})" style="margin-top:10px; background:red; color:white; border:none; padding:5px; border-radius:4px; font-size:10px;">ELIMINA</button>
+                    <b>📁 ${n.t}</b>
+                    <div class="code-preview">HTML: ${n.h.substring(0,25)}...</div>
+                    <div class="code-preview">CSS: ${n.c.substring(0,25)}...</div>
+                    <div class="code-preview">JS: ${n.j.substring(0,25)}...</div>
+                    <button class="btn btn-delete" onclick="del(${n.id})" style="margin-top:10px; padding:5px; height:30px;">ELIMINA</button>
                 </div>
             `).join('').reverse();
+            updateStats();
         }
         render();
     </script>
