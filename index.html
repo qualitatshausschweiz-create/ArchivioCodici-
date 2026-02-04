@@ -22,7 +22,7 @@
         .folder-icon { font-size: 40px; display: block; margin-bottom: 5px; }
         .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; }
         
-        .del-tag { position: absolute; top: 0; right: 10px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: none; line-height: 20px; }
+        .del-tag { position: absolute; top: 0; right: 10px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: none; line-height: 20px; text-align:center; }
         .editing .del-tag { display: block; }
 
         .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; }
@@ -72,7 +72,7 @@
     </div>
 
     <div id="app-note" class="app-window">
-        <h2>📂 ARCHIVIO CODICI NOTE</h2>
+        <h2>📂 ARCHIVIO CODICI</h2>
         <div class="stats-box">> MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span></div>
         <div id="notes-list"></div>
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
@@ -96,15 +96,14 @@
     </div>
 
     <script>
-        // --- LOGICA CARTELLE ---
+        // --- GESTIONE CARTELLE DESKTOP ---
         let folders = JSON.parse(localStorage.getItem('sandro_custom_folders')) || [];
         let editMode = false;
 
         function renderDesktop() {
             const grid = document.getElementById('desktop-grid');
-            grid.innerHTML = `
-                <div class="folder" onclick="openApp('app-note')"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>
-                <div class="folder" onclick="openApp('play-test')"><span class="folder-icon">🛠️</span><span class="folder-name">Play Test</span></div>`;
+            grid.innerHTML = `<div class="folder" onclick="openApp('app-note')"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>
+                              <div class="folder" onclick="openApp('play-test')"><span class="folder-icon">🛠️</span><span class="folder-name">Play Test</span></div>`;
             folders.forEach((f, i) => {
                 grid.innerHTML += `<div class="folder ${editMode ? 'editing' : ''}" onclick="folderAction(${i})">
                     <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
@@ -115,33 +114,50 @@
         function toggleEdit() { editMode = !editMode; renderDesktop(); }
         function deleteFolder(i) { folders.splice(i, 1); saveF(); renderDesktop(); }
         function saveF() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
-        function resetFolders() { if(confirm("Vuoi resettare tutto?")) { localStorage.clear(); location.reload(); } }
+        function resetFolders() { if(confirm("Resettare tutto?")) { localStorage.clear(); location.reload(); } }
 
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
         // --- DATABASE CON CODICI COMPLETI ---
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
-            id: 'original',
-            t: 'APP NOTE ORIGINALE',
-            h: `<div style="display:flex; justify-content:space-around; padding:10px; border-bottom:1px solid #ccc; background:#fff;">
-    <button onclick="parent.postMessage('sole', '*')" style="font-size:25px; border:none; background:none; cursor:pointer;">☀️</button>
-    <button onclick="parent.postMessage('piu', '*')" style="font-size:25px; border:none; background:none; cursor:pointer;">➕</button>
-    <button onclick="parent.postMessage('cartella', '*')" style="font-size:25px; border:none; background:none; cursor:pointer;">📁</button>
-    <button onclick="parent.postMessage('cestino', '*')" style="font-size:25px; border:none; background:none; cursor:pointer;">🗑️</button>
-    <button onclick="parent.postMessage('ingranaggio', '*')" style="font-size:25px; border:none; background:none; cursor:pointer;">⚙️</button>
-</div>
-<div id="status" style="padding:20px; text-align:center; font-weight:bold; color:#333;">Premi un bottone sopra</div>`,
-            c: `body { margin: 0; background: #f0f0f0; font-family: sans-serif; }
-button:active { transform: scale(0.9); }`,
-            j: `window.addEventListener('message', function(e) {
-    const status = document.getElementById('status');
-    if(e.data === 'sole') status.innerText = 'MODALITÀ LUCE ATTIVA';
-    if(e.data === 'piu') status.innerText = 'AGGIUNGI NUOVA NOTA';
-    if(e.data === 'cartella') status.innerText = 'APRI ARCHIVIO';
-    if(e.data === 'cestino') status.innerText = 'CESTINO APERTO';
-    if(e.data === 'ingranaggio') status.innerText = 'IMPOSTAZIONI SISTEMA';
-});`
+            id: 'note-v1',
+            t: 'NOTE APP COMPLETA',
+            h: `<div class="note-app">
+    <div class="toolbar">
+        <button id="btn-theme">☀️</button>
+        <button id="btn-add">➕</button>
+        <button id="btn-cat">📁</button>
+        <button id="btn-trash">🗑️</button>
+        <button id="btn-settings">⚙️</button>
+    </div>
+    <div id="main-content" style="padding:20px; text-align:center;">
+        <h3>Benvenuto Sandro</h3>
+        <p>I bottoni sopra sono ora attivi.</p>
+    </div>
+    <div id="panel" style="display:none; position:fixed; bottom:0; width:100%; background:white; border-top:2px solid black; padding:20px;">
+        <h4 id="panel-title">Pannello</h4>
+        <button onclick="document.getElementById('panel').style.display='none'">CHIUDI</button>
+    </div>
+</div>`,
+            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; transition: 0.3s; }
+.toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; }
+.toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }
+.dark-mode { background: #222 !important; color: white !important; }
+.dark-mode #panel { background: #333; color: white; }`,
+            j: `const btnTheme = document.getElementById('btn-theme');
+const panel = document.getElementById('panel');
+const panelTitle = document.getElementById('panel-title');
+
+btnTheme.onclick = () => {
+    document.querySelector('.note-app').classList.toggle('dark-mode');
+    btnTheme.innerText = document.querySelector('.note-app').classList.contains('dark-mode') ? '🌙' : '☀️';
+};
+
+document.getElementById('btn-add').onclick = () => { panel.style.display='block'; panelTitle.innerText='NUOVA NOTA'; };
+document.getElementById('btn-cat').onclick = () => { panel.style.display='block'; panelTitle.innerText='CATEGORIE'; };
+document.getElementById('btn-trash').onclick = () => { panel.style.display='block'; panelTitle.innerText='CESTINO'; };
+document.getElementById('btn-settings').onclick = () => { panel.style.display='block'; panelTitle.innerText='IMPOSTAZIONI'; };`
         }];
 
         function openApp(id) {
@@ -156,11 +172,11 @@ button:active { transform: scale(0.9); }`,
                 <div class="note-card">
                     <strong>📁 ${n.t}</strong>
                     <div class="btn-group">
-                        <button class="btn btn-html" onclick="alert('CODICE H:\\n\\n' + database.find(x=>x.id=='${n.id}').h)">HTML</button>
-                        <button class="btn btn-css" onclick="alert('CODICE C:\\n\\n' + database.find(x=>x.id=='${n.id}').c)">CSS</button>
-                        <button class="btn btn-js" onclick="alert('CODICE J:\\n\\n' + database.find(x=>x.id=='${n.id}').j)">JS</button>
+                        <button class="btn btn-html" onclick="alert(database.find(x=>x.id=='${n.id}').h)">HTML</button>
+                        <button class="btn btn-css" onclick="alert(database.find(x=>x.id=='${n.id}').c)">CSS</button>
+                        <button class="btn btn-js" onclick="alert(database.find(x=>x.id=='${n.id}').j)">JS</button>
                     </div>
-                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA NELL'EDITOR & TESTA</button>
+                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA & TESTA LIVE</button>
                 </div>
             `).reverse().join('');
             document.getElementById('note-count').innerText = database.length;
@@ -181,8 +197,7 @@ button:active { transform: scale(0.9); }`,
             const h = document.getElementById('p-html').value;
             const c = "<style>" + document.getElementById('p-css').value + "</style>";
             const j = "<script>" + document.getElementById('p-js').value + "<\/script>";
-            const iframe = document.getElementById('live-preview');
-            iframe.srcdoc = h + c + j;
+            document.getElementById('live-preview').srcdoc = h + c + j;
         }
 
         function saveNew() {
