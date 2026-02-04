@@ -13,22 +13,30 @@
         .desktop { display: flex; justify-content: space-around; padding: 20px 0; border-bottom: 2px solid var(--black); margin-bottom: 20px; }
         .folder { text-align: center; width: 45%; cursor: pointer; }
         .folder-icon { font-size: 50px; display: block; margin-bottom: 5px; }
-        .folder-name { font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .folder-name { font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
-        /* Contenitori App (nascosti di base) */
+        /* Contenitori App */
         .app-window { display: none; background: var(--white); border: 3px solid var(--black); padding: 15px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 20px; }
         .active { display: block !important; }
 
-        .clock { background: var(--black); color: #fff; text-align: center; padding: 10px; font-weight: bold; border-radius: 5px; margin-bottom: 15px; }
+        .clock { background: var(--black); color: #fff; text-align: center; padding: 10px; font-weight: bold; border-radius: 5px; margin-bottom: 15px; font-size: 20px; }
         
-        /* Stile Input e Bottoni (come da tuoi screenshot) */
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 10px; font-family: monospace; font-size: 14px; }
-        .btn-group { display: flex; gap: 8px; }
-        .btn { flex: 1; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px; text-transform: uppercase; }
+        /* Input e Bottoni */
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 10px; font-family: monospace; font-size: 14px; background: #fafafa; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { flex: 1; min-width: 80px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
         .btn-green { background: var(--green); }
+        .btn-black { background: var(--black); }
+        .btn-red { background: #d9534f; }
         .btn-gray { background: #666; }
-        
-        .spacer { height: 350px; }
+        .btn-blue { background: #007bff; }
+
+        /* Lista Note nell'Archivio */
+        .note-item { border-top: 2px solid #eee; padding: 15px 0; margin-top: 10px; }
+        .note-title { font-weight: bold; color: var(--green); display: block; margin-bottom: 8px; }
+        .code-indicator { display: inline-block; font-size: 9px; background: #eee; padding: 2px 5px; border-radius: 3px; margin-right: 4px; border: 1px solid #ccc; }
+
+        .spacer { height: 400px; } /* Per chiudere Play senza blocchi verde */
     </style>
 </head>
 <body>
@@ -48,53 +56,115 @@
 
     <div id="app-note" class="app-window">
         <h2>📂 ARCHIVIO PERSONALE</h2>
-        <div id="stats" style="font-size: 10px; margin-bottom: 10px; color: var(--green);">
-            Memoria: <span id="mem-val">0</span> KB | Note: <span id="note-count">0</span>
+        <div id="stats" style="font-size: 10px; margin-bottom: 15px; background: #eee; padding: 10px; border-radius: 5px; border-left: 5px solid var(--green);">
+            <b>STATISTICHE:</b><br>
+            Memoria: <span id="mem-val" style="color:var(--green)">0</span> KB | 
+            Note Salvate: <span id="note-count" style="color:var(--green)">0</span>
         </div>
+        
         <div id="notes-list">
-            <p style="font-size: 11px; color: #999;">Entra in una nota per vedere i 3 bottoni HTML, CSS e JS...</p>
-        </div>
-        <button class="btn btn-gray" onclick="closeApps()" style="width:100%; margin-top:10px;">Chiudi Cartella</button>
+            </div>
+        
+        <button class="btn btn-black" onclick="closeApps()" style="width:100%; margin-top:20px;">Esci dalla Cartella</button>
     </div>
 
     <div id="play-test" class="app-window">
-        <h2>NUOVO PROGETTO (PLAY)</h2>
-        <input type="text" id="p-title" placeholder="Nome (es. Shop Online)" autocomplete="off">
+        <h2>🛠️ NUOVO PROGETTO (PLAY)</h2>
+        <input type="text" id="p-title" placeholder="Nome Progetto..." autocomplete="off">
         <textarea id="p-html" placeholder="CODICE HTML" rows="3"></textarea>
         <textarea id="p-css" placeholder="CODICE CSS" rows="3"></textarea>
         <textarea id="p-js" placeholder="CODICE JS" rows="3"></textarea>
         <div class="btn-group">
-            <button class="btn btn-green">MEMORIZZA</button>
-            <button class="btn btn-gray" onclick="closeApps()">RESET</button>
+            <button class="btn btn-green" onclick="saveFromPlay()">MEMORIZZA</button>
+            <button class="btn btn-gray" onclick="resetPlay()">RESET</button>
         </div>
     </div>
 
     <div class="spacer"></div>
 
     <script>
+        // Orologio
         function updateClock() {
             document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH');
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Funzione per aprire le cartelle
+        let database = JSON.parse(localStorage.getItem('sandro_storage')) || [];
+
+        // Navigazione cartelle
         function openApp(appId) {
             closeApps();
             document.getElementById(appId).classList.add('active');
-            window.scrollTo({top: 200, behavior: 'smooth'});
+            renderNotes();
+            window.scrollTo({top: 150, behavior: 'smooth'});
         }
 
         function closeApps() {
             document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
         }
 
-        // Recupero memoria e statistiche
-        function refreshStats() {
-            let db = JSON.parse(localStorage.getItem('sandro_storage')) || [];
-            document.getElementById('note-count').innerText = db.length;
-            document.getElementById('mem-val').innerText = (JSON.stringify(db).length / 1024).toFixed(2);
+        // Funzioni Play
+        function saveFromPlay() {
+            const t = document.getElementById('p-title').value;
+            if(!t) return alert("Inserisci un titolo!");
+
+            const entry = {
+                t: t,
+                h: document.getElementById('p-html').value,
+                c: document.getElementById('p-css').value,
+                j: document.getElementById('p-js').value,
+                id: Date.now()
+            };
+
+            database.push(entry);
+            localStorage.setItem('sandro_storage', JSON.stringify(database));
+            alert("Salvato nell'Archivio!");
+            resetPlay();
+            renderNotes();
         }
-        refreshStats();
+
+        function resetPlay() {
+            ['p-title','p-html','p-css','p-js'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        // Funzioni Archivio (Modifica, Elimina, Ripristina)
+        function deleteNote(id) {
+            if(confirm("Eliminare definitivamente?")) {
+                database = database.filter(n => n.id !== id);
+                localStorage.setItem('sandro_storage', JSON.stringify(database));
+                renderNotes();
+            }
+        }
+
+        function restoreToPlay(id) {
+            const item = database.find(n => n.id === id);
+            document.getElementById('p-title').value = item.t;
+            document.getElementById('p-html').value = item.h;
+            document.getElementById('p-css').value = item.c;
+            document.getElementById('p-js').value = item.j;
+            openApp('play-test'); // Ti sposta in Play per modificare
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = database.map(n => `
+                <div class="note-item">
+                    <span class="note-title">📁 ${n.t}</span>
+                    <span class="code-indicator">HTML</span><span class="code-indicator">CSS</span><span class="code-indicator">JS</span>
+                    <div class="btn-group" style="margin-top:10px;">
+                        <button class="btn btn-blue" onclick="restoreToPlay(${n.id})">RIPRISTINA / MODIFICA</button>
+                        <button class="btn btn-red" onclick="deleteNote(${n.id})">ELIMINA</button>
+                    </div>
+                </div>
+            `).join('').reverse();
+
+            // Aggiorna Stats
+            document.getElementById('note-count').innerText = database.length;
+            const size = (JSON.stringify(database).length / 1024).toFixed(2);
+            document.getElementById('mem-val').innerText = size;
+        }
+
+        renderNotes();
     </script>
 </body>
 </html>
