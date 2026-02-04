@@ -3,39 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Archivio Codici & Stats Pro</title>
+    <title>Sandro Multi-App System</title>
     <style>
         :root { --black: #111; --green: #1b4d3e; --white: #fff; --gray: #f4f4f4; }
         * { box-sizing: border-box; -webkit-appearance: none; }
         body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
-        
-        /* Orologio */
-        .clock { background: var(--black); color: #fff; text-align: center; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 22px; }
-        
-        /* Box Principale Note */
-        .card { background: var(--white); border: 3px solid var(--black); padding: 20px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 20px; }
-        h2 { font-size: 16px; margin: 0 0 15px 0; text-transform: uppercase; }
-        label { font-size: 10px; font-weight: bold; display: block; margin-bottom: 5px; color: var(--green); }
-        
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 12px; font-family: monospace; font-size: 14px; background: #fafafa; }
-        
-        /* Dashboard Extra (Statistiche e Memoria) */
-        .extra-folder { background: #e8e8e8; border: 2px dashed var(--black); padding: 15px; margin-top: 20px; border-radius: 10px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stat-box { background: var(--black); color: #fff; padding: 10px; border-radius: 5px; text-align: center; font-size: 10px; }
-        .stat-box span { display: block; font-size: 14px; color: #0f0; font-weight: bold; }
 
-        /* Bottoni */
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        .btn { flex: 1; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+        /* HEADER & CLOCK */
+        .clock { background: var(--black); color: #fff; text-align: center; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 22px; }
+
+        /* SEZIONE 1: PLAY EDITOR (Quello che ti piace) */
+        .card { background: var(--white); border: 3px solid var(--black); padding: 20px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 25px; }
+        h2 { font-size: 16px; margin: 0 0 15px 0; text-transform: uppercase; color: var(--green); }
+        label { font-size: 11px; font-weight: bold; display: block; margin-bottom: 5px; }
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 15px; font-family: monospace; font-size: 14px; background: #fafafa; }
+
+        /* SEZIONE 2: CARTELLA APP NOTE (La tua vecchia App) */
+        .folder-box { border: 4px dashed var(--black); background: #eee; padding: 15px; margin-top: 30px; border-radius: 15px; }
+        .folder-title { font-weight: 900; font-size: 14px; text-align: center; margin-bottom: 15px; display: block; }
+
+        /* BOTTONI */
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { flex: 1; min-width: 80px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px; text-transform: uppercase; }
         .btn-save { background: var(--green); }
         .btn-reset { background: #666; }
+        .btn-edit { background: #007bff; }
         .btn-delete { background: #d9534f; }
+        .btn-restore { background: #f0ad4e; }
 
-        .note-item { background: white; border: 2px solid #000; padding: 15px; margin-top: 15px; box-shadow: 4px 4px 0px #ccc; }
-        .code-preview { background: #222; color: #0f0; padding: 8px; font-size: 9px; overflow-x: auto; margin-top: 5px; border-radius: 4px; border-left: 3px solid var(--green); }
-        
-        .spacer { height: 350px; } /* Per chiudere Play facilmente */
+        /* STATS & MEMORIA */
+        .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 15px; }
+        .stat-item { background: #222; color: #0f0; font-size: 9px; padding: 5px; text-align: center; border-radius: 3px; }
+
+        .note-item { background: white; border: 2px solid #000; padding: 15px; margin-top: 10px; }
+        .code-preview { background: #222; color: #0f0; padding: 8px; font-size: 10px; overflow-x: auto; border-radius: 4px; margin-top: 5px; }
+
+        .spacer { height: 400px; } /* Fondamentale per chiudere Play */
     </style>
 </head>
 <body>
@@ -43,99 +46,101 @@
     <div class="clock" id="clk">00:00:00</div>
 
     <div class="card">
-        <h2>Nuovo Progetto</h2>
-        <input type="text" id="title" placeholder="Nome Progetto..." autocomplete="off" inputmode="text">
-        
+        <h2>🚀 PLAY LIVE EDITOR</h2>
+        <input type="text" id="title" placeholder="Nome Progetto..." autocomplete="off">
         <label>HTML</label>
-        <textarea id="html_c" placeholder="Codice HTML..." rows="2" autocomplete="off" inputmode="text"></textarea>
-        
+        <textarea id="html_c" placeholder="Codice HTML..." rows="2" autocomplete="off"></textarea>
         <label>CSS</label>
-        <textarea id="css_c" placeholder="Codice CSS..." rows="2" autocomplete="off" inputmode="text"></textarea>
-        
-        <label>JAVASCRIPT</label>
-        <textarea id="js_c" placeholder="Codice JS..." rows="2" autocomplete="off" inputmode="text"></textarea>
-
+        <textarea id="css_c" placeholder="Codice CSS..." rows="2" autocomplete="off"></textarea>
+        <label>JS</label>
+        <textarea id="js_c" placeholder="Codice JS..." rows="2" autocomplete="off"></textarea>
         <div class="btn-group">
-            <button class="btn btn-save" onclick="save()">Memorizza</button>
-            <button class="btn btn-reset" onclick="reset()">Reset</button>
+            <button class="btn btn-save" onclick="saveData()">MEMORIZZA</button>
+            <button class="btn btn-reset" onclick="resetForm()">RESET</button>
         </div>
     </div>
 
-    <div id="output"></div>
-
-    <div class="extra-folder">
-        <h2 style="font-size: 12px; color: var(--green);">📂 Dashboard Statistiche</h2>
-        <div class="stats-grid">
-            <div class="stat-box">NOTE SALVATE<span id="stat-count">0</span></div>
-            <div class="stat-box">MEMORIA USATA<span id="stat-mem">0 KB</span></div>
-            <div class="stat-box">DATA APP<span id="stat-date">--/--</span></div>
-            <div class="stat-box">STATO SISTEMA<span id="stat-status">OK</span></div>
+    <div class="folder-box">
+        <span class="folder-title">📂 CARTELLA: ARCHIVIO NOTE & STATS</span>
+        
+        <div class="stats-bar">
+            <div class="stat-item">NOTE: <span id="count">0</span></div>
+            <div class="stat-item">MEM: <span id="mem">0KB</span></div>
+            <div class="stat-item">STATUS: <span style="color:yellow">LIVE</span></div>
         </div>
+
+        <div id="output"></div>
     </div>
 
     <div class="spacer"></div>
 
     <script>
-        // Funzione Orologio e Data
-        function updateClock() { 
-            const now = new Date();
-            document.getElementById('clk').innerText = now.toLocaleTimeString('it-CH'); 
-            document.getElementById('stat-date').innerText = now.toLocaleDateString('it-CH', {day:'2-digit', month:'2-digit'});
+        // Orologio
+        function updateClock() {
+            document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH');
         }
-        setInterval(updateClock, 1000); 
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
 
-        let db = JSON.parse(localStorage.getItem('archivio_sandro')) || [];
+        let database = JSON.parse(localStorage.getItem('sandro_storage')) || [];
 
-        function save() {
-            const data = {
-                t: document.getElementById('title').value,
+        function saveData() {
+            const title = document.getElementById('title').value;
+            if(!title) return alert("Inserisci un titolo!");
+
+            const newEntry = {
+                t: title,
                 h: document.getElementById('html_c').value,
                 c: document.getElementById('css_c').value,
                 j: document.getElementById('js_c').value,
                 id: Date.now()
             };
-            if(!data.t) return alert("Inserisci un titolo");
-            db.push(data);
-            localStorage.setItem('archivio_sandro', JSON.stringify(db));
+
+            database.push(newEntry);
+            localStorage.setItem('sandro_storage', JSON.stringify(database));
             render();
-            reset();
+            resetForm();
         }
 
-        function reset() {
+        function resetForm() {
             ['title','html_c','css_c','js_c'].forEach(id => document.getElementById(id).value = '');
         }
 
-        function del(id) {
-            if(confirm("Eliminare definitivamente?")) {
-                db = db.filter(n => n.id !== id);
-                localStorage.setItem('archivio_sandro', JSON.stringify(db));
+        function deleteNote(id) {
+            if(confirm("Vuoi eliminare?")) {
+                database = database.filter(n => n.id !== id);
+                localStorage.setItem('sandro_storage', JSON.stringify(database));
                 render();
             }
         }
 
-        function updateStats() {
-            // Conta Note
-            document.getElementById('stat-count').innerText = db.length;
-            // Calcola Memoria (approssimativa in KB)
-            const stringDb = JSON.stringify(db);
-            const size = (stringDb.length / 1024).toFixed(2);
-            document.getElementById('stat-mem').innerText = size + " KB";
+        function editNote(id) {
+            const item = database.find(n => n.id === id);
+            document.getElementById('title').value = item.t;
+            document.getElementById('html_c').value = item.h;
+            document.getElementById('css_c').value = item.c;
+            document.getElementById('js_c').value = item.j;
+            deleteNote(id); // Rimuove la vecchia per sovrascriverla
         }
 
         function render() {
             const out = document.getElementById('output');
-            out.innerHTML = db.map(n => `
+            out.innerHTML = database.map(n => `
                 <div class="note-item">
-                    <b>📁 ${n.t}</b>
-                    <div class="code-preview">HTML: ${n.h.substring(0,25)}...</div>
-                    <div class="code-preview">CSS: ${n.c.substring(0,25)}...</div>
-                    <div class="code-preview">JS: ${n.j.substring(0,25)}...</div>
-                    <button class="btn btn-delete" onclick="del(${n.id})" style="margin-top:10px; padding:5px; height:30px;">ELIMINA</button>
+                    <b>${n.t}</b>
+                    <div class="code-preview">HTML: ${n.h.substring(0,15)}...</div>
+                    <div class="btn-group" style="margin-top:10px;">
+                        <button class="btn btn-edit" onclick="editNote(${n.id})">Modifica</button>
+                        <button class="btn btn-delete" onclick="deleteNote(${n.id})">Elimina</button>
+                    </div>
                 </div>
             `).join('').reverse();
-            updateStats();
+
+            // Stats memoria
+            document.getElementById('count').innerText = database.length;
+            const size = (JSON.stringify(database).length / 1024).toFixed(2);
+            document.getElementById('mem').innerText = size + "KB";
         }
+
         render();
     </script>
 </body>
