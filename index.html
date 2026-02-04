@@ -9,34 +9,45 @@
         * { box-sizing: border-box; -webkit-appearance: none; }
         body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
 
-        .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 20px; }
+        /* Orologio in alto (come da screenshot) */
+        .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; font-size: 22px; }
         
-        .desktop { display: flex; justify-content: space-around; padding: 20px 0; border-bottom: 2px solid var(--black); margin-bottom: 20px; }
-        .folder { text-align: center; width: 45%; cursor: pointer; }
-        .folder-icon { font-size: 50px; display: block; margin-bottom: 5px; }
-        .folder-name { font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        /* Layout Home: Icone in alto */
+        .desktop { display: flex; justify-content: space-around; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .folder { text-align: center; width: 45%; cursor: pointer; transition: transform 0.1s; }
+        .folder:active { transform: scale(0.95); }
+        .folder-icon { font-size: 45px; display: block; margin-bottom: 5px; filter: grayscale(100%); opacity: 0.7; }
+        .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; }
 
-        .app-window { display: none; background: var(--white); border: 3px solid var(--black); padding: 15px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 20px; }
+        /* Finestra App (Stile bordi neri degli screenshot) */
+        .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; position: relative; }
         .active { display: block !important; }
 
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 10px; font-family: monospace; font-size: 14px; background: #fafafa; }
-        
-        /* BOTTONI GRANDI E VISIBILI */
-        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .btn { flex: 1; min-width: 80px; padding: 15px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 12px; text-transform: uppercase; text-align: center; }
-        
-        .btn-html { background: #e34c26 !important; box-shadow: 0 4px #b13a1d; } 
-        .btn-css { background: #264de4 !important; box-shadow: 0 4px #1a35a0; }  
-        .btn-js { background: #f7df1e !important; color: #000 !important; box-shadow: 0 4px #c6b218; }   
-        .btn-green { background: var(--green) !important; }
-        .btn-black { background: var(--black) !important; }
-        .btn-red { background: #d9534f !important; }
-        .btn-blue { background: #007bff !important; }
+        h2 { font-size: 18px; text-transform: uppercase; margin-top: 0; display: flex; align-items: center; gap: 10px; }
 
-        .note-card { border: 2px solid #000; padding: 15px; background: #fff; margin-top: 10px; }
-        .stats { font-size: 10px; background: #222; color: #0f0; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-family: monospace; }
+        /* Statistiche Matrix */
+        .stats-box { background: #222; color: #0f0; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; margin-bottom: 15px; line-height: 1.4; }
+
+        /* Input e Testo */
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 12px; font-family: monospace; font-size: 14px; background: #fff; }
+        label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+
+        /* Bottoni */
+        .btn-group { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+        .btn { flex: 1; padding: 15px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; text-align: center; }
         
-        .spacer { height: 400px; }
+        .btn-html { background: #e34c26 !important; } 
+        .btn-css { background: #264de4 !important; }  
+        .btn-js { background: #f7df1e !important; color: #000 !important; }   
+        .btn-green { background: var(--green) !important; }
+        .btn-gray { background: #555 !important; }
+        .btn-red { background: #d9534f !important; }
+        .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; }
+
+        .note-card { border: 1px solid #ddd; padding: 15px; margin-top: 15px; background: #fff; }
+        
+        .footer-text { text-align: center; color: #999; font-size: 10px; margin-top: 40px; }
+        .spacer { height: 300px; }
     </style>
 </head>
 <body>
@@ -45,7 +56,7 @@
 
     <div class="desktop">
         <div class="folder" onclick="openApp('app-note')">
-            <span class="folder-icon">📂</span>
+            <span class="folder-icon">📁</span>
             <span class="folder-name">App Note Sandro</span>
         </div>
         <div class="folder" onclick="openApp('play-test')">
@@ -55,9 +66,9 @@
     </div>
 
     <div id="app-note" class="app-window">
-        <h2>📂 ARCHIVIO CODICI NOTE</h2>
+        <h2>📁 ARCHIVIO CODICI NOTE</h2>
         
-        <div class="stats">
+        <div class="stats-box">
             > MEMORIA: <span id="mem-val">0</span> KB<br>
             > NOTE SALVATE: <span id="note-count">0</span>
         </div>
@@ -65,43 +76,60 @@
         <div id="notes-list">
             </div>
 
-        <button class="btn btn-black" onclick="closeApps()" style="width:100%; margin-top:30px;">CHIUDI</button>
+        <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
 
     <div id="play-test" class="app-window">
-        <h2>🛠️ PLAY TEST EDITOR</h2>
-        <input type="text" id="p-title" placeholder="Titolo Progetto..." autocomplete="off">
-        <textarea id="p-html" placeholder="INCOLLA HTML" rows="3"></textarea>
-        <textarea id="p-css" placeholder="INCOLLA CSS" rows="3"></textarea>
-        <textarea id="p-js" placeholder="INCOLLA JS" rows="3"></textarea>
+        <h2>🛠️ NUOVO PROGETTO</h2>
+        
+        <label>Nome Progetto</label>
+        <input type="text" id="p-title" placeholder="es. Shop Online" autocomplete="off">
+        
+        <label>Codice HTML</label>
+        <textarea id="p-html" placeholder="Incolla HTML..." rows="3"></textarea>
+        
+        <label>Codice CSS</label>
+        <textarea id="p-css" placeholder="Incolla CSS..." rows="3"></textarea>
+        
+        <label>Codice JS</label>
+        <textarea id="p-js" placeholder="Incolla JS..." rows="3"></textarea>
+        
         <div class="btn-group">
             <button class="btn btn-green" onclick="saveData()">MEMORIZZA</button>
-            <button class="btn btn-blue" onclick="resetPlay()">RESET</button>
+            <button class="btn btn-gray" onclick="resetPlay()">RESET</button>
         </div>
     </div>
 
+    <div class="footer-text">Archivio Personale Sandro - 2026</div>
     <div class="spacer"></div>
 
     <script>
+        // Gestione Orologio it-CH
         function updateClock() {
             document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH');
         }
         setInterval(updateClock, 1000); updateClock();
 
-        let database = JSON.parse(localStorage.getItem('sandro_storage')) || [];
+        // Database
+        let database = JSON.parse(localStorage.getItem('sandro_db')) || [];
 
+        // Navigazione
         function openApp(id) {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(id === 'app-note') renderNotes();
+            window.scrollTo({top: 100, behavior: 'smooth'});
         }
 
         function closeApps() {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
         }
 
+        // Funzioni Play Test
         function saveData() {
-            const t = document.getElementById('p-title').value || "Senza Titolo";
+            const t = document.getElementById('p-title').value;
+            if(!t) { alert("Inserisci un nome!"); return; }
+
             const entry = {
                 t: t,
                 h: document.getElementById('p-html').value,
@@ -109,54 +137,55 @@
                 j: document.getElementById('p-js').value,
                 id: Date.now()
             };
+
             database.push(entry);
-            localStorage.setItem('sandro_storage', JSON.stringify(database));
-            alert("Salvato!");
+            localStorage.setItem('sandro_db', JSON.stringify(database));
+            alert("Progetto Memorizzato!");
             resetPlay();
             openApp('app-note');
         }
 
         function resetPlay() {
-            ['p-title','p-html','p-css','p-js'].forEach(i => document.getElementById(i).value = '');
+            ['p-title','p-html','p-css','p-js'].forEach(id => document.getElementById(id).value = '');
         }
 
+        // Funzioni Archivio
         function deleteNote(id) {
-            if(confirm("Eliminare?")) {
+            if(confirm("Eliminare definitivamente questo codice?")) {
                 database = database.filter(n => n.id !== id);
-                localStorage.setItem('sandro_storage', JSON.stringify(database));
+                localStorage.setItem('sandro_db', JSON.stringify(database));
                 renderNotes();
             }
         }
 
-        // Funzione per vedere il codice cliccando i bottoni
-        function show(id, type) {
+        function viewCode(id, type) {
             const item = database.find(n => n.id === id);
             const code = type === 'h' ? item.h : type === 'c' ? item.c : item.j;
-            alert("CODICE " + type.toUpperCase() + ":\n\n" + code);
+            alert("CONTENUTO " + type.toUpperCase() + ":\n\n" + (code || "Vuoto"));
         }
 
         function renderNotes() {
             const list = document.getElementById('notes-list');
             if(database.length === 0) {
-                list.innerHTML = "<p style='text-align:center; font-size:12px;'>Nessun codice salvato.</p>";
+                list.innerHTML = "<p style='font-size:12px; color:#666; text-align:center;'>Nessun codice in memoria.</p>";
             } else {
                 list.innerHTML = database.map(n => `
                     <div class="note-card">
-                        <strong style="font-size:14px;">📁 ${n.t}</strong>
-                        <div class="btn-group">
-                            <button class="btn btn-html" onclick="show(${n.id},'h')">HTML</button>
-                            <button class="btn btn-css" onclick="show(${n.id},'c')">CSS</button>
-                            <button class="btn btn-js" onclick="show(${n.id},'j')">JS</button>
-                        </div>
+                        <strong>📁 ${n.t}</strong>
                         <div class="btn-group" style="margin-top:10px;">
-                            <button class="btn btn-red" onclick="deleteNote(${n.id})">ELIMINA</button>
+                            <button class="btn btn-html" onclick="viewCode(${n.id},'h')">HTML</button>
+                            <button class="btn btn-css" onclick="viewCode(${n.id},'c')">CSS</button>
+                            <button class="btn btn-js" onclick="viewCode(${n.id},'j')">JS</button>
                         </div>
+                        <button class="btn btn-red" style="width:100%; margin-top:8px; padding:8px;" onclick="deleteNote(${n.id})">ELIMINA</button>
                     </div>
                 `).reverse().join('');
             }
             
+            // Stats
             document.getElementById('note-count').innerText = database.length;
-            document.getElementById('mem-val').innerText = (JSON.stringify(database).length / 1024).toFixed(2);
+            const size = (JSON.stringify(database).length / 1024).toFixed(2);
+            document.getElementById('mem-val').innerText = size;
         }
 
         renderNotes();
