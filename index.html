@@ -21,17 +21,21 @@
 
         .stats-box { background: #222; color: #0f0; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; margin-bottom: 15px; }
 
-        .btn-group { display: flex; gap: 8px; margin-top: 5px; }
-        .btn { flex: 1; padding: 15px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 12px; text-transform: uppercase; text-align: center; }
+        .btn-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+        .btn { flex: 1; min-width: 80px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 9px; text-transform: uppercase; text-align: center; }
         
-        .btn-html { background: #e34c26 !important; box-shadow: 0 4px #b13a1d; } 
-        .btn-css { background: #264de4 !important; box-shadow: 0 4px #1a35a0; }  
-        .btn-js { background: #f7df1e !important; color: #000 !important; box-shadow: 0 4px #c6b218; }   
-        .btn-red { background: #d9534f !important; width: 100%; margin-top: 10px; }
-        .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; }
+        .btn-html { background: #e34c26 !important; } 
+        .btn-css { background: #264de4 !important; }  
+        .btn-js { background: #f7df1e !important; color: #000 !important; }   
+        
+        .btn-edit { background: #007bff !important; } /* Blu per Modifica/Editor */
+        .btn-copy { background: #6f42c1 !important; } /* Viola per Copia */
+        .btn-red { background: #d9534f !important; }
+        .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; font-size: 12px; }
+        .btn-green { background: var(--green) !important; width: 100%; margin-top: 10px; font-size: 12px; }
 
-        .note-card { border: 2px solid #eee; padding: 15px; margin-top: 15px; background: #fff; border-radius: 8px; }
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 12px; }
+        .note-card { border: 2px solid #000; padding: 15px; margin-top: 15px; background: #fff; }
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 12px; font-family: monospace; }
         
         .footer-text { text-align: center; color: #999; font-size: 10px; margin-top: 40px; }
     </style>
@@ -52,34 +56,25 @@
     </div>
 
     <div id="app-note" class="app-window">
-        <h2 style="font-size:16px;">📂 ARCHIVIO CODICI NOTE</h2>
+        <h2>📂 ARCHIVIO CODICI</h2>
         <div class="stats-box">
-            > MEMORIA ATTIVA: <span id="mem-val">0</span> KB<br>
-            > PROGETTI: <span id="note-count">1</span>
+            > MEMORIA: <span id="mem-val">0</span> KB<br>
+            > NOTE: <span id="note-count">0</span>
         </div>
 
         <div id="notes-list">
-            <div class="note-card">
-                <strong style="font-size:12px;">📂 APP NOTE ORIGINALE</strong>
-                <div class="btn-group">
-                    <button class="btn btn-html" onclick="viewOriginal('h')">HTML</button>
-                    <button class="btn btn-css" onclick="viewOriginal('c')">CSS</button>
-                    <button class="btn btn-js" onclick="viewOriginal('j')">JS</button>
-                </div>
-                <button class="btn btn-red" style="padding:8px;" onclick="alert('Sistema Protetto')">Sandro System</button>
             </div>
-        </div>
 
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
 
     <div id="play-test" class="app-window">
-        <h2>🛠️ NUOVO PROGETTO</h2>
-        <input type="text" id="p-title" placeholder="Nome...">
-        <textarea id="p-html" placeholder="HTML..." rows="3"></textarea>
+        <h2>🛠️ EDITOR / PLAY TEST</h2>
+        <input type="text" id="p-title" placeholder="Titolo Progetto...">
+        <textarea id="p-html" placeholder="HTML..." rows="4"></textarea>
         <textarea id="p-css" placeholder="CSS..." rows="3"></textarea>
         <textarea id="p-js" placeholder="JS..." rows="3"></textarea>
-        <button class="btn btn-green" style="width:100%" onclick="alert('Salvato!')">MEMORIZZA</button>
+        <button class="btn btn-green" onclick="saveNew()">MEMORIZZA NELL'ARCHIVIO</button>
     </div>
 
     <div class="footer-text">Archivio Personale Sandro - 2026</div>
@@ -90,32 +85,93 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
+        let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
+            id: 'original',
+            t: 'APP NOTE ORIGINALE',
+            h: `<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Note App</title>\n  <link rel="stylesheet" href="style.css">\n  <script src="https://accounts.google.com/gsi/client" async defer><\/script>\n</head>\n<body>\n  <div class="icon-bar">\n    <button id="themeToggle">☀️</button>\n    <button id="addNoteBtn">➕</button>\n    <button id="categoriesBtn">📁</button>\n    <button id="trashBtn">🗑️</button>\n    <button id="settingsBtn">⚙️</button>\n  </div>\n  <div id="notesContainer"></div>\n</body>\n</html>`,
+            c: `/* CSS Originale Sandro */`,
+            j: `/* JS Originale Sandro */`
+        }];
+
         function openApp(id) {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            updateStats();
+            if(id === 'app-note') renderNotes();
         }
 
         function closeApps() {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
         }
 
-        // --- IL TUO CODICE HTML INTEGRATO QUI ---
-        const myCodes = {
-            h: `<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Note App</title>\n  <link rel="stylesheet" href="style.css">\n  <script src="https://accounts.google.com/gsi/client" async defer><\/script>\n</head>\n<body>\n  <div class="icon-bar">\n    <button id="themeToggle">☀️</button>\n    <button id="addNoteBtn">➕</button>\n    <button id="categoriesBtn">📁</button>\n    <button id="trashBtn">🗑️</button>\n    <button id="settingsBtn">⚙️</button>\n  </div>\n  <div id="notesContainer"></div>\n  \n</body>\n</html>`,
-            c: `/* Inserisci qui il tuo CSS originale */`,
-            j: `/* Inserisci qui il tuo JS originale */`
-        };
-
-        function viewOriginal(type) {
-            // Mostra il codice in un alert o puoi copiarlo
-            alert("IL TUO HTML SALVATO:\n\n" + myCodes[type]);
+        function saveNew() {
+            const t = document.getElementById('p-title').value || "Nuovo Progetto";
+            const entry = {
+                id: Date.now(),
+                t: t.toUpperCase(),
+                h: document.getElementById('p-html').value,
+                c: document.getElementById('p-css').value,
+                j: document.getElementById('p-js').value
+            };
+            database.push(entry);
+            localStorage.setItem('sandro_db', JSON.stringify(database));
+            alert("Salvato nell'Archivio!");
+            openApp('app-note');
         }
 
-        function updateStats() {
-            const size = (JSON.stringify(myCodes).length / 1024).toFixed(2);
-            document.getElementById('mem-val').innerText = size;
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = database.map(n => `
+                <div class="note-card">
+                    <strong>📁 ${n.t}</strong>
+                    <div class="btn-group">
+                        <button class="btn btn-html" onclick="viewCode('${n.id}','h')">HTML</button>
+                        <button class="btn btn-css" onclick="viewCode('${n.id}','c')">CSS</button>
+                        <button class="btn btn-js" onclick="viewCode('${n.id}','j')">JS</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-copy" onclick="copyFull('${n.id}')">COPIA TUTTO</button>
+                        <button class="btn btn-edit" onclick="loadToEditor('${n.id}')">COPIA NELL'EDITOR</button>
+                    </div>
+                    <button class="btn btn-red" style="width:100%; margin-top:5px; padding:8px;" onclick="deleteNote('${n.id}')">ELIMINA</button>
+                </div>
+            `).reverse().join('');
+            
+            document.getElementById('note-count').innerText = database.length;
+            document.getElementById('mem-val').innerText = (JSON.stringify(database).length / 1024).toFixed(2);
         }
+
+        function viewCode(id, type) {
+            const item = database.find(x => x.id == id);
+            alert("CODICE " + type.toUpperCase() + ":\n\n" + item[type]);
+        }
+
+        function loadToEditor(id) {
+            const item = database.find(x => x.id == id);
+            document.getElementById('p-title').value = item.t;
+            document.getElementById('p-html').value = item.h;
+            document.getElementById('p-css').value = item.c;
+            document.getElementById('p-js').value = item.j;
+            alert("Codice caricato nel Play Test! Ora puoi modificarlo.");
+            openApp('play-test');
+        }
+
+        function copyFull(id) {
+            const item = database.find(x => x.id == id);
+            const full = `HTML:\n${item.h}\n\nCSS:\n${item.c}\n\nJS:\n${item.j}`;
+            navigator.clipboard.writeText(full);
+            alert("Tutti i codici copiati negli appunti!");
+        }
+
+        function deleteNote(id) {
+            if(id === 'original') return alert("Impossibile eliminare il codice di sistema!");
+            if(confirm("Vuoi eliminare questo progetto?")) {
+                database = database.filter(x => x.id != id);
+                localStorage.setItem('sandro_db', JSON.stringify(database));
+                renderNotes();
+            }
+        }
+
+        renderNotes();
     </script>
 </body>
 </html>
