@@ -1,127 +1,52 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sandro Project OS - V6</title>
-  <style>
-    :root {
-      --copy-btn: #6c5ce7; --report: #00b894; --web: #0984e3; --folder: #fdcb6e; --danger: #ff7675; --glass: rgba(28, 28, 28, 0.9); --play: #00d2d3;
-    }
-    body { font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #000; color: #fff; overflow-x: hidden; }
-    
-    .clock-container { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
-    #clock-time { font-size: 3rem; font-weight: 200; text-shadow: 0 0 20px var(--web); }
-    #clock-date { font-size: 0.9rem; color: var(--web); margin-top: 5px; }
-
-    .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
-    #searchBar { flex: 1; background: #151515; border: 1px solid #333; padding: 12px; border-radius: 12px; color: #fff; outline: none; }
-    .btn-main { background: var(--web); border: none; border-radius: 12px; padding: 0 15px; color: white; font-weight: bold; }
-
-    .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .item-box { background: var(--glass); border-radius: 22px; padding: 25px 10px; text-align: center; border: 1px solid #222; }
-    
-    #projectView, #editView, #playView { display: none; position: fixed; inset: 0; background: #000; padding: 20px; flex-direction: column; z-index: 100; overflow-y: auto; }
-    .toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .btn-action { padding: 12px; border-radius: 12px; border: none; color: white; font-weight: bold; flex: 1; }
-    
-    textarea { width: 100%; flex-grow: 1; min-height: 350px; background: #080808; color: #00ff9d; border: 1px solid #222; border-radius: 15px; padding: 15px; font-family: monospace; margin-bottom: 10px; }
-    iframe { width: 100%; flex-grow: 1; background: #fff; border-radius: 20px; border: none; }
-    .status-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--report); padding: 10px 20px; border-radius: 10px; display: none; z-index: 1000; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Essenz Schweiz</title>
+    <style>
+        /* Qui ho inserito tutto il CSS che rimpicciolisce i bottoni */
+        :root { --black: #111111; --green: #1b4d3e; --white: #ffffff; }
+        * { box-sizing: border-box; -webkit-appearance: none !important; }
+        body { background: #f2f2f2; margin: 0; font-family: -apple-system, sans-serif; padding-bottom: env(safe-area-inset-bottom, 100px); }
+        .super-wrapper { max-width: 500px; margin: auto; }
+        .top-bar { background: var(--black); color: white; text-align: center; padding: 12px; font-size: 11px; font-weight: bold; }
+        .hero-section { padding: 20px; }
+        .hero-card { background: var(--white); border: 4px solid var(--black); padding: 25px; box-shadow: 10px 10px 0px var(--green); }
+        .green-txt { color: var(--green); font-weight: 900; }
+        .grid-prodotti { padding: 20px; }
+        .item-box { background: white; border: 3px solid var(--black); margin-bottom: 20px; display: flex; align-items: center; }
+        .img-placeholder { width: 70px; height: 70px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 30px; border-right: 3px solid var(--black); }
+        .info { padding: 15px; flex: 1; }
+        .btn-micro { display: block !important; width: 100px !important; height: 32px !important; background: var(--black) !important; color: white !important; border: none !important; font-size: 11px !important; font-weight: bold !important; border-radius: 6px !important; margin-top: 10px !important; cursor: pointer; }
+        .iphone-safe-spacer { height: 200px !important; display: block !important; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #000; }
+        footer { text-align: center; padding: 20px; font-size: 10px; }
+    </style>
 </head>
 <body>
-
-  <div id="homeView">
-    <h1>SANDRO <span style="color:var(--web)">OS</span></h1>
-    <div class="clock-container"><div id="clock-time">00:00:00</div><div id="clock-date">-- -- --</div></div>
-    <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Cerca progetto..." oninput="render()">
-        <button class="btn-main" onclick="creaNuovoProgetto()">➕</button>
+<div class="super-wrapper">
+    <div class="top-bar">ESSENZ SCHWEIZ 🇨🇭</div>
+    <header class="hero-section">
+        <div class="hero-card">
+            <h1>ESSENZ <span class="green-txt">CH</span></h1>
+            <p>Spedizione discreta da Zurigo.</p>
+        </div>
+    </header>
+    <div class="grid-prodotti">
+        <div class="item-box">
+            <div class="img-placeholder">🌿</div>
+            <div class="info">
+                <h3>GOLDEN FLOWERS</h3>
+                <div class="prezzo">35.- CHF</div>
+                <button type="button" class="btn-micro">PRENDI</button>
+            </div>
+        </div>
     </div>
-    <div class="folder-grid" id="mainGrid"></div>
-  </div>
-
-  <div id="projectView">
-    <button onclick="goHome()" style="background:none; border:none; color:var(--web); margin-bottom:15px;">⬅ Indietro</button>
-    <h2 id="activeTitle"></h2>
-    <div class="toolbar">
-        <button class="btn-action" style="background:var(--play);" onclick="avviaPlay()">▶ PLAY</button>
-        <button class="btn-action" style="background:var(--danger);" onclick="eliminaProgetto()">🗑️</button>
-    </div>
-    <div class="folder-grid">
-      <div class="item-box" onclick="openEditor('html')">📄 HTML</div>
-      <div class="item-box" onclick="openEditor('css')">🎨 CSS</div>
-      <div class="item-box" onclick="openEditor('js')">⚡ JS</div>
-    </div>
-  </div>
-
-  <div id="editView">
-    <h2 id="editTitle"></h2>
-    <textarea id="editorTextarea" spellcheck="false"></textarea>
-    <button class="btn-action" style="background:var(--report);" onclick="salvaCodice()">✅ SALVA</button>
-    <button onclick="closeEditor()" style="background:none; border:none; color:white; margin-top:10px;">Annulla</button>
-  </div>
-
-  <div id="playView">
-    <button onclick="document.getElementById('playView').style.display='none'" style="background:var(--danger); color:white; border:none; padding:12px; width:100%; border-radius:12px; margin-bottom:10px;">CHIUDI X</button>
-    <iframe id="playFrame"></iframe>
-  </div>
-
-  <div id="statusMsg" class="status-msg"></div>
-
-  <script>
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock-time').textContent = now.toLocaleTimeString('it-IT');
-        document.getElementById('clock-date').textContent = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-    setInterval(updateClock, 1000); updateClock();
-
-    function notify(msg) {
-        const el = document.getElementById('statusMsg');
-        el.innerText = msg; el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 2000);
-    }
-
-    // --- DATABASE V6 (Shop Funzionante) ---
-    let database = JSON.parse(localStorage.getItem('sandro_os_v6')) || { 
-        "Shop": {
-            html: "<div style='padding:20px;text-align:center;'><h1>Sandro Store</h1><div id='cart-count' style='background:#007aff;color:#fff;display:inline-block;padding:5px 15px;border-radius:20px;'>Carrello: 0</div><div id='p-list' style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;'></div></div>",
-            css: "body{font-family:sans-serif;background:#f5f5f7;}.card{background:#fff;padding:15px;border-radius:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}",
-            js: "var items=[{n:'iPhone',p:999},{n:'Watch',p:499}]; var cart=0; var list=document.getElementById('p-list'); items.forEach(function(i){ list.innerHTML += '<div class=card><h3>'+i.n+'</h3><p>€'+i.p+'</p><button onclick=window.buy()>Compra</button></div>'; }); window.buy=function(){cart++; document.getElementById('cart-count').innerText='Carrello: '+cart;};"
-        }
-    };
-
-    function salvaDB() { localStorage.setItem('sandro_os_v6', JSON.stringify(database)); render(); }
-    
-    function render() {
-        const grid = document.getElementById('mainGrid');
-        grid.innerHTML = '';
-        Object.keys(database).forEach(n => {
-            grid.innerHTML += '<div class="item-box" onclick="openProj(\''+n+'\')">📂<br><br><strong>'+n+'</strong></div>';
-        });
-    }
-
-    let currentProj = ""; let currentType = "";
-    function openProj(n) { currentProj = n; document.getElementById('activeTitle').innerText = n; document.getElementById('projectView').style.display = 'flex'; }
-    function goHome() { document.getElementById('projectView').style.display = 'none'; }
-    function openEditor(type) { currentType = type; document.getElementById('editTitle').innerText = type.toUpperCase(); document.getElementById('editorTextarea').value = database[currentProj][type]; document.getElementById('editView').style.display = 'flex'; }
-    function salvaCodice() { database[currentProj][currentType] = document.getElementById('editorTextarea').value; salvaDB(); notify("Salvato! ✅"); }
-    function closeEditor() { document.getElementById('editView').style.display = 'none'; }
-
-    function avviaPlay() {
-        const p = database[currentProj];
-        const frame = document.getElementById('playFrame');
-        const finalCode = "<html><head><style>" + p.css + "<\/style><\/head><body>" + p.html + "<script>" + p.js + "<\/script><\/body><\/html>";
-        document.getElementById('playView').style.display = 'flex';
-        frame.srcdoc = finalCode;
-    }
-
-    function creaNuovoProgetto() { const n = prompt("Nome:"); if(n){ database[n]={html:'',css:'',js:''}; salvaDB(); } }
-    function eliminaProgetto() { if(confirm("Elimina?")){ delete database[currentProj]; salvaDB(); goHome(); } }
-
-    render();
-  </script>
+    <div class="iphone-safe-spacer"></div>
+    <footer>ESSENZ SCHWEIZ — 2026</footer>
+</div>
 </body>
 </html>
