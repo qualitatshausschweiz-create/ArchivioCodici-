@@ -5,162 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Archivio Codici Pro</title>
     <style>
-        :root {
-            --black: #111111;
-            --green: #1b4d3e;
-            --white: #ffffff;
-            --gray: #f4f4f4;
-        }
-
+        :root { --black: #111; --green: #1b4d3e; --white: #fff; --gray: #f4f4f4; }
         * { box-sizing: border-box; -webkit-appearance: none; }
+        body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; padding-bottom: 300px; }
+        
+        .clock { background: var(--black); color: #fff; text-align: center; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 22px; }
+        .card { background: var(--white); border: 3px solid var(--black); padding: 20px; box-shadow: 8px 8px 0px var(--green); margin-bottom: 20px; }
+        
+        h2 { font-size: 16px; margin: 0 0 15px 0; text-transform: uppercase; }
+        label { font-size: 11px; font-weight: bold; display: block; margin-bottom: 5px; }
+        
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 15px; font-family: monospace; font-size: 14px; background: #fafafa; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-save { background: var(--green); }
+        .btn-reset { background: #666; }
 
-        body {
-            font-family: -apple-system, sans-serif;
-            background: var(--gray);
-            margin: 0;
-            padding: env(safe-area-inset-top, 20px) 15px 0 15px;
-        }
-
-        /* Orologio Svizzero */
-        .clock-box {
-            text-align: center;
-            font-weight: 900;
-            font-size: 24px;
-            padding: 10px;
-            background: var(--black);
-            color: var(--white);
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .main-card {
-            background: var(--white);
-            border: 3px solid var(--black);
-            padding: 20px;
-            box-shadow: 8px 8px 0px var(--green);
-            margin-bottom: 30px;
-        }
-
-        h2 { font-size: 18px; margin-top: 0; text-transform: uppercase; }
-
-        input, textarea {
-            width: 100%;
-            border: 2px solid var(--black);
-            padding: 12px;
-            margin-bottom: 10px;
-            font-size: 16px; /* Impedisce lo zoom su iPhone */
-        }
-
-        /* BOTTONI PICCOLI E SICURI */
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-
-        .btn {
-            display: inline-block !important;
-            width: 100px !important; /* Molto piccoli per non attivare blocchi */
-            height: 35px !important;
-            border: none !important;
-            font-weight: bold !important;
-            font-size: 11px !important;
-            cursor: pointer;
-            border-radius: 4px !important;
-            color: white !important;
-            text-transform: uppercase;
-        }
-
-        .btn-save { background: var(--green) !important; }
-        .btn-edit { background: var(--black) !important; }
-        .btn-delete { background: #b22222 !important; }
-        .btn-reset { background: #555 !important; }
-
-        /* LISTA NOTE */
-        .note-item {
-            background: white;
-            border: 2px solid #000;
-            padding: 15px;
-            margin-top: 15px;
-            position: relative;
-        }
-
-        /* --- IL FIX PER CHIUDERE PLAY --- */
-        .iphone-chiudi-fix {
-            height: 300px !important; /* 300 pixel di vuoto totale */
-            display: block !important;
-            clear: both;
-        }
-
-        footer { text-align: center; padding: 20px; font-size: 10px; opacity: 0.5; }
+        .note-item { background: white; border: 2px solid #000; padding: 15px; margin-top: 15px; position: relative; }
+        .code-preview { background: #222; color: #0f0; padding: 10px; font-size: 10px; overflow-x: auto; margin-top: 5px; border-radius: 4px; }
+        
+        .spacer { height: 350px; } /* Fondamentale per chiudere l'app senza intoppi */
     </style>
 </head>
 <body>
 
-    <div id="clock" class="clock-box">00:00:00</div>
+    <div class="clock" id="clk">00:00:00</div>
 
-    <div class="main-card">
-        <h2>Nuovo Codice</h2>
-        <input type="text" id="title" placeholder="Titolo App" autocomplete="off">
-        <textarea id="code" placeholder="Incolla codice o nota..." rows="4" autocomplete="off"></textarea>
+    <div class="card">
+        <h2>Nuovo Progetto</h2>
+        <input type="text" id="title" placeholder="Nome (es. Shop Online)" autocomplete="off" inputmode="text">
         
+        <label>CODICE HTML</label>
+        <textarea id="html_c" placeholder="Incolla HTML..." rows="3" autocomplete="off" inputmode="text"></textarea>
+        
+        <label>CODICE CSS</label>
+        <textarea id="css_c" placeholder="Incolla CSS..." rows="3" autocomplete="off" inputmode="text"></textarea>
+        
+        <label>CODICE JS</label>
+        <textarea id="js_c" placeholder="Incolla JS..." rows="3" autocomplete="off" inputmode="text"></textarea>
+
         <div class="btn-group">
-            <button class="btn btn-save" onclick="saveNote()">Memorizza</button>
-            <button class="btn btn-reset" onclick="resetForm()">Reset</button>
+            <button class="btn btn-save" onclick="save()">MEMORIZZA</button>
+            <button class="btn btn-reset" onclick="reset()">RESET</button>
         </div>
     </div>
 
-    <div id="notes-list">
-        </div>
-
-    <div class="iphone-chiudi-fix"></div>
-
-    <footer>Archivio Personale Sandro - 2026</footer>
+    <div id="output"></div>
+    <div class="spacer"></div>
 
     <script>
-        // Orologio
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('it-IT');
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        function update() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
+        setInterval(update, 1000); update();
 
-        // Logica Archivio
-        let notes = JSON.parse(localStorage.getItem('my_codes')) || [];
+        let db = JSON.parse(localStorage.getItem('archivio_sandro')) || [];
 
-        function saveNote() {
-            const title = document.getElementById('title').value;
-            const code = document.getElementById('code').value;
-            if(!title || !code) return alert("Inserisci dati!");
-
-            notes.push({ title, code, id: Date.now() });
-            localStorage.setItem('my_codes', JSON.stringify(notes));
-            renderNotes();
-            resetForm();
+        function save() {
+            const data = {
+                t: document.getElementById('title').value,
+                h: document.getElementById('html_c').value,
+                c: document.getElementById('css_c').value,
+                j: document.getElementById('js_c').value,
+                id: Date.now()
+            };
+            if(!data.t) return alert("Inserisci un titolo");
+            db.push(data);
+            localStorage.setItem('archivio_sandro', JSON.stringify(db));
+            render();
+            reset();
         }
 
-        function resetForm() {
-            document.getElementById('title').value = '';
-            document.getElementById('code').value = '';
+        function reset() {
+            ['title','html_c','css_c','js_c'].forEach(id => document.getElementById(id).value = '');
         }
 
-        function deleteNote(id) {
-            notes = notes.filter(n => n.id !== id);
-            localStorage.setItem('my_codes', JSON.stringify(notes));
-            renderNotes();
+        function del(id) {
+            db = db.filter(n => n.id !== id);
+            localStorage.setItem('archivio_sandro', JSON.stringify(db));
+            render();
         }
 
-        function renderNotes() {
-            const list = document.getElementById('notes-list');
-            list.innerHTML = notes.map(n => `
+        function render() {
+            const out = document.getElementById('output');
+            out.innerHTML = db.map(n => `
                 <div class="note-item">
-                    <strong>${n.title}</strong>
-                    <pre style="font-size:11px; background:#f9f9f9; padding:5px; border:1px solid #ddd; overflow-x:auto;">${n.code}</pre>
-                    <div class="btn-group" style="margin-top:10px;">
-                        <button class="btn btn-delete" onclick="deleteNote(${n.id})">Elimina</button>
-                    </div>
+                    <b>${n.t}</b>
+                    <div class="code-preview">HTML: ${n.h.substring(0,20)}...</div>
+                    <div class="code-preview">CSS: ${n.c.substring(0,20)}...</div>
+                    <button onclick="del(${n.id})" style="margin-top:10px; background:red; color:white; border:none; padding:5px; border-radius:4px; font-size:10px;">ELIMINA</button>
                 </div>
-            `).join('');
+            `).join('').reverse();
         }
-
-        renderNotes();
+        render();
     </script>
 </body>
 </html>
