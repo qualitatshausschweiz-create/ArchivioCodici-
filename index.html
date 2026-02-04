@@ -87,12 +87,13 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
+        // I tuoi dati inseriti e pronti
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'original',
             t: 'APP NOTE ORIGINALE',
-            h: ``,
-            c: `/* Inserisci qui il tuo CSS */`,
-            j: `/* Inserisci qui il tuo JS */`
+            h: `<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Note App</title>\n  <script src="https://accounts.google.com/gsi/client" async defer><\/script>\n</head>\n<body>\n  <div class="icon-bar">\n    <button id="themeToggle">☀️</button>\n    <button id="addNoteBtn">➕</button>\n    <button id="categoriesBtn">📁</button>\n    <button id="trashBtn">🗑️</button>\n    <button id="settingsBtn">⚙️</button>\n  </div>\n  <div id="notesContainer"></div>\n</body>\n</html>`,
+            c: `/* Il tuo CSS */`,
+            j: `/* Il tuo JS */`
         }];
 
         function openApp(id) {
