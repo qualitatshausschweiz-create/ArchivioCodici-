@@ -9,7 +9,7 @@
         * { box-sizing: border-box; -webkit-appearance: none; }
         body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
 
-        .clock { background: var(--black); color: #fff; text-align: center; padding: 10px; font-weight: bold; border-radius: 5px; margin-bottom: 15px; font-size: 20px; }
+        .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; font-size: 20px; }
         
         /* Scrivania con cartelle affiancate */
         .desktop { display: flex; justify-content: space-around; padding: 20px 0; border-bottom: 2px solid var(--black); margin-bottom: 20px; }
@@ -24,21 +24,21 @@
         /* Input e Bottoni */
         input, textarea { width: 100%; border: 2px solid var(--black); padding: 10px; margin-bottom: 10px; font-family: monospace; font-size: 14px; background: #fafafa; }
         .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
-        .btn { flex: 1; min-width: 70px; padding: 10px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 9px; text-transform: uppercase; }
+        .btn { flex: 1; min-width: 75px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
         
-        /* Colori Bottoni */
-        .btn-green { background: var(--green); }
-        .btn-html { background: #e34c26; } /* Arancione HTML */
-        .btn-css { background: #264de4; }  /* Blu CSS */
-        .btn-js { background: #f7df1e; color: #000; }   /* Giallo JS */
-        .btn-black { background: var(--black); }
-        .btn-red { background: #d9534f; }
-        .btn-blue { background: #007bff; }
-        .btn-gray { background: #666; }
+        /* Colori Bottoni Richiesti */
+        .btn-html { background: #e34c26 !important; } 
+        .btn-css { background: #264de4 !important; }  
+        .btn-js { background: #f7df1e !important; color: #000 !important; }   
+        .btn-green { background: var(--green) !important; }
+        .btn-black { background: var(--black) !important; }
+        .btn-red { background: #d9534f !important; }
+        .btn-blue { background: #007bff !important; }
+        .btn-gray { background: #666 !important; }
 
-        /* Lista Note nell'Archivio */
-        .note-item { border: 2px solid #eee; padding: 15px; margin-top: 15px; background: #fff; }
-        .note-title { font-weight: 900; color: var(--black); display: block; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        /* Note salvate */
+        .note-item { border: 2px solid #000; padding: 15px; margin-top: 15px; background: #fff; box-shadow: 4px 4px 0px #ddd; }
+        .note-header { font-weight: 900; font-size: 13px; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; }
         
         .spacer { height: 400px; }
     </style>
@@ -59,16 +59,15 @@
     </div>
 
     <div id="app-note" class="app-window">
-        <h2>📂 ARCHIVIO CON 3 BOTTONI</h2>
-        <div id="stats" style="font-size: 10px; margin-bottom: 15px; background: #222; color: #0f0; padding: 10px; border-radius: 5px; font-family: monospace;">
-            > MEMORIA: <span id="mem-val">0</span> KB<br>
-            > NOTE: <span id="note-count">0</span>
+        <h2>📂 ARCHIVIO PRO</h2>
+        <div id="stats" style="font-size: 10px; margin-bottom: 15px; background: #222; color: #0f0; padding: 10px; border-radius: 5px;">
+            MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span>
         </div>
         
         <div id="notes-list">
             </div>
         
-        <button class="btn btn-black" onclick="closeApps()" style="width:100%; margin-top:20px; font-size:12px;">CHIUDI ARCHIVIO</button>
+        <button class="btn btn-black" onclick="closeApps()" style="width:100%; margin-top:20px; font-size:12px;">X CHIUDI CARTELLA</button>
     </div>
 
     <div id="play-test" class="app-window">
@@ -78,8 +77,8 @@
         <textarea id="p-css" placeholder="CODICE CSS" rows="3"></textarea>
         <textarea id="p-js" placeholder="CODICE JS" rows="3"></textarea>
         <div class="btn-group">
-            <button class="btn btn-green" onclick="saveFromPlay()" style="font-size:12px;">MEMORIZZA</button>
-            <button class="btn btn-gray" onclick="resetPlay()" style="font-size:12px;">RESET</button>
+            <button class="btn btn-green" onclick="saveFromPlay()">MEMORIZZA</button>
+            <button class="btn btn-gray" onclick="resetPlay()">RESET</button>
         </div>
     </div>
 
@@ -91,7 +90,22 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        let database = JSON.parse(localStorage.getItem('sandro_storage')) || [];
+        // INTEGRAZIONE CODICI ORIGINALI NELL'ARCHIVIO
+        const myOriginalCodes = [
+            {
+                id: 1,
+                t: "APP NOTE SISTEMA",
+                h: "\n<div class='main'>\n <div id='display'></div>\n</div>",
+                c: "/* CSS App Note Sandro */\nbody { background: #f4f4f4; }\n.main { border: 2px solid #000; }",
+                j: "// JS App Note Sandro\nfunction init() {\n console.log('Sandro System Live');\n}"
+            }
+        ];
+
+        let database = JSON.parse(localStorage.getItem('sandro_storage'));
+        if (!database || database.length === 0) {
+            database = myOriginalCodes;
+            localStorage.setItem('sandro_storage', JSON.stringify(database));
+        }
 
         function openApp(appId) {
             closeApps();
@@ -116,7 +130,6 @@
             };
             database.push(entry);
             localStorage.setItem('sandro_storage', JSON.stringify(database));
-            alert("Salvato!");
             resetPlay();
             renderNotes();
         }
@@ -126,7 +139,7 @@
         }
 
         function deleteNote(id) {
-            if(confirm("Eliminare nota?")) {
+            if(confirm("Eliminare questa nota?")) {
                 database = database.filter(n => n.id !== id);
                 localStorage.setItem('sandro_storage', JSON.stringify(database));
                 renderNotes();
@@ -142,28 +155,25 @@
             openApp('play-test');
         }
 
-        // Funzioni per i 3 Bottoni (Visualizza Codice)
-        function viewCode(id, type) {
+        // Funzione per visualizzare il codice dei 3 bottoni
+        function showCode(id, field) {
             const item = database.find(n => n.id === id);
-            alert(type.toUpperCase() + ":\n\n" + item[type.toLowerCase()]);
+            const codes = { 'h': item.h, 'c': item.c, 'j': item.j };
+            alert("CODICE SALVATO:\n\n" + codes[field]);
         }
 
         function renderNotes() {
             const list = document.getElementById('notes-list');
             list.innerHTML = database.map(n => `
                 <div class="note-item">
-                    <span class="note-title">PROJECT: ${n.t}</span>
-                    
-                    <label style="font-size:9px; font-weight:bold;">CODICI:</label>
-                    <div class="btn-group" style="margin-bottom:15px;">
-                        <button class="btn btn-html" onclick="viewCode(${n.id}, 'h')">HTML</button>
-                        <button class="btn btn-css" onclick="viewCode(${n.id}, 'c')">CSS</button>
-                        <button class="btn btn-js" onclick="viewCode(${n.id}, 'j')">JS</button>
+                    <span class="note-header">📁 PROGETTO: ${n.t}</span>
+                    <div class="btn-group" style="margin-bottom:10px;">
+                        <button class="btn btn-html" onclick="showCode(${n.id}, 'h')">HTML</button>
+                        <button class="btn btn-css" onclick="showCode(${n.id}, 'c')">CSS</button>
+                        <button class="btn btn-js" onclick="showCode(${n.id}, 'j')">JS</button>
                     </div>
-
-                    <label style="font-size:9px; font-weight:bold;">AZIONI:</label>
                     <div class="btn-group">
-                        <button class="btn btn-blue" onclick="restoreToPlay(${n.id})">MODIFICA</button>
+                        <button class="btn btn-blue" onclick="restoreToPlay(${n.id})">RIPRISTINA</button>
                         <button class="btn btn-red" onclick="deleteNote(${n.id})">ELIMINA</button>
                     </div>
                 </div>
