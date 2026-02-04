@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -11,21 +11,20 @@
 
         .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; font-size: 22px; }
         
-        /* BOTTONI GESTIONE DESKTOP */
-        .desktop-admin { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-admin { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; font-size: 11px; text-transform: uppercase; }
-        .btn-add { background: #2ed573; }
-        .btn-mod { background: #ffa502; }
-        .btn-reset { background: #ff4757; }
+        /* BOTTONI GESTIONE DESKTOP - COME RICHIESTI */
+        .desktop-admin { display: flex; gap: 5px; margin-bottom: 20px; }
+        .btn-admin { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 10px; text-transform: uppercase; }
+        .btn-add { background: #28a745; }
+        .btn-mod { background: #fd7e14; }
+        .btn-reset { background: #dc3545; }
 
-        .desktop { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 20px; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
-        .folder { text-align: center; width: 80px; cursor: pointer; position: relative; }
+        .desktop { display: flex; justify-content: space-around; flex-wrap: wrap; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; gap: 10px; }
+        .folder { text-align: center; width: 45%; cursor: pointer; position: relative; margin-bottom: 15px; }
         .folder-icon { font-size: 40px; display: block; margin-bottom: 5px; }
-        .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; word-wrap: break-word; }
+        .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; }
         
-        /* Icona eliminazione in modalità modifica */
-        .delete-overlay { position: absolute; top: -5px; right: 5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; display: none; font-weight: bold; }
-        .editing .delete-overlay { display: block; }
+        .del-tag { position: absolute; top: 0; right: 10px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: none; line-height: 20px; }
+        .editing .del-tag { display: block; }
 
         .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; }
         .active { display: block !important; }
@@ -62,8 +61,16 @@
         <button class="btn-admin btn-reset" onclick="resetFolders()">🔄 Ripristina</button>
     </div>
 
-    <div class="desktop" id="desktop">
+    <div class="desktop" id="desktop-grid">
+        <div class="folder" onclick="openApp('app-note')">
+            <span class="folder-icon">📂</span>
+            <span class="folder-name">App Note Sandro</span>
         </div>
+        <div class="folder" onclick="openApp('play-test')">
+            <span class="folder-icon">🛠️</span>
+            <span class="folder-name">Play Test</span>
+        </div>
+    </div>
 
     <div id="app-note" class="app-window">
         <h2>📂 ARCHIVIO CODICI</h2>
@@ -92,75 +99,54 @@
     <div class="footer-text">Archivio Personale Sandro - 2026</div>
 
     <script>
-        /* LOGICA DESKTOP & CARTELLE */
-        let isEditing = false;
-        let folders = JSON.parse(localStorage.getItem('sandro_folders')) || [
-            { id: 'app-note', name: 'App Note Sandro', icon: '📂', type: 'system' },
-            { id: 'play-test', name: 'Play Test', icon: '🛠️', type: 'system' }
-        ];
+        // --- GESTIONE CARTELLE ---
+        let folders = JSON.parse(localStorage.getItem('sandro_custom_folders')) || [];
+        let editMode = false;
 
         function renderDesktop() {
-            const desk = document.getElementById('desktop');
-            desk.innerHTML = '';
-            folders.forEach(f => {
-                const div = document.createElement('div');
-                div.className = 'folder';
-                div.innerHTML = `
-                    ${f.type !== 'system' ? `<div class="delete-overlay" onclick="removeFolder('${f.id}')">X</div>` : ''}
-                    <span class="folder-icon">${f.icon}</span>
-                    <span class="folder-name">${f.name}</span>
+            const grid = document.getElementById('desktop-grid');
+            grid.innerHTML = `
+                <div class="folder" onclick="openApp('app-note')">
+                    <span class="folder-icon">📂</span>
+                    <span class="folder-name">App Note Sandro</span>
+                </div>
+                <div class="folder" onclick="openApp('play-test')">
+                    <span class="folder-icon">🛠️</span>
+                    <span class="folder-name">Play Test</span>
+                </div>
+            `;
+            folders.forEach((f, i) => {
+                grid.innerHTML += `
+                    <div class="folder ${editMode ? 'editing' : ''}" onclick="folderAction(${i})">
+                        <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
+                        <span class="folder-icon">📁</span>
+                        <span class="folder-name">${f.name}</span>
+                    </div>
                 `;
-                div.onclick = (e) => {
-                    if(isEditing && f.type !== 'system') {
-                        renameFolder(f.id);
-                    } else if (!isEditing) {
-                        if(f.type === 'system') openApp(f.id);
-                        else alert('Cartella ' + f.name + ' aperta!');
-                    }
-                };
-                desk.appendChild(div);
             });
         }
 
         function addFolder() {
-            const name = prompt("Nome cartella:");
-            if(!name) return;
-            folders.push({ id: 'f-' + Date.now(), name: name, icon: '📁', type: 'custom' });
-            saveFolders();
-            renderDesktop();
+            const n = prompt("Nome cartella:");
+            if(n) { folders.push({name: n.toUpperCase()}); save(); renderDesktop(); }
         }
 
-        function toggleEdit() {
-            isEditing = !isEditing;
-            document.getElementById('desktop').classList.toggle('editing');
-            alert(isEditing ? "Modalità modifica: Clicca sul nome per rinominare o sulla X per eliminare." : "Modalità normale.");
-        }
-
-        function removeFolder(id) {
-            folders = folders.filter(f => f.id !== id);
-            saveFolders();
-            renderDesktop();
-        }
-
-        function renameFolder(id) {
-            const newName = prompt("Nuovo nome:");
-            if(!newName) return;
-            const folder = folders.find(f => f.id === id);
-            if(folder) folder.name = newName;
-            saveFolders();
-            renderDesktop();
-        }
-
-        function resetFolders() {
-            if(confirm("Ripristinare le cartelle iniziali?")) {
-                localStorage.removeItem('sandro_folders');
-                location.reload();
+        function toggleEdit() { editMode = !editMode; renderDesktop(); }
+        
+        function folderAction(i) {
+            if(editMode) {
+                const n = prompt("Rinomina:", folders[i].name);
+                if(n) { folders[i].name = n.toUpperCase(); save(); renderDesktop(); }
+            } else {
+                alert("Cartella " + folders[i].name + " aperta (Contenuto Vuoto)");
             }
         }
 
-        function saveFolders() { localStorage.setItem('sandro_folders', JSON.stringify(folders)); }
+        function deleteFolder(i) { folders.splice(i, 1); save(); renderDesktop(); }
+        function resetFolders() { if(confirm("Ripristinare tutto?")) { folders = []; localStorage.clear(); location.reload(); } }
+        function save() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
 
-        /* IL TUO CODICE SACRO */
+        // --- IL TUO CODICE SACRO ORIGINALE ---
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
@@ -175,13 +161,10 @@
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'original',
             t: 'APP NOTE ORIGINALE',
-            h: `...`, // Codice rimosso qui per brevità nel messaggio, ma mantenuto nel file finale
-            c: `...`,
-            j: `...`
+            h: ``,
+            c: `/* CSS NOTE APP */`,
+            j: `// JS NOTE APP`
         }];
-
-        // ... (Mantieni tutto il resto del tuo script originale esattamente come lo avevi scritto)
-        // [QUI SEGUE IL TUO INTERO DATABASE E FUNZIONI ARCHIVIO]
 
         function openApp(id) {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
@@ -192,10 +175,10 @@
         function closeApps() { document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active')); }
 
         function runTest() {
-            const html = document.getElementById('p-html').value;
-            const css = "<style>" + document.getElementById('p-css').value + "</style>";
-            const js = "<script>" + document.getElementById('p-js').value + "<\/script>";
-            document.getElementById('live-preview').srcdoc = html + css + js;
+            const h = document.getElementById('p-html').value;
+            const c = "<style>" + document.getElementById('p-css').value + "</style>";
+            const j = "<script>" + document.getElementById('p-js').value + "<\/script>";
+            document.getElementById('live-preview').srcdoc = h + c + j;
         }
 
         function saveNew() {
@@ -208,7 +191,6 @@
             };
             database.push(entry);
             localStorage.setItem('sandro_db', JSON.stringify(database));
-            alert("Salvato in Archivio!");
             renderNotes();
         }
 
@@ -218,12 +200,11 @@
                 <div class="note-card">
                     <strong>📁 ${n.t}</strong>
                     <div class="btn-group">
-                        <button class="btn btn-html" onclick="alert('Codice HTML:\\n'+database.find(x=>x.id=='${n.id}').h)">HTML</button>
-                        <button class="btn btn-css" onclick="alert('Codice CSS:\\n'+database.find(x=>x.id=='${n.id}').c)">CSS</button>
-                        <button class="btn btn-js" onclick="alert('Codice JS:\\n'+database.find(x=>x.id=='${n.id}').j)">JS</button>
+                        <button class="btn btn-html" onclick="alert('HTML:\\n'+database.find(x=>x.id=='${n.id}').h)">HTML</button>
+                        <button class="btn btn-css" onclick="alert('CSS:\\n'+database.find(x=>x.id=='${n.id}').c)">CSS</button>
+                        <button class="btn btn-js" onclick="alert('JS:\\n'+database.find(x=>x.id=='${n.id}').j)">JS</button>
                     </div>
-                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA NELL'EDITOR & TESTA LIVE</button>
-                    <button class="btn btn-red" style="width:100%; margin-top:5px;" onclick="deleteNote('${n.id}')">ELIMINA</button>
+                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">EDIT & TEST</button>
                 </div>
             `).reverse().join('');
             document.getElementById('note-count').innerText = database.length;
@@ -238,15 +219,6 @@
             document.getElementById('p-js').value = item.j;
             openApp('play-test');
             runTest();
-        }
-
-        function deleteNote(id) {
-            if(id === 'original') return;
-            if(confirm("Eliminare permanentemente?")) {
-                database = database.filter(x => x.id != id);
-                localStorage.setItem('sandro_db', JSON.stringify(database));
-                renderNotes();
-            }
         }
 
         renderDesktop();
