@@ -55,13 +55,11 @@
         <button class="btn-admin btn-reset" onclick="resetFolders()">🔄 Ripristina</button>
     </div>
 
-    <div class="desktop" id="desktop-grid">
-        </div>
+    <div class="desktop" id="desktop-grid"></div>
 
     <div id="project-window" class="app-window">
         <h2 id="proj-title">CARTELLA</h2>
         <div class="stats-box">> STATO: PROGETTO ATTIVO</div>
-        <p>Qui potrai inserire i codici specifici per questo progetto.</p>
         <button class="btn btn-green" onclick="openApp('play-test')">APRI EDITOR</button>
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
@@ -128,13 +126,12 @@
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
-        // Database Iniziale (Codice Sacro della Note App)
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'note-v1',
             t: 'NOTE APP COMPLETA',
-            h: `<div class="note-app"><div class="toolbar"><button id="btn-theme">☀️</button><button id="btn-add">➕</button><button id="btn-cat">📁</button><button id="btn-trash">🗑️</button><button id="btn-settings">⚙️</button></div><div id="main-content" style="padding:20px; text-align:center;"><h3>Benvenuto Sandro</h3></div></div>`,
-            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; } .toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; } .toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }`,
-            j: `document.getElementById('btn-theme').onclick = () => alert('Tema Cambiato!');`
+            h: '<div class="note-app"><div class="toolbar"><button id="btn-theme">☀️</button><button id="btn-add">➕</button><button id="btn-cat">📁</button><button id="btn-trash">🗑️</button><button id="btn-settings">⚙️</button></div><div id="main-content" style="padding:20px; text-align:center;"><h3>Benvenuto Sandro</h3></div></div>',
+            c: '.note-app { font-family: sans-serif; height: 100vh; background: #fff; } .toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; } .toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }',
+            j: "document.getElementById('btn-theme').onclick = () => alert('Tema Cambiato!');"
         }];
 
         function openApp(id) {
@@ -175,7 +172,7 @@
             database.push(entry);
             localStorage.setItem('sandro_db', JSON.stringify(database));
             renderNotes();
-            alert("Salvato nell'Archivio!");
+            alert("Salvato!");
         }
 
         function toggleEdit() { editMode = !editMode; renderDesktop(); }
