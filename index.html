@@ -33,12 +33,7 @@
         .btn-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
         .btn { flex: 1; min-width: 60px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 10px; text-transform: uppercase; text-align: center; }
         
-        .btn-html { background: #e34c26 !important; } 
-        .btn-css { background: #264de4 !important; }  
-        .btn-js { background: #f7df1e !important; color: #000 !important; }   
-        
         .btn-edit { background: #007bff !important; } 
-        .btn-red { background: #d9534f !important; }
         .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; font-size: 12px; }
         .btn-green { background: var(--green) !important; width: 100%; font-size: 12px; }
 
@@ -61,57 +56,71 @@
     </div>
 
     <div class="desktop" id="desktop-grid">
-        <div class="folder" onclick="openApp('app-note')">
-            <span class="folder-icon">📂</span>
-            <span class="folder-name">App Note Sandro</span>
         </div>
-        <div class="folder" onclick="openApp('play-test')">
-            <span class="folder-icon">🛠️</span>
-            <span class="folder-name">Play Test</span>
-        </div>
+
+    <div id="project-window" class="app-window">
+        <h2 id="proj-title">CARTELLA</h2>
+        <div class="stats-box">> STATO: PROGETTO ATTIVO</div>
+        <p>Qui potrai inserire i codici specifici per questo progetto.</p>
+        <button class="btn btn-green" onclick="openApp('play-test')">APRI EDITOR</button>
+        <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
 
     <div id="app-note" class="app-window">
         <h2>📂 ARCHIVIO CODICI</h2>
-        <div class="stats-box">> MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span></div>
         <div id="notes-list"></div>
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
 
     <div id="play-test" class="app-window">
-        <h2>🛠️ EDITOR & ANTEPRIMA LIVE</h2>
+        <h2>🛠️ EDITOR LIVE</h2>
         <input type="text" id="p-title" placeholder="Titolo Progetto...">
         <textarea id="p-html" placeholder="HTML..." rows="5"></textarea>
         <textarea id="p-css" placeholder="CSS..." rows="3"></textarea>
         <textarea id="p-js" placeholder="JS..." rows="3"></textarea>
-        
         <div class="btn-group">
             <button class="btn btn-green" onclick="runTest()">▶️ TESTA LIVE</button>
             <button class="btn btn-edit" onclick="saveNew()">💾 MEMORIZZA</button>
-            <button class="btn btn-red" onclick="resetEditor()">🔄 RESET</button>
+            <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
         </div>
-
-        <label style="display:block; margin-top:15px; font-size:10px; font-weight:bold;">SIMULATORE LIVE:</label>
         <iframe id="live-preview"></iframe>
     </div>
 
     <script>
-        // --- GESTIONE CARTELLE DESKTOP ---
         let folders = JSON.parse(localStorage.getItem('sandro_custom_folders')) || [];
         let editMode = false;
 
         function renderDesktop() {
             const grid = document.getElementById('desktop-grid');
-            grid.innerHTML = `<div class="folder" onclick="openApp('app-note')"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>
-                              <div class="folder" onclick="openApp('play-test')"><span class="folder-icon">🛠️</span><span class="folder-name">Play Test</span></div>`;
+            grid.innerHTML = `
+                <div class="folder" onclick="openApp('app-note')"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>
+                <div class="folder" onclick="openApp('play-test')"><span class="folder-icon">🛠️</span><span class="folder-name">Play Test</span></div>
+            `;
             folders.forEach((f, i) => {
-                grid.innerHTML += `<div class="folder ${editMode ? 'editing' : ''}" onclick="folderAction(${i})">
-                    <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
-                    <span class="folder-icon">📁</span><span class="folder-name">${f.name}</span></div>`;
+                grid.innerHTML += `
+                    <div class="folder ${editMode ? 'editing' : ''}" onclick="openProject(${i})">
+                        <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
+                        <span class="folder-icon">📁</span>
+                        <span class="folder-name">${f.name}</span>
+                    </div>`;
             });
         }
-        function addFolder() { const n = prompt("Nome cartella:"); if(n) { folders.push({name: n.toUpperCase()}); saveF(); renderDesktop(); } }
-        function toggleEdit() { editMode = !editMode; renderDesktop(); }
+
+        function addFolder() {
+            const n = prompt("Nome della nuova cartella (es. SITO CBD):");
+            if(n) { folders.push({name: n.toUpperCase()}); saveF(); renderDesktop(); }
+        }
+
+        function openProject(i) {
+            if(editMode) {
+                const n = prompt("Rinomina:", folders[i].name);
+                if(n) { folders[i].name = n.toUpperCase(); saveF(); renderDesktop(); }
+            } else {
+                document.getElementById('proj-title').innerText = "PROGETTO: " + folders[i].name;
+                openApp('project-window');
+            }
+        }
+
         function deleteFolder(i) { folders.splice(i, 1); saveF(); renderDesktop(); }
         function saveF() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
         function resetFolders() { if(confirm("Resettare tutto?")) { localStorage.clear(); location.reload(); } }
@@ -119,45 +128,13 @@
         function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
         setInterval(updateClock, 1000); updateClock();
 
-        // --- DATABASE CON CODICI COMPLETI ---
+        // Database Iniziale (Codice Sacro della Note App)
         let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
             id: 'note-v1',
             t: 'NOTE APP COMPLETA',
-            h: `<div class="note-app">
-    <div class="toolbar">
-        <button id="btn-theme">☀️</button>
-        <button id="btn-add">➕</button>
-        <button id="btn-cat">📁</button>
-        <button id="btn-trash">🗑️</button>
-        <button id="btn-settings">⚙️</button>
-    </div>
-    <div id="main-content" style="padding:20px; text-align:center;">
-        <h3>Benvenuto Sandro</h3>
-        <p>I bottoni sopra sono ora attivi.</p>
-    </div>
-    <div id="panel" style="display:none; position:fixed; bottom:0; width:100%; background:white; border-top:2px solid black; padding:20px;">
-        <h4 id="panel-title">Pannello</h4>
-        <button onclick="document.getElementById('panel').style.display='none'">CHIUDI</button>
-    </div>
-</div>`,
-            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; transition: 0.3s; }
-.toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; }
-.toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }
-.dark-mode { background: #222 !important; color: white !important; }
-.dark-mode #panel { background: #333; color: white; }`,
-            j: `const btnTheme = document.getElementById('btn-theme');
-const panel = document.getElementById('panel');
-const panelTitle = document.getElementById('panel-title');
-
-btnTheme.onclick = () => {
-    document.querySelector('.note-app').classList.toggle('dark-mode');
-    btnTheme.innerText = document.querySelector('.note-app').classList.contains('dark-mode') ? '🌙' : '☀️';
-};
-
-document.getElementById('btn-add').onclick = () => { panel.style.display='block'; panelTitle.innerText='NUOVA NOTA'; };
-document.getElementById('btn-cat').onclick = () => { panel.style.display='block'; panelTitle.innerText='CATEGORIE'; };
-document.getElementById('btn-trash').onclick = () => { panel.style.display='block'; panelTitle.innerText='CESTINO'; };
-document.getElementById('btn-settings').onclick = () => { panel.style.display='block'; panelTitle.innerText='IMPOSTAZIONI'; };`
+            h: `<div class="note-app"><div class="toolbar"><button id="btn-theme">☀️</button><button id="btn-add">➕</button><button id="btn-cat">📁</button><button id="btn-trash">🗑️</button><button id="btn-settings">⚙️</button></div><div id="main-content" style="padding:20px; text-align:center;"><h3>Benvenuto Sandro</h3></div></div>`,
+            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; } .toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; } .toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }`,
+            j: `document.getElementById('btn-theme').onclick = () => alert('Tema Cambiato!');`
         }];
 
         function openApp(id) {
@@ -171,16 +148,9 @@ document.getElementById('btn-settings').onclick = () => { panel.style.display='b
             list.innerHTML = database.map(n => `
                 <div class="note-card">
                     <strong>📁 ${n.t}</strong>
-                    <div class="btn-group">
-                        <button class="btn btn-html" onclick="alert(database.find(x=>x.id=='${n.id}').h)">HTML</button>
-                        <button class="btn btn-css" onclick="alert(database.find(x=>x.id=='${n.id}').c)">CSS</button>
-                        <button class="btn btn-js" onclick="alert(database.find(x=>x.id=='${n.id}').j)">JS</button>
-                    </div>
                     <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA & TESTA LIVE</button>
                 </div>
             `).reverse().join('');
-            document.getElementById('note-count').innerText = database.length;
-            document.getElementById('mem-val').innerText = (JSON.stringify(database).length / 1024).toFixed(2);
         }
 
         function loadToEditor(id) {
@@ -205,10 +175,11 @@ document.getElementById('btn-settings').onclick = () => { panel.style.display='b
             database.push(entry);
             localStorage.setItem('sandro_db', JSON.stringify(database));
             renderNotes();
+            alert("Salvato nell'Archivio!");
         }
 
+        function toggleEdit() { editMode = !editMode; renderDesktop(); }
         function closeApps() { document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active')); }
-        function resetEditor() { document.querySelectorAll('textarea, input').forEach(i => i.value = ''); }
 
         renderDesktop();
         renderNotes();
