@@ -9,23 +9,18 @@
         * { box-sizing: border-box; -webkit-appearance: none; }
         body { font-family: sans-serif; background: var(--gray); margin: 0; padding: 15px; }
 
-        /* Orologio Nero in alto */
         .clock { background: var(--black); color: #fff; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; font-size: 22px; }
         
-        /* Desktop con Icone */
         .desktop { display: flex; justify-content: space-around; padding: 10px 0; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
         .folder { text-align: center; width: 45%; cursor: pointer; }
         .folder-icon { font-size: 40px; display: block; margin-bottom: 5px; }
         .folder-name { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #333; }
 
-        /* Finestra App */
         .app-window { display: none; background: var(--white); border: 2px solid var(--black); padding: 20px; box-shadow: 6px 6px 0px var(--green); margin-top: 10px; }
         .active { display: block !important; }
 
-        /* Stats Style Matrix */
         .stats-box { background: #222; color: #0f0; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; margin-bottom: 15px; }
 
-        /* Bottoni Colorati */
         .btn-group { display: flex; gap: 8px; margin-top: 5px; }
         .btn { flex: 1; padding: 15px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 12px; text-transform: uppercase; text-align: center; }
         
@@ -36,7 +31,7 @@
         .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; }
 
         .note-card { border: 2px solid #eee; padding: 15px; margin-top: 15px; background: #fff; border-radius: 8px; }
-        input, textarea { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 12px; font-family: monospace; }
+        input, textarea { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 12px; }
         
         .footer-text { text-align: center; color: #999; font-size: 10px; margin-top: 40px; }
     </style>
@@ -58,9 +53,9 @@
 
     <div id="app-note" class="app-window">
         <h2 style="font-size:16px;">📂 ARCHIVIO CODICI NOTE</h2>
-        <div class="stats-box" id="stats-ui">
-            > MEMORIA: 0.45 KB<br>
-            > NOTE SALVATE: 1
+        <div class="stats-box">
+            > MEMORIA ATTIVA: <span id="mem-val">0</span> KB<br>
+            > PROGETTI: <span id="note-count">1</span>
         </div>
 
         <div id="notes-list">
@@ -71,7 +66,7 @@
                     <button class="btn btn-css" onclick="viewOriginal('c')">CSS</button>
                     <button class="btn btn-js" onclick="viewOriginal('j')">JS</button>
                 </div>
-                <button class="btn btn-red" style="padding:8px;" onclick="alert('Codice di sistema protetto')">SISTEMA</button>
+                <button class="btn btn-red" style="padding:8px;" onclick="alert('Sistema Protetto')">Sandro System</button>
             </div>
         </div>
 
@@ -80,11 +75,11 @@
 
     <div id="play-test" class="app-window">
         <h2>🛠️ NUOVO PROGETTO</h2>
-        <input type="text" id="p-title" placeholder="Titolo...">
+        <input type="text" id="p-title" placeholder="Nome...">
         <textarea id="p-html" placeholder="HTML..." rows="3"></textarea>
         <textarea id="p-css" placeholder="CSS..." rows="3"></textarea>
         <textarea id="p-js" placeholder="JS..." rows="3"></textarea>
-        <button class="btn btn-html" style="width:100%" onclick="saveNew()">MEMORIZZA</button>
+        <button class="btn btn-green" style="width:100%" onclick="alert('Salvato!')">MEMORIZZA</button>
     </div>
 
     <div class="footer-text">Archivio Personale Sandro - 2026</div>
@@ -98,26 +93,28 @@
         function openApp(id) {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            updateStats();
         }
 
         function closeApps() {
             document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
         }
 
-        // --- I TUOI CODICI MEMORIZZATI ---
+        // --- IL TUO CODICE HTML INTEGRATO QUI ---
         const myCodes = {
-            h: `\n<div class="clock" id="clk"></div>\n<div class="desktop">\n <div class="folder">App Note</div>\n</div>`,
-            c: `/* CSS Sandro */\n:root { --black: #111; --green: #1b4d3e; }\nbody { font-family: sans-serif; background: #f4f4f4; }`,
-            j: `// JS Sandro\nfunction updateClock() {\n document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH');\n}\nsetInterval(updateClock, 1000);`
+            h: `<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Note App</title>\n  <link rel="stylesheet" href="style.css">\n  <script src="https://accounts.google.com/gsi/client" async defer><\/script>\n</head>\n<body>\n  <div class="icon-bar">\n    <button id="themeToggle">☀️</button>\n    <button id="addNoteBtn">➕</button>\n    <button id="categoriesBtn">📁</button>\n    <button id="trashBtn">🗑️</button>\n    <button id="settingsBtn">⚙️</button>\n  </div>\n  <div id="notesContainer"></div>\n  \n</body>\n</html>`,
+            c: `/* Inserisci qui il tuo CSS originale */`,
+            j: `/* Inserisci qui il tuo JS originale */`
         };
 
         function viewOriginal(type) {
-            alert("IL TUO CODICE " + type.toUpperCase() + ":\n\n" + myCodes[type]);
+            // Mostra il codice in un alert o puoi copiarlo
+            alert("IL TUO HTML SALVATO:\n\n" + myCodes[type]);
         }
 
-        function saveNew() {
-            alert("Progetto aggiunto all'archivio!");
-            closeApps();
+        function updateStats() {
+            const size = (JSON.stringify(myCodes).length / 1024).toFixed(2);
+            document.getElementById('mem-val').innerText = size;
         }
     </script>
 </body>
