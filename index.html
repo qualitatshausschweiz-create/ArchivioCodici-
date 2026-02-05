@@ -33,20 +33,13 @@
         .btn-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
         .btn { flex: 1; min-width: 60px; padding: 12px; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 10px; text-transform: uppercase; text-align: center; }
         
-        .btn-html { background: #e34c26 !important; } 
-        .btn-css { background: #264de4 !important; }  
-        .btn-js { background: #f7df1e !important; color: #000 !important; }   
-        
         .btn-edit { background: #007bff !important; } 
         .btn-black { background: var(--black) !important; width: 100%; margin-top: 20px; font-size: 12px; }
         .btn-green { background: var(--green) !important; width: 100%; font-size: 12px; }
 
-        #live-preview { width: 100%; height: 500px; border: 2px solid #000; margin-top: 15px; background: white; }
+        #live-preview { width: 100%; height: 400px; border: 2px solid #000; margin-top: 15px; background: white; }
 
-        .note-card { border: 2px solid #000; padding: 15px; margin-top: 15px; background: #fff; }
         textarea, input { width: 100%; border: 2px solid var(--black); padding: 12px; margin-bottom: 8px; font-family: monospace; }
-        
-        .footer-text { text-align: center; color: #999; font-size: 10px; margin-top: 40px; }
     </style>
 </head>
 <body>
@@ -61,147 +54,86 @@
 
     <div class="desktop" id="desktop-grid"></div>
 
-    <div id="project-window" class="app-window">
-        <h2 id="proj-title">CARTELLA</h2>
-        <div class="stats-box">> STATO: PROGETTO ATTIVO</div>
-        <button class="btn btn-green" onclick="openApp('play-test')">APRI EDITOR</button>
-        <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
+    <div id="play-test" class="app-window">
+        <h2 id="editor-title">🛠️ EDITOR</h2>
+        <input type="text" id="p-title" placeholder="Titolo Progetto..." readonly>
+        <textarea id="p-html" placeholder="HTML..." rows="5"></textarea>
+        <textarea id="p-css" placeholder="CSS..." rows="3"></textarea>
+        <textarea id="p-js" placeholder="JS..." rows="3"></textarea>
+        
+        <div class="btn-group">
+            <button class="btn btn-green" onclick="runTest()">▶️ TESTA LIVE</button>
+            <button class="btn btn-edit" onclick="saveCurrentFolder()">💾 SALVA IN CARTELLA</button>
+            <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
+        </div>
+
+        <iframe id="live-preview"></iframe>
     </div>
 
     <div id="app-note" class="app-window">
-        <h2>📂 ARCHIVIO CODICI</h2>
-        <div class="stats-box">> MEMORIA: <span id="mem-val">0</span> KB | NOTE: <span id="note-count">0</span></div>
+        <h2>📂 ARCHIVIO CODICI NOTE</h2>
         <div id="notes-list"></div>
         <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
     </div>
 
-    <div id="play-test" class="app-window">
-        <h2>🛠️ EDITOR LIVE</h2>
-        <input type="text" id="p-title" placeholder="Titolo Progetto...">
-        <textarea id="p-html" placeholder="HTML..." rows="5"></textarea>
-        <textarea id="p-css" placeholder="CSS..." rows="3"></textarea>
-        <textarea id="p-js" placeholder="JS..." rows="3"></textarea>
-        <div class="btn-group">
-            <button class="btn btn-green" onclick="runTest()">▶️ TESTA LIVE</button>
-            <button class="btn btn-edit" onclick="saveNew()">💾 MEMORIZZA</button>
-            <button class="btn btn-black" onclick="closeApps()">CHIUDI</button>
-        </div>
-        <iframe id="live-preview"></iframe>
-    </div>
-
     <script>
+        // Memoria per le cartelle (ognuna ha il suo HTML, CSS, JS)
         let folders = JSON.parse(localStorage.getItem('sandro_custom_folders')) || [];
+        let currentFolderIndex = null;
         let editMode = false;
 
         function renderDesktop() {
             const grid = document.getElementById('desktop-grid');
-            grid.innerHTML = `
-                <div class="folder" onclick="openApp('app-note')"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>
-                <div class="folder" onclick="openApp('play-test')"><span class="folder-icon">🛠️</span><span class="folder-name">Play Test</span></div>
-            `;
+            grid.innerHTML = `<div class="folder" onclick="openNoteApp()"><span class="folder-icon">📂</span><span class="folder-name">App Note Sandro</span></div>`;
+            
             folders.forEach((f, i) => {
                 grid.innerHTML += `
-                    <div class="folder ${editMode ? 'editing' : ''}" onclick="openProject(${i})">
+                    <div class="folder ${editMode ? 'editing' : ''}" onclick="openFolder(${i})">
                         <div class="del-tag" onclick="deleteFolder(${i}); event.stopPropagation();">X</div>
-                        <span class="folder-icon">📁</span><span class="folder-name">${f.name}</span>
+                        <span class="folder-icon">📁</span>
+                        <span class="folder-name">${f.name}</span>
                     </div>`;
             });
         }
 
         function addFolder() {
-            const n = prompt("Nome della nuova cartella:");
-            if(n) { folders.push({name: n.toUpperCase()}); saveF(); renderDesktop(); }
-        }
-
-        function openProject(i) {
-            if(editMode) {
-                const n = prompt("Rinomina:", folders[i].name);
-                if(n) { folders[i].name = n.toUpperCase(); saveF(); renderDesktop(); }
-            } else {
-                document.getElementById('proj-title').innerText = "PROGETTO: " + folders[i].name;
-                openApp('project-window');
+            const n = prompt("Nome Progetto (es. ONLINE SHOPPING):");
+            if(n) {
+                // Ogni cartella nasce con un codice base vuoto o di esempio
+                folders.push({
+                    name: n.toUpperCase(),
+                    h: '<h1>' + n.toUpperCase() + '</h1><p>Inizia a programmare...</p>',
+                    c: 'body { background: white; font-family: sans-serif; }',
+                    j: 'console.log("Progetto avviato");'
+                });
+                saveF();
+                renderDesktop();
             }
         }
 
-        function deleteFolder(i) { folders.splice(i, 1); saveF(); renderDesktop(); }
-        function saveF() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
-        function resetFolders() { if(confirm("Resettare tutto?")) { localStorage.clear(); location.reload(); } }
-
-        function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
-        setInterval(updateClock, 1000); updateClock();
-
-        // --- IL DATABASE SACRO CON I CODICI COMPLETI ---
-        let database = JSON.parse(localStorage.getItem('sandro_db')) || [{
-            id: 'note-v1',
-            t: 'NOTE APP COMPLETA 4 FEB',
-            h: `<div class="note-app">
-    <div class="toolbar">
-        <button id="btn-theme">☀️</button>
-        <button id="btn-add">➕</button>
-        <button id="btn-cat">📁</button>
-        <button id="btn-trash">🗑️</button>
-        <button id="btn-settings">⚙️</button>
-    </div>
-    <div id="main-content" style="padding:20px; text-align:center;">
-        <h3>Sandro Note System</h3>
-        <p>I bottoni sopra sono ora tutti collegati al JS.</p>
-    </div>
-    <div id="panel" style="display:none; position:fixed; bottom:0; width:100%; background:white; border-top:2px solid black; padding:20px;">
-        <h4 id="panel-title">Pannello</h4>
-        <button onclick="document.getElementById('panel').style.display='none'">CHIUDI</button>
-    </div>
-</div>`,
-            c: `.note-app { font-family: sans-serif; height: 100vh; background: #fff; transition: 0.3s; }
-.toolbar { display: flex; justify-content: space-around; padding: 15px; border-bottom: 2px solid #000; background: #f8f8f8; }
-.toolbar button { font-size: 24px; border: none; background: none; cursor: pointer; }
-.dark-mode { background: #222 !important; color: white !important; }
-.dark-mode .toolbar { background: #333 !important; border-bottom-color: #555; }`,
-            j: `const btnTheme = document.getElementById('btn-theme');
-const panel = document.getElementById('panel');
-const panelTitle = document.getElementById('panel-title');
-
-btnTheme.onclick = () => {
-    document.querySelector('.note-app').classList.toggle('dark-mode');
-    btnTheme.innerText = document.querySelector('.note-app').classList.contains('dark-mode') ? '🌙' : '☀️';
-};
-
-document.getElementById('btn-add').onclick = () => { panel.style.display='block'; panelTitle.innerText='NUOVA NOTA'; };
-document.getElementById('btn-cat').onclick = () => { panel.style.display='block'; panelTitle.innerText='CATEGORIE'; };
-document.getElementById('btn-trash').onclick = () => { panel.style.display='block'; panelTitle.innerText='CESTINO'; };
-document.getElementById('btn-settings').onclick = () => { panel.style.display='block'; panelTitle.innerText='IMPOSTAZIONI'; };`
-        }];
-
-        function openApp(id) {
-            document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'app-note') renderNotes();
-        }
-
-        function renderNotes() {
-            const list = document.getElementById('notes-list');
-            list.innerHTML = database.map(n => `
-                <div class="note-card">
-                    <strong>📁 ${n.t}</strong>
-                    <div class="btn-group">
-                        <button class="btn btn-html" onclick="alert(database.find(x=>x.id=='${n.id}').h)">HTML</button>
-                        <button class="btn btn-css" onclick="alert(database.find(x=>x.id=='${n.id}').c)">CSS</button>
-                        <button class="btn btn-js" onclick="alert(database.find(x=>x.id=='${n.id}').j)">JS</button>
-                    </div>
-                    <button class="btn btn-edit" style="width:100%; margin-top:5px;" onclick="loadToEditor('${n.id}')">COPIA & TESTA LIVE</button>
-                </div>
-            `).reverse().join('');
-            document.getElementById('note-count').innerText = database.length;
-            document.getElementById('mem-val').innerText = (JSON.stringify(database).length / 1024).toFixed(2);
-        }
-
-        function loadToEditor(id) {
-            const item = database.find(x => x.id == id);
-            document.getElementById('p-title').value = item.t;
-            document.getElementById('p-html').value = item.h;
-            document.getElementById('p-css').value = item.c;
-            document.getElementById('p-js').value = item.j;
+        function openFolder(i) {
+            if(editMode) return;
+            currentFolderIndex = i;
+            const f = folders[i];
+            
+            // Carica i dati specifici di QUESTA cartella nell'editor
+            document.getElementById('editor-title').innerText = "PROGETTO: " + f.name;
+            document.getElementById('p-title').value = f.name;
+            document.getElementById('p-html').value = f.h;
+            document.getElementById('p-css').value = f.c;
+            document.getElementById('p-js').value = f.j;
+            
             openApp('play-test');
             runTest();
+        }
+
+        function saveCurrentFolder() {
+            if(currentFolderIndex === null) return;
+            folders[currentFolderIndex].h = document.getElementById('p-html').value;
+            folders[currentFolderIndex].c = document.getElementById('p-css').value;
+            folders[currentFolderIndex].j = document.getElementById('p-js').value;
+            saveF();
+            alert("Codice salvato nella cartella: " + folders[currentFolderIndex].name);
         }
 
         function runTest() {
@@ -211,18 +143,54 @@ document.getElementById('btn-settings').onclick = () => { panel.style.display='b
             document.getElementById('live-preview').srcdoc = h + c + j;
         }
 
-        function saveNew() {
-            const entry = { id: Date.now(), t: document.getElementById('p-title').value.toUpperCase() || "PROGETTO", h: document.getElementById('p-html').value, c: document.getElementById('p-css').value, j: document.getElementById('p-js').value };
-            database.push(entry);
-            localStorage.setItem('sandro_db', JSON.stringify(database));
+        function openNoteApp() {
+            // Logica speciale per la Note App (il tuo archivio sacro)
+            openApp('app-note');
             renderNotes();
         }
 
-        function toggleEdit() { editMode = !editMode; renderDesktop(); }
-        function closeApps() { document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active')); }
+        function renderNotes() {
+            // Qui teniamo il codice della Note App del 4 Febbraio
+            const noteData = {
+                t: "NOTE APP SACRA",
+                h: `<div style="display:flex; justify-content:space-around; padding:10px; border-bottom:2px solid black;">
+                    <button onclick="alert('Sole')">☀️</button><button onclick="alert('Più')">➕</button>
+                    <button onclick="alert('Cartella')">📁</button><button onclick="alert('Cestino')">🗑️</button>
+                    <button onclick="alert('Ingranaggio')">⚙️</button></div>`,
+                c: "button { font-size: 20px; }",
+                j: ""
+            };
+            document.getElementById('notes-list').innerHTML = `
+                <div style="border:1px solid black; padding:10px;">
+                    <strong>${noteData.t}</strong>
+                    <button class="btn btn-edit" onclick="loadNoteToEditor()">CARICA & TESTA</button>
+                </div>`;
+        }
 
+        function loadNoteToEditor() {
+            currentFolderIndex = null; // Stiamo usando la Note App, non una cartella
+            document.getElementById('editor-title').innerText = "MODIFICA NOTE APP";
+            document.getElementById('p-html').value = `<div class="toolbar"><button>☀️</button><button>➕</button><button>📁</button><button>🗑️</button><button>⚙️</button></div>`;
+            document.getElementById('p-css').value = `.toolbar { display: flex; justify-content: space-around; padding: 20px; border-bottom: 2px solid #000; } button { font-size: 25px; cursor: pointer; }`;
+            document.getElementById('p-js').value = `console.log("Note app caricata");`;
+            openApp('play-test');
+            runTest();
+        }
+
+        function openApp(id) {
+            document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeApps() { document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active')); }
+        function toggleEdit() { editMode = !editMode; renderDesktop(); }
+        function deleteFolder(i) { folders.splice(i, 1); saveF(); renderDesktop(); }
+        function saveF() { localStorage.setItem('sandro_custom_folders', JSON.stringify(folders)); }
+        function resetFolders() { if(confirm("Resetta tutto?")) { localStorage.clear(); location.reload(); } }
+        function updateClock() { document.getElementById('clk').innerText = new Date().toLocaleTimeString('it-CH'); }
+        
+        setInterval(updateClock, 1000); updateClock();
         renderDesktop();
-        renderNotes();
     </script>
 </body>
 </html>
